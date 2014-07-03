@@ -1,0 +1,40 @@
+\documentclass{letter}
+\signature{
+Dan Ibanez \\
+(518)-227-8857 \\
+\texttt{dibanez@scorec.rpi.edu}}
+\address{
+RPI SCOREC \\
+CII-4011 \\
+110 8th Street \\
+Troy, NY 12180-3590}
+\begin{document}
+\begin{letter}{}
+\opening{Dear Editor,}
+
+We are submitting for review our recent work on hybrid MPI-thread parallelism
+applied to unstructured, adaptive mesh simulations.
+This research has been ongoing for over a year, resulting in the development
+of a highly stable and scalable hybrid communications library called PCU, which is actively
+supporting the SCOREC mesh adaptation tools at RPI and, in turn, the PHASTA fluid solver
+from the University of Colorado Boulder
+and the Albany solver framework from Sandia National Laboratories.
+PCU continues to demonstrate scaling on IBM Blue Gene/Q machines.
+
+The technology in PCU consists of a system of non-blocking inter-thread message
+passing primitives, non-blocking threaded collectives, and a termination
+detection algorithm which optimally solves a communication problem often
+encountered in parallel unstructured mesh simulations.
+
+The maturity of this work coincides with the current activity in the HPC
+community on the subject of hybrid programming models and systems.
+It should interest the readers of Parallel Computing how PCU attains
+hybrid MPI-thread
+scalability for general and unpredictable communication patterns using
+simple yet novel algorithms.
+
+We look forward to working with you.
+
+\closing{Sincerely,}
+\end{letter}
+\end{document}
