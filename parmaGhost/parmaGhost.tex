@@ -33,7 +33,7 @@ I = \frac{max(w(p))}{avg(w(p))}
 \end{equation}
 Most partitioners cannot account for the ghosted elements as the affect of the ghosts on $w(p_i)$ changes with the partitioning of the owned elements.  
 
-Figure~\ref{fig:ghostEx} depicts an example of three layer ghosting in the polyhedral mesh.
+Figure~\ref{fig:ghostEx} depicts an example of three layer ghosting in a simple triangular mesh.
 
 \begin{figure} 
 \centering
@@ -45,7 +45,7 @@ Figure~\ref{fig:ghostEx} depicts an example of three layer ghosting in the polyh
 
 ParMA diffusive partition improvement procedures can account for the ghosted layers using a combination of existing element selection criteria and an extended 'weight' tracking mechanism.  The weight tracking extension relies on the exact knowledge of the change to the ghosted elements as elements on a heavy part are selected for migration to a light part.
 
-ParMA will be ran on the delaunay trianularization of the Voronoi mesh (Figure~\ref{fig:delaunay}), as depicted in Figures~\ref{fig:NA240}, \ref{fig:east60}, and \ref{fig:NA60}, and will accordingly target vertex balance.  The vertex part assignments, along with identifier information, will be output for partitioning the Voronoi mesh. Vertices in the initial partition are identified by their part number and local vtx number.  Details on the meshes of interest are available online ~\cite{climateMesh}. 
+ParMA will be ran on the Delaunay triangularization of the Voronoi mesh (Figure~\ref{fig:delaunay}), as depicted in Figures~\ref{fig:NA240}, and will accordingly target vertex balance.  The vertex part assignments, along with identifier information, will be output for partitioning the Voronoi mesh. Vertices in the initial partition are identified by their part number and local vertex number.  Details on the meshes of interest are available online ~\cite{climateMesh}. 
 
 \begin{figure} 
 \centering
@@ -57,18 +57,6 @@ ParMA will be ran on the delaunay trianularization of the Voronoi mesh (Figure~\
 \centering
 \includegraphics[width=0.75\textwidth]{ocean_QU_240kmNA.png}
 \caption{\label{fig:NA240} 240km resolution dual mesh.}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75\textwidth]{ocean_QU_60kmNA_eastCoastZoom.png}
-\caption{\label{fig:east60} 60km resolution dual mesh of North American east coast.}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75\textwidth]{ocean_QU_60kmNA_far.png}
-\caption{\label{fig:NA60}60km resolution dual mesh.}
 \end{figure}
 
 A Delaunay mesh vertex based partitioning, as depicted in Figure~\ref{fig:ownership2}, is not a valid partition of the Delaunay mesh as each element needs to be assigned to exactly one part.  To obtain unique element assignment an element based partitioning of the Delaunay mesh is performed.  Duplicate Delaunay vertices created on the part boundary as a result of the element partitioning are depicted in Figure~\ref{fig:ownership3} by dotted lines.  These vertex copies in the Voroni mesh this correspond to an element assigned to multiple parts.  Unique part assignment of the Voroni mesh elements is through the ownership associated with the Delaunay mesh vertices.  In Figure~\ref{fig:ownership3} ownership of a mesh vertex is depicted through a colored Voroni element.  Using vertex ownership the weight of each part is defined in Equation~\ref{eqn:weightDelaunay}; the notation $M^0$ is a mesh vertex, $gM^d$ is a ghost mesh vertex, and $\hat{M^0}$ denotes the owned copy of the vertex.
@@ -84,58 +72,14 @@ Algorithm~\ref{alg:parma} outlines the top-level procedure for iterative diffusi
 \begin{figure} 
 \centering
 \includegraphics[width=0.4\textwidth]{ghostingOwnershipFig2.png}
-\caption{\label{fig:ownership2} A Delaunay mesh vertex based partitioning is not a valid partition of the Delaunay mesh as elements, denoted with dashed edges, span the part boundary.  In the scorec unstructured mesh tools an element cannot be divided between multiple parts.}
-\end{figure}
+\caption{\label{fig:ownership2} A Delaunay mesh vertex based partitioning is not a valid partition of the Delaunay mesh as elements, denoted with dashed edges, span the part boundary.  In the SCOREC unstructured mesh tools an element cannot be divided between multiple parts.}
 
-\begin{figure} 
-\centering
 \includegraphics[width=0.4\textwidth]{ghostingOwnershipFig3.png}
 \caption{\label{fig:ownership3} An element based partitioning of the Delaunay mesh with duplicate Delaunay vertices on the part boundary.  Owned Delaunay mesh vertices are marked with colored Voroni elements.}
-\end{figure}
 
-\begin{figure} 
-\centering
 \includegraphics[width=0.4\textwidth]{ghostingOwnershipFig4.png}
 \caption{\label{fig:ownership4} One layer edge-based ghosting of a Delaunay mesh element partition.  Green elements are ghosted to the bottom part and yellow elements ghosted to the top part.}
 \end{figure}
-
-
-\section{Results}
-
-\begin{figure} 
-\centering
-\includegraphics[width=0.8\textwidth]{plateghosts.png}
-\caption{\label{fig:ownership4} Three layers of ghosting between two parts of a test mesh.  The boundary is only ghosted from the part that owns the vertices to the not owned part.}
-\end{figure}
-
-\begin{center}
-\begin{tabular}{c | c | c | c}
-  \hline
-  parts & initial imbalance & final imbalance & parma-ghost runtime \\
-  64 & 1.135 & 1.046 & 2.0222 \\
-  128 & 1.158 & 1.040 & 1.2728 \\
-  256 & 1.194 & 1.048 & 1.8081 \\
-  512 & 1.348 & 1.058 & 1.7639 \\
-  \hline 
-\end{tabular}
-\end{center}
-
-Testing was done on AMOS with a 60km mesh of the ocean using 64 nodes with varying part numbers ranging from 64 to 512 parts. The method was repeated until imblance reached 1.05 or better.
-
-\begin{figure} 
-\centering
-\includegraphics[width=0.45\textwidth]{60km/init/0_255.png}
-\includegraphics[width=0.5\textwidth]{60km/final/0_255.png}
-\caption{\label{fig:60km0_255} RIB initial partition (left) and the ParMA ghost balanced partition (right).}
-\end{figure}
-
-\begin{figure} 
-\centering
-\includegraphics[width=0.8\textwidth]{60km/init/384_404.png}
-\includegraphics[width=0.8\textwidth]{60km/final/384_404.png}
-\caption{\label{fig:60km384_404} RIB initial partition (top) and the ParMA ghost balanced partition (bottom).}
-\end{figure}
-
 
 \begin{algorithm}
 \caption{ParMA Ghosting improvement}
@@ -168,6 +112,105 @@ Testing was done on AMOS with a 60km mesh of the ocean using 64 nodes with varyi
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+
+\begin{figure} 
+\centering
+\includegraphics[width=0.8\textwidth]{plateghosts.png}
+\caption{\label{fig:ownership4} Three layers of ghosting between two parts of a test mesh.  The boundary is only ghosted from the part that owns the vertices to the not owned part.}
+\end{figure}
+
+\section{Results}
+
+The North America graded 15km to 75km, and 15km uniform meshes are partitioned with Zoltan local and global ParMETIS, and ParMA RIB to a 5\% peak element imbalance and then ParMA ghost balancing is applied.  
+Tests were ran on RPI's AMOS and ALCF's Cetus, and Mira IBM BlueGene/Q systems.  
+Tables ~\ref{tab:nalg}, \ref{tab:nagg} and \ref{tab:naplrib} list the timings to compute the partition, migrate the elements, the resulting initial ghost imbalance, $I_0$, the final ghost imbalance, $I_N$, the number of ghost balancing iterations, $N$, and the total ghost balancing time for the North America graded mesh.
+Likewise, results for the 15km uniform mesh are listed in Tables ~\ref{tab:15kmlg}, \ref{tab:15kmgg} and \ref{tab:15kmplrib}.  
+Note, the 15km 6144 partition was ran using a combination of threads and MPI processes (COMING SOON) to accommodate the BlueGene/Q's power of two process per node requirement; all other ghost balancing tests were ran without threads.
+
+Figure~\ref{fig:60km0_255} and \ref{fig:60km384_404} respectively depict the initial ParMA RIB partition and the resulting ghost balanced partition.  
+The ghost balanced partition maintains the original partitions low degree while smoothing out the part boundaries via a high surface area vertex selection mechanism discussed in ~\cite{ParMA-2014}.
+
+\begin{figure} 
+\centering
+\includegraphics[width=0.45\textwidth]{60km/init/0_255.png}
+\includegraphics[width=0.5\textwidth]{60km/final/0_255.png}
+\caption{\label{fig:60km0_255} RIB initial partition (left) and the ParMA ghost balanced partition (right).}
+
+\includegraphics[width=0.6\textwidth]{60km/init/384_404.png}
+\includegraphics[width=0.6\textwidth]{60km/final/384_404.png}
+\caption{\label{fig:60km384_404} RIB initial partition (top) and the ParMA ghost balanced partition (bottom).}
+\end{figure}
+
+\begin{table}
+\centering
+\caption{\label{tab:nalg}North America Graded: Zoltan Local ParMETIS followed by ghost balancing.}
+\begin{tabular}{  l | l | l | l | l | l | l | l | l | l | l }
+    \hline
+    nodes & parts & tgt parts & factor & plan (s) & migrate (s) & total (s) & $I_0$ & $I_N$ & N & time (s) \\ \hline
+    32 & 1 & 32 & 32 & 31.73 & 92.35 & 124.07 & 1.048 & 1.048 & 0 & 0.10 \\ 
+    32 & 32 & 512 & 16 & 1.01 & 2.38 & 3.39 & 1.218 & 1.05 & 29 & 0.98 \\ 
+    32 & 32 & 1024 & 32 & 1.10 & 3.24 & 4.34 & 1.236 & 1.046 & 32 & 1.07 \\ 
+    32 & 32 & 2048 & 64 & 1.26 & 4.63 & 5.90 & 1.276 & 1.05 & 112 & 4.95 \\ 
+\end{tabular}
+
+\caption{\label{tab:nagg}North America Graded: Zoltan Global ParMETIS followed by ghost balancing.}
+\begin{tabular}{  l | l | l | l | l | l | l | l | l | l | l }
+    \hline
+    nodes & parts & tgt parts & factor & plan (s) & migrate (s) & total (s) & $I_0$ & $I_N$ & N & time (s) \\ \hline
+    32 & 1 & 32 & 32 & 31.73 & 92.35 & 124.07 & 1.048 & 1.048 & 0 & 0.10 \\ 
+    32 & 32 & 512 & 16 & 1.97 & 2.38 & 4.34 & 1.179 & 1.049 & 31 & 1.05 \\ 
+    32 & 32 & 1024 & 32 & 2.86 & 3.07 & 5.93 & 1.204 & 1.05 & 28 & 0.93 \\ 
+    32 & 32 & 2048 & 64 & 4.65 & 5.19 & 9.84 & 1.281 & 1.046 & 92 & 4.14 \\ 
+\end{tabular}
+
+\caption{\label{tab:naplrib}North America Graded: ParMA local RIB followed by ghost balancing.}
+\begin{tabular}{  l | l | l | l | l | l | l | l | l | l | l }
+    \hline
+    nodes & parts & tgt parts & factor & plan (s) & migrate (s) & total (s) & $I_0$ & $I_N$ & N & time (s) \\ \hline
+    32 & 1 & 32 & 32 & 11.27 & 90.34 & 101.61 & 1.079 & 1.048 & 6 & 0.98 \\ 
+    32 & 32 & 512 & 16 & 0.25 & 2.32 & 2.56 & 1.27 & 1.05 & 15 & 0.50 \\ 
+    32 & 32 & 1024 & 32 & 0.29 & 3.21 & 3.49 & 1.443 & 1.045 & 25 & 0.81 \\ 
+    32 & 32 & 2048 & 64 & 0.33 & 4.68 & 5.01 & 1.394 & 1.046 & 38 & 1.62 \\ 
+\end{tabular}
+
+\caption{\label{tab:15kmlg}15km Uniform: Zoltan local ParMETIS followed by ghost balancing.}
+\begin{tabular}{  l | l | l | l | l | l | l | l | l | l | l }
+    \hline
+    nodes & parts & tgt parts & factor & plan (s) & migrate (s) & total (s) & $I_0$ & $I_N$ & N & time (s) \\ \hline
+    1 & 1 & 8 & 8 & 26.04 & 195.83 & 221.87 & 1.008 & 1.008 & 0 & 1.78 \\ 
+    8 & 8 & 64 & 8 & 27.80 & 57.08 & 84.88 & 1.019 & 1.019 & 0 & 0.31 \\ 
+    8 & 64 & 512 & 8 & 3.52 & 15.26 & 18.78 & 1.073 & 1.048 & 6 & 0.55 \\ 
+    128 & 512 & 1024 & 2 & 0.43 & 0.76 & 1.20 & 1.116 & 1.048 & 11 & 0.70 \\ 
+    128 & 512 & 2048 & 4 & 0.44 & 0.90 & 1.34 & 1.17 & 1.049 & 14 & 0.78 \\ 
+    128 & 512 & 4096 & 8 & 0.46 & 1.01 & 1.47 & 1.207 & 1.05 & 21 & 0.96 \\ 
+    128 & 512 & 6144 & 12 & 0.48 & 1.08 & 1.55 &  &  &  &  \\ 
+\end{tabular}
+
+\caption{\label{tab:15kmgg}15km Uniform: Zoltan global ParMETIS followed by ghost balancing.}
+\begin{tabular}{  l | l | l | l | l | l | l | l | l | l | l }
+    \hline
+    nodes & parts & tgt parts & factor & plan (s) & migrate (s) & total (s) & $I_0$ & $I_N$ & N & time (s) \\ \hline
+      1 & 1 & 8 & 8 & 26.04 & 195.83 & 221.87 & 1.008 & 1.008 & 0 & 1.78 \\ 
+      8 & 8 & 64 & 8 & 32.40 & 62.70 & 95.09 & 1.052 & 1.048 & 2 & 0.78 \\ 
+      8 & 64 & 512 & 8 & 4.74 & 8.88 & 13.62 & 1.126 & 1.049 & 14 & 1.26 \\ 
+      128 & 512 & 1024 & 2 & 1.13 & 1.44 & 2.56 & 1.131 & 1.05 & 23 & 1.46 \\ 
+      128 & 512 & 2048 & 4 & 1.42 & 1.34 & 2.76 & 1.152 & 1.048 & 16 & 0.88 \\ 
+      128 & 512 & 4096 & 8 & 2.07 & 1.21 & 3.27 & 1.202 & 1.049 & 23 & 1.04 \\ 
+      128 & 512 & 6144 & 12 & 2.63 & 1.19 & 3.82 &  &  &  & \  \\ 
+\end{tabular}
+
+\caption{\label{tab:15kmplrib}15km Uniform: ParMA local RIB followed by ghost balancing.}
+\begin{tabular}{  l | l | l | l | l | l | l | l | l | l | l }
+    \hline
+    nodes & parts & tgt parts & factor & plan (s) & migrate (s) & total (s) & $I_0$ & $I_N$ & N & time (s) \\ \hline
+      1 & 1 & 8 & 8 & 34.24 & 126.62 & 160.85 & 1.007 & 1.007 & 0 & 1.83 \\ 
+      8 & 8 & 64 & 8 & 7.01 & 51.85 & 58.86 & 1.054 & 1.047 & 3 & 1.17 \\ 
+      8 & 64 & 512 & 8 & 0.80 & 6.88 & 7.67 & 1.127 & 1.047 & 13 & 1.19 \\ 
+      128 & 512 & 1024 & 2 & 0.05 & 0.71 & 0.76 & 1.182 & 1.049 & 17 & 1.11 \\ 
+      128 & 512 & 2048 & 4 & 0.07 & 0.88 & 0.95 & 1.212 & 1.049 & 24 & 1.30 \\ 
+      128 & 512 & 4096 & 8 & 0.09 & 0.96 & 1.05 & 1.267 & 1.046 & 33 & 1.38 \\ 
+\end{tabular}
+\end{table}
 
 \section{Code}
 
