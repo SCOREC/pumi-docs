@@ -121,7 +121,7 @@ Algorithm~\ref{alg:parma} outlines the top-level procedure for iterative diffusi
 
 \section{Results}
 
-The North America graded 15km to 75km, and 15km uniform meshes are partitioned with Zoltan local and global ParMETIS, and ParMA RIB to a 5\% peak element imbalance and then ParMA ghost balancing is applied.  
+The 500K element North America graded 15km to 75km, and the 3.6M element 15km uniform meshes are partitioned with Zoltan local and global ParMETIS, and ParMA RIB to a 5\% peak element imbalance and then ParMA ghost balancing is applied. 
 Tests were ran on RPI's AMOS and ALCF's Cetus, and Mira IBM BlueGene/Q systems.  
 Tables ~\ref{tab:nalg}, \ref{tab:nagg} and \ref{tab:naplrib} list the timings to compute the partition, migrate the elements, the resulting initial ghost imbalance, $I_0$, the final ghost imbalance, $I_N$, the number of ghost balancing iterations, $N$, and the total ghost balancing time for the North America graded mesh.
 Likewise, results for the 15km uniform mesh are listed in Tables ~\ref{tab:15kmlg}, \ref{tab:15kmgg} and \ref{tab:15kmplrib}.  
