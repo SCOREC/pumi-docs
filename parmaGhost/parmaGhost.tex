@@ -219,6 +219,8 @@ https://github.com/SCOREC/core
 
 The code in parma/diffMC/src/parma\_ghost.cc implements the partitioning procedures and test/ghost.cc provides a test driver.  The test driver can be built with the command `make ghost'.  In the plate/2 directory of the test meshes SVN repo http://redmine.scorec.rpi.edu/svn/meshes is a two part 2D mesh for testing.  This mesh is classified on the plate/plate.dmg model.  Run the driver with the command `mpirun -np PROCS ./ghost MODEL MESH'.
 
+The NetCDF meshes must be converted to a SCOREC model and mesh in order to be used in the ghost program. The code in mpas/apfMPAS.cc implements NetCDF to SCOREC and SCOREC to NetCDF protocols and test drivers are in test/mpas\_read.cc and test/mpas\_write.cc. These test drivers can be built using 'make mpas\_read' and 'make mpas\_write' respectively. First run mpas\_read with './mpas\_read NetCDF OUT\_MESH OUT\_MODEL'. After reading the NetCDF file the SCOREC mesh must be split to desired part count using the split program, built with 'make split' and ran with './split MODEL MESH SPLIT\_MESH FACTOR'. To write graph.info.part.# files for the newly balanced mesh run 'mpirun -np PROCS ./mpas\_write MODEL MESH NetCDF'.
+
 \newpage
 \bibliographystyle{plain}
 \bibliography{references.bib}
