@@ -69,6 +69,8 @@ In the Voroni mesh the bridge entity is an edge and three layers of ghosts are n
 
 Algorithm~\ref{alg:parma} outlines the top-level procedure for iterative diffusion that seeks to reduce $I$.  While the mesh peak imbalance $I$ is greater than the specified target imbalance a diffusive iteration is executed.  Each iteration first requires finding neighboring parts, computing part weights and exchanging those weights with neighboring parts, finding the elements ghosted on the part boundaries and exchanging the weight of those ghosts with neighboring parts, and lastly computing the amount of weight to migrate to each neighbor.  
 
+Once the Delaunay triangularization is balanced, it is to be converted back into the original format. A single file that lists each vertex's part numbers in the original order must be created. Algorithm~\ref{alg:mpas} describes the steps for creating this file. First each part exchanges vertex info such that each part, $p$, has an equal share of the vertices, $v$, that range from $p*v-p*(v+1)$. Then each part searches for any verticies that were removed during the read operation. Finally, blocks of parts each write to a different file which can then be combined in order to make the final part file.
+
 \begin{figure} 
 \centering
 \includegraphics[width=0.4\textwidth]{ghostingOwnershipFig2.png}
@@ -109,6 +111,36 @@ Algorithm~\ref{alg:parma} outlines the top-level procedure for iterative diffusi
     \EndIf
   \EndFor
   \State $migrate(plan)$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{MPAS I/O}
+\label{alg:mpas}
+\begin{algorithmic}[1]
+%\Require {mesh $M$ of dimension $d$, bridge ent dim $bDim$, num ghost layers $layers$}
+\Procedure{read}{}
+  
+\EndProcedure
+
+\Procedure{write}{}
+  \State $vtxs \leftarrow \emptyset$
+  \ForEach {$owned vtx$}
+    \State send vtx number and part number to target
+  \EndFor
+  \ForEach {$recieved vtx$}
+    \State $vtxs[vtx number] \leftarrow $
+  \EndFor
+  \ForEach {$vtx number$}
+    \If {vtxs[vtx number] is empty}
+      \State $vtxs[vtx number] = random part number$
+    \EndIf
+  \EndFor
+  \State Open file
+  \ForEach {$v \in vtxs$}
+    \State $file \leftarrow part number$
+  \EndFor
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
@@ -219,7 +251,7 @@ https://github.com/SCOREC/core
 
 The code in parma/diffMC/src/parma\_ghost.cc implements the partitioning procedures and test/ghost.cc provides a test driver.  The test driver can be built with the command `make ghost'.  In the plate/2 directory of the test meshes SVN repo http://redmine.scorec.rpi.edu/svn/meshes is a two part 2D mesh for testing.  This mesh is classified on the plate/plate.dmg model.  Run the driver with the command `mpirun -np PROCS ./ghost MODEL MESH'.
 
-The NetCDF meshes must be converted to a SCOREC model and mesh in order to be used in the ghost program. The code in mpas/apfMPAS.cc implements NetCDF to SCOREC and SCOREC to NetCDF protocols and test drivers are in test/mpas\_read.cc and test/mpas\_write.cc. These test drivers can be built using 'make mpas\_read' and 'make mpas\_write' respectively. First run mpas\_read with './mpas\_read NetCDF OUT\_MESH OUT\_MODEL'. After reading the NetCDF file the SCOREC mesh must be split to desired part count using the split program, built with 'make split' and ran with './split MODEL MESH SPLIT\_MESH FACTOR'. To write graph.info.part.# files for the newly balanced mesh run 'mpirun -np PROCS ./mpas\_write MODEL MESH NetCDF'.
+The code in mpas/apfMPAS.cc implements NetCDF to SCOREC and SCOREC to NetCDF protocols and test drivers are in test/mpas\_read.cc and test/mpas\_write.cc. These test drivers can be built using 'make mpas\_read' and 'make mpas\_write' respectively. First run mpas\_read with './mpas\_read NetCDF OUT\_MESH OUT\_MODEL'. After reading the NetCDF file the SCOREC mesh must be split to desired part count using the split program, built with 'make split' and ran with './split MODEL MESH SPLIT\_MESH FACTOR'. To write graph.info.part.\# files for the newly balanced mesh run 'mpirun -np PROCS ./mpas\_write MODEL MESH NetCDF'.
 
 \newpage
 \bibliographystyle{plain}
