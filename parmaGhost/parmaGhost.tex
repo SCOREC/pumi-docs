@@ -126,20 +126,20 @@ Once the Delaunay triangularization is balanced, it is to be converted back into
 
 \Procedure{write}{}
   \State $vtxs \leftarrow \emptyset$
-  \ForEach {$owned vtx$}
+  \ForEach {$owned \: vtx$}
     \State send vtx number and part number to target
   \EndFor
-  \ForEach {$recieved vtx$}
-    \State $vtxs[vtx number] \leftarrow $
+  \ForEach {$recieved \: vtx$}
+    \State $vtxs[vtx \: number] \leftarrow part \: number$
   \EndFor
-  \ForEach {$vtx number$}
+  \ForEach {$vtx \: number$}
     \If {vtxs[vtx number] is empty}
-      \State $vtxs[vtx number] \leftarrow random part number$
+      \State $vtxs[vtx \: number] \leftarrow random \: part \: number$
     \EndIf
   \EndFor
   \State Open file 
   \ForEach {$v \in vtxs$}
-    \State $file \leftarrow part number$
+    \State $file \leftarrow part \: number$
   \EndFor
 \EndProcedure
 \end{algorithmic}
