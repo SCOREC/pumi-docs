@@ -69,8 +69,7 @@ In the Voroni mesh the bridge entity is an edge and three layers of ghosts are n
 
 Algorithm~\ref{alg:parma} outlines the top-level procedure for iterative diffusion that seeks to reduce $I$.  While the mesh peak imbalance $I$ is greater than the specified target imbalance a diffusive iteration is executed.  Each iteration first requires finding neighboring parts, computing part weights and exchanging those weights with neighboring parts, finding the elements ghosted on the part boundaries and exchanging the weight of those ghosts with neighboring parts, and lastly computing the amount of weight to migrate to each neighbor.  
 
-%Due to the Delaunay triangularization if a primal element has less than 2 elements blah blah blah
-Once the Delaunay triangularization is balanced, it is to be converted back into a format the MPAS ocean application can read. This format is a single file that lists each vertex's part numbers in the original order of vertices. The write procedure of algorithm~\ref{alg:mpas} describes the steps for creating this file. First each part exchanges vertex info such that each part, $p$, has an equal share of the vertices, $v$, that range from $p*v-p*(v+1)$. Then each part searches for any vertices that were removed during the read operation. Finally, blocks of parts each write to a different file which can then be combined in order to make the final part file.
+Once the Delaunay triangularization is balanced, it is to be converted back into a format the MPAS ocean application can read. This format being the same as a ParMETIS partition file consisting of each vertex's part number in the order of the vertices in the NetCDF serial mesh. The write procedure of algorithm~\ref{alg:mpas} describes the steps for creating this file. First each part exchanges vertex info such that each part, $p$, has an equal share of the vertices, $v$, that range from $p*v$ to $p*(v+1)$. As a result from the Delaunay triangularization, any primal elemnt that has less than 2 neighbors cannot be converted to the new dual mesh and are removed before ParMA can be run. At this point each part searches for any vertices that were removed and assigns each to a random part. Finally, blocks of parts each write to a different file which can then be combined in order to make the final part file.
 
 \begin{figure} 
 \centering
@@ -120,12 +119,11 @@ Once the Delaunay triangularization is balanced, it is to be converted back into
 \caption{MPAS I/O}
 \label{alg:mpas}
 \begin{algorithmic}[1]
-%\Require {mesh $M$ of dimension $d$, bridge ent dim $bDim$, num ghost layers $layers$}
 \Procedure{write}{}
   \State $vtxs \leftarrow \emptyset$
   \ForEach {$owned \: vtx$}
-    \State // target is the part denoted by vtx number/vtx per part
-    \State send vtx number and part number to target process
+    \State // target part has the vtx number within its range (p*v to p*(v+1))
+    \State send vtx number and part number to target part
   \EndFor
   \ForEach {$recieved \: vtx$}
     \State $vtxs[vtx \: number] \leftarrow part \: number$
