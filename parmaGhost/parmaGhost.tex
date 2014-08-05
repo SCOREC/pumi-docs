@@ -45,7 +45,7 @@ Figure~\ref{fig:ghostEx} depicts an example of three layer ghosting in a simple 
 
 ParMA diffusive partition improvement procedures can account for the ghosted layers using a combination of existing element selection criteria and an extended 'weight' tracking mechanism.  The weight tracking extension relies on the exact knowledge of the change to the ghosted elements as elements on a heavy part are selected for migration to a light part.
 
-ParMA will be ran on the Delaunay triangularization of the Voronoi mesh (Figure~\ref{fig:delaunay}), as depicted in Figures~\ref{fig:NA240}, and will accordingly target vertex balance.  The vertex part assignments, along with identifier information, will be output for partitioning the Voronoi mesh. Vertices in the initial partition are identified by their part number and local vertex number.  Details on the meshes of interest are available online ~\cite{climateMesh}. 
+ParMA will be ran on the Delaunay triangularization of the Voronoi mesh (Figure~\ref{fig:delaunay}), as depicted in Figures~\ref{fig:NA240}, and will accordingly target vertex balance.  The vertex part assignments, along with identifier information, will be output for partitioning the Voronoi mesh. Vertices in the initial partition are identified by their part id and local vertex id.  Details on the meshes of interest are available online ~\cite{climateMesh}. 
 
 \begin{figure} 
 \centering
@@ -69,7 +69,7 @@ In the Voroni mesh the bridge entity is an edge and three layers of ghosts are n
 
 Algorithm~\ref{alg:parma} outlines the top-level procedure for iterative diffusion that seeks to reduce $I$.  While the mesh peak imbalance $I$ is greater than the specified target imbalance a diffusive iteration is executed.  Each iteration first requires finding neighboring parts, computing part weights and exchanging those weights with neighboring parts, finding the elements ghosted on the part boundaries and exchanging the weight of those ghosts with neighboring parts, and lastly computing the amount of weight to migrate to each neighbor.  
 
-Once the Delaunay triangularization is balanced, it is to be converted back into a format the MPAS ocean application can read. This format being the same as a ParMETIS partition file consisting of each vertex's part number in the order of the vertices in the NetCDF serial mesh. The write procedure of algorithm~\ref{alg:mpas} describes the steps for creating this file. First each part exchanges vertex info such that each part, $p$, has an equal share of the vertices, $v$, that range from $p*v$ to $p*(v+1)-1$. As a result from the Delaunay triangularization, any primal elemnt that has less than 2 neighbors cannot be converted to the new dual mesh and are removed before ParMA can be run. At this point each part searches for any vertices that were removed and assigns each to a random part. Finally, blocks of parts each write to a different file which can then be concatenated in order to make the final part file.
+Once the Delaunay triangularization is balanced, it is to be converted back into a format the MPAS ocean application can read. This format being the same as a ParMETIS partition file consisting of each vertex's part id in the order of the vertices in the NetCDF serial mesh. The write procedure of algorithm~\ref{alg:mpas} describes the steps for creating this file. First each part exchanges vertex info such that each part, $p$, has an equal share of the vertices, $v$, that range from $p*v$ to $p*(v+1)-1$. As a result from the Delaunay triangularization, any primal elemnt that has less than 2 neighbors cannot be converted to the new dual mesh and are removed before ParMA can be run. At this point each part searches for any vertices that were removed and assigns each to a random part. Finally, blocks of parts each write to a different file which can then be concatenated in order to make the final part file.
 
 \begin{figure} 
 \centering
@@ -122,20 +122,20 @@ Once the Delaunay triangularization is balanced, it is to be converted back into
 \Procedure{write}{}
   \State $vtxs \leftarrow \emptyset$
   \ForEach {$owned \: vtx$}
-    \State //target part has the vtx id within [p*v, p*(v+1)-1]
-    \State send vtx id and part number to target part
+    \State //target part has the $vtx \: id$ within [p*v, p*(v+1)-1]
+    \State send $vtx \: id$ and $part \: id$ to target part
   \EndFor
   \ForEach {$recieved \: vtx$}
-    \State $vtxs[vtx \: id] \leftarrow part \: number$
+    \State $vtxs[vtx \: id] \leftarrow part \: id$
   \EndFor
   \ForEach {$i \in [p*v,p*(v+1)-1]$}
-    \If {vtxs[i] is empty}
-      \State $vtxs[i] \leftarrow random \: part \: number$
+    \If {$vtxs[i]$ is empty}
+      \State $vtxs[i] \leftarrow random \: part \: id$
     \EndIf
   \EndFor
   \State Open file 
-  \ForEach {$v \in vtxs$}
-    \State $file \leftarrow part \: number$
+  \ForEach {$i \in [p*v,p*(v+1)-1]$}
+    \State $file \leftarrow vtxs[i]$
   \EndFor
 \EndProcedure
 \end{algorithmic}
