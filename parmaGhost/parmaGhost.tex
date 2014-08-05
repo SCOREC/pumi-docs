@@ -69,7 +69,7 @@ In the Voroni mesh the bridge entity is an edge and three layers of ghosts are n
 
 Algorithm~\ref{alg:parma} outlines the top-level procedure for iterative diffusion that seeks to reduce $I$.  While the mesh peak imbalance $I$ is greater than the specified target imbalance a diffusive iteration is executed.  Each iteration first requires finding neighboring parts, computing part weights and exchanging those weights with neighboring parts, finding the elements ghosted on the part boundaries and exchanging the weight of those ghosts with neighboring parts, and lastly computing the amount of weight to migrate to each neighbor.  
 
-Once the Delaunay triangularization is balanced, it is to be converted back into the original format. A single file that lists each vertex's part numbers in the original order must be created. Algorithm~\ref{alg:mpas} describes the steps for creating this file. First each part exchanges vertex info such that each part, $p$, has an equal share of the vertices, $v$, that range from $p*v-p*(v+1)$. Then each part searches for any verticies that were removed during the read operation. Finally, blocks of parts each write to a different file which can then be combined in order to make the final part file.
+Once the Delaunay triangularization is balanced, it is to be converted back into the original format. A single file that lists each vertex's part numbers in the original order must be created. The write function of algorithm~\ref{alg:mpas} describes the steps for creating this file. First each part exchanges vertex info such that each part, $p$, has an equal share of the vertices, $v$, that range from $p*v-p*(v+1)$. Then each part searches for any verticies that were removed during the read operation. Finally, blocks of parts each write to a different file which can then be combined in order to make the final part file.
 
 \begin{figure} 
 \centering
@@ -134,10 +134,10 @@ Once the Delaunay triangularization is balanced, it is to be converted back into
   \EndFor
   \ForEach {$vtx number$}
     \If {vtxs[vtx number] is empty}
-      \State $vtxs[vtx number] = random part number$
+      \State $vtxs[vtx number] \leftarrow random part number$
     \EndIf
   \EndFor
-  \State Open file
+  \State Open file 
   \ForEach {$v \in vtxs$}
     \State $file \leftarrow part number$
   \EndFor
