@@ -22,8 +22,14 @@
 
 \section{Problem Description}
 
-Massively parallelized mesh simulations require the mesh to be distributed throughout many processes(parts) and be balanced in terms of computation and communicaion. Many algorithms exist that target balancing the number of a specific dimension of mesh entities on each part. <BRIEFLY TALK ABOUT THE DIFFERENCE BETWEEN GRAPH AND GEOMETRIC METHODS>.  In particular the faster geometric methods tend to create parts that have large inter-part surface area, and many neighbors relative to the (hyper)graph based methods which causes an increase in communication. (Hyper)Graph-based methods can also suffer from similar issues as the number of parts gets very large and the number of elements per part becomes drops to several hundreds.  We plan to target the overall shape of a part in order to reduce the number of neighbors each part has. 
+Massively parallelized mesh simulations require the mesh to be distributed throughout many processes(parts) and be balanced in terms of computation and communicaion. Many algorithms exist that target balancing the number of a specific dimension of mesh entities on each part. (Hyper)graph methods describe the mesh in terms of graphs and then use muliple stages of heuristics to divide the graph into subgraphs for balancing. The faster geometric methods tend to create parts that have large inter-part surface area, and many neighbors relative to the (hyper)graph based methods which causes an increase in communication. (Hyper)Graph-based methods can also suffer from similar issues as the number of parts gets very large and the number of elements per part becomes drops to several hundreds.  We plan to target the overall shape of a part in order to reduce the number of neighbors each part has.  
  
+\section{Methods}
+
+\section{Implementation}
+
+\section{Results}
+
 
 \newpage
 \bibliographystyle{plain}
