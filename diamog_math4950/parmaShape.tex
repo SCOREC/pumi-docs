@@ -42,17 +42,8 @@ parts gets very large and the number of elements per part drops to several
 hundreds. 
 An alternative method that uses mesh data directly, ParMA, performs load 
 balancing without the need to construct a graph. 
-Instead ParMA uses the mesh adjacencies and partition model data.
-Since ParMA has all the mesh and model data including topological and geometric
-coordinates, it can be used for both (hyper)graph and geometric based 
-procedures which use only a portion of the data held by ParMA.
-%ParMA utilizes a complete mesh representation in order to have constant time 
-%access to mesh adjancecies.
-%The performance of ParMA's load balancing of multiple mesh entities has been 
-%demonstrated up to 512k cores of the Mira Blue Gene/Q.
-We plan to utilize ParMA to target the overall shape of a part in order to reduce the number of neighbors each part has and thus reduce communication times.  
-%Testing will be done on a fluid solver application, PHASTA, on the Rensselaer
-%Center for Computational Innovation's AMOS Blue Gene/Q system.
+With access to all the mesh, partition, and model data, including topological and geometric coordinates, partitioning methods analogous to those used by (hyper)graph and geometric based procedures can be defined.
+Towards this, ParMA paritioning methods will be extended to improve the overall shape of a part in order to reduce the number of neighbors each part has and thus reduce application communication times.  
  
 \section{Introduction}
 %Explain previous work in detail with references. 
