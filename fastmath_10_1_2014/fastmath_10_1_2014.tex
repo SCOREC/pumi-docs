@@ -1,10 +1,25 @@
 \documentclass{beamer}
-\usepackage{graphicx}
-\begin{document}
-\title{FASTMath 10/1/2014 Architecture}
-\author{Cameron Smith \and Dan Ibanez}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline} {
+  \quad\strut\insertsection\hfill\insertframenumber/
+  \inserttotalframenumber\strut\quad
+}
 
-\frame{\titlepage}
+\usepackage{graphicx}
+
+\begin{document}
+
+\title{Code Strategies for Next Generation Architectures}
+\author{Cameron Smith \and Dan Ibanez}
+\institute[SCOREC]{Scientific Computation Research Center \\
+Rensselaer Polytechnic Institute}
+
+\date{October 1, 2014}
+
+%don't show page # on title slide
+\begin{frame}[plain]
+    \titlepage
+\end{frame}
 
 \input{scorec_tools.tex}
 
