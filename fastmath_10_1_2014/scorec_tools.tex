@@ -1,10 +1,30 @@
 \frame{\frametitle{PCU Communication}
+\begin{itemize}
+\item Local, collective, unstructured exchanges
+\item Buffer all messages between each pair
+\item Non-blocking send/receive
+\item Non-blocking barrier (!) for termination detection
+\end{itemize}
 }
 
 \frame{\frametitle{PCU Threading}
+\begin{itemize}
+\item Create/join through pthread
+\item Uniform threads per process
+\item Communication between threads
+\item Use MPI\_THREAD\_MULTIPLE
+\item Buffering between pairs reduces contention
+\end{itemize}
 }
 
 \frame{\frametitle{Role of Threads}
+\begin{itemize}
+\item Treated like nested \texttt{mpiexec}
+\item All threads have globally unique ranks
+\item Communcation primitives and high-level operations
+using thread ranks
+\item Thread has 3D contiguous mesh partition
+\end{itemize}
 }
 
 \frame{\frametitle{Array Mesh Storage}
