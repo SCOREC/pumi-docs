@@ -19,7 +19,6 @@ unstructured neighborhood
 \item Uniform threads per process
 \item Communication between threads
 \item All threads have globally unique ranks
-\item Use MPI\_THREAD\_MULTIPLE (not strictly necessary)
 \item Can be compatible with other thread
 managers by accepting their threads
 \end{itemize}
@@ -28,10 +27,9 @@ managers by accepting their threads
 \frame{\frametitle{Array Mesh Storage}
 \begin{itemize}
 \item (recent advancement)
-\item Array data structure that allows constant-time
+\item Array-based structure that allows constant-time
 insertion/removal and persistent indices
-\item Linked lists in arrays encode variable-length
-data
+\item Linked lists in arrays encode variable-length data
 \item Can represent unstructured meshes and efficiently
 support adaptivity
 \item 4X memory reduction
@@ -39,5 +37,7 @@ support adaptivity
 \item Easier to serialize, indices not invalidated by
 array relocation
 \item More compatible with analysis structures
+\item However, does not quite lend itself to parallel\_for
+abstractions
 \end{itemize}
 }
