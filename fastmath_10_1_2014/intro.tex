@@ -9,6 +9,7 @@ with prismatic boundary layers
 \begin{itemize}
 \item Constant insertion/removal of mesh entities
 \item Local cavity operations, possibly overlapping
+\item Mesh surface adapts to curved CAD surface
 \item Many conditionals per cavity
 \end{itemize}
 \item Dynamic Partitioning (ParMA)
@@ -34,7 +35,7 @@ ranks that pass messages
 to reduce abstraction overhead
 \item Use this communication model for all code
 \item Architecture-specific code contained in communication
-library
+library: Parallel Control Utility (PCU)
 \item Transparent portability
 \end{itemize}
 }

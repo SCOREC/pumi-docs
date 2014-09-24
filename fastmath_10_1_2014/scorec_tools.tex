@@ -26,7 +26,6 @@ managers by accepting their threads
 
 \frame{\frametitle{Array Mesh Storage}
 \begin{itemize}
-\item (recent advancement)
 \item Array-based structure that allows constant-time
 insertion/removal and persistent indices
 \item Linked lists in arrays encode variable-length data
@@ -34,10 +33,10 @@ insertion/removal and persistent indices
 support adaptivity
 \item 4X memory reduction
 \item Much better data locality guarantees
+\item Easier to allocate in possibly more restrictive future
+memory architectures
 \item Easier to serialize, indices not invalidated by
 array relocation
 \item More compatible with analysis structures
-\item However, does not quite lend itself to parallel\_for
-abstractions
 \end{itemize}
 }
