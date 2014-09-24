@@ -1,0 +1,38 @@
+\frame{\frametitle{BGQ Experience}
+48 rack Mira runs - 92B mesh elements
+\begin{itemize}
+\item Fairly easy migration from BGP
+\item Pipeline stalls on data dependencies - use more threads
+\item 6 cycle branch instructions
+\item System comm threads can compete with user threads
+\item Very few commercial codes ported - can't buy a baby BG
+\end{itemize}
+}
+
+\frame{\frametitle{Stampede Experience}
+Growing pains
+\begin{itemize}
+  \item TACC support has been very helpful
+  \item Kicked off the system twice for crashing login nodes 
+  \begin{itemize}
+    \item file i/o from Phi to NFS export from Lustre 
+  \end{itemize}
+\end{itemize}
+Initial Testing
+\begin{itemize}
+  \item MVAPICH2-Mic performance better than Intel MPI 
+  \item On an equal number of Phi and BG/Q nodes
+  \begin{itemize}
+    \item 1024 $\rightarrow$ 2048 partitioning is 40\% faster on Stampede
+    \item 2048 $\rightarrow$ 4096 partitioning is 8\% slower on Stampede
+  \end{itemize}
+  \item Vertex balancing of 3M element mesh on 128 parts
+  \begin{itemize}
+    \item 2 Phis 2.48 seconds (mvapich2-mic)
+    \item {\bf 3 Phis 1.88 seconds (mvapich2-mic)}
+    \item 2 BGQ nodes 3.74 seconds (gnu4.7)
+    \item 4 BGQ nodes 2.49 seconds (gnu4.7)
+    \item 8 BGQ nodes 2.16 seconds (gnu4.7)
+  \end{itemize}
+\end{itemize}
+}
