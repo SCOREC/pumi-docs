@@ -23,15 +23,18 @@ with prismatic boundary layers
 
 \frame{\frametitle{Approach}
 \begin{itemize}
+\item Static array / \texttt{parallel\_for} abstraction
+too restrictive
 \item Define an abstract model similar to MPI:
 ranks that pass messages
 \item Adapt it beyond processes (e.g. to threads)
-\item Define a subset of communication patterns
-(collectives) that can be more optimally implemented
-\item Use the restrictions on communication patterns
+\item Define a subset of communication operations
+(collective exchanges) that can be more optimally implemented
+\item Use the subset of communication operations
 to reduce abstraction overhead
 \item Use this communication model for all code
 \item Architecture-specific code contained in communication
 library
+\item Transparent portability
 \end{itemize}
 }
