@@ -1,31 +1,43 @@
 \frame{\frametitle{PCU Communication}
 \begin{itemize}
-\item Local, collective, unstructured exchanges
+\item Collective, unstructured exchanges
+\item Each rank sends messages to local but
+unstructured neighborhood
 \item Buffer all messages between each pair
-\item Non-blocking send/receive
-\item Non-blocking barrier (!) for termination detection
+\item Exchange all messages between all pairs in one collective
+\item However, communication graph is not known
+\item Non-blocking send/receive (one per pair)
+\item Non-blocking barrier for termination detection
 \end{itemize}
 }
 
 \frame{\frametitle{PCU Threading}
 \begin{itemize}
+\item Treated like nested \texttt{mpiexec}
+\item Thread has 3D contiguous mesh partition
 \item Create/join through pthread
 \item Uniform threads per process
 \item Communication between threads
-\item Use MPI\_THREAD\_MULTIPLE
-\item Buffering between pairs reduces contention
-\end{itemize}
-}
-
-\frame{\frametitle{Role of Threads}
-\begin{itemize}
-\item Treated like nested \texttt{mpiexec}
 \item All threads have globally unique ranks
-\item Communcation primitives and high-level operations
-using thread ranks
-\item Thread has 3D contiguous mesh partition
+\item Use MPI\_THREAD\_MULTIPLE (not strictly necessary)
+\item Can be compatible with other thread
+managers by accepting their threads
 \end{itemize}
 }
 
 \frame{\frametitle{Array Mesh Storage}
+\begin{itemize}
+\item (recent advancement)
+\item Array data structure that allows constant-time
+insertion/removal and persistent indices
+\item Linked lists in arrays encode variable-length
+data
+\item Can represent unstructured meshes and efficiently
+support adaptivity
+\item 4X memory reduction
+\item Much better data locality guarantees
+\item Easier to serialize, indices not invalidated by
+array relocation
+\item More compatible with analysis structures
+\end{itemize}
 }
