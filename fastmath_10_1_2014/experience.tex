@@ -15,29 +15,34 @@
 2-level fat-tree, 6,400 nodes \\
 node: 2x E5 8 core sockets (32GB) + 60 core Phi (8GB)
 \bigskip \\
-Growing pains
+Growing pains - running natively on Phi
 \begin{itemize}
   \item TACC support has been very helpful
-  \item Kicked off the system twice for crashing login nodes 
+  \item Kicked off the system twice 
   \begin{itemize}
-    \item file i/o from Phi to NFS export from Lustre 
+    \item Crashed fens after posix file i/o from Phi (NFS + Lustre)
+    \item Crashed 30+ compute nodes - new and mysterious Intel bug
   \end{itemize}
+  \item Complex infrastructure and environment requirements
 \end{itemize}
-Initial Testing
+Partitioning 25M element mesh on an equal number of Phi and BG/Q nodes
 \begin{itemize}
-  \item MVAPICH2-Mic performance better than Intel MPI 
-  \item On an equal number of Phi and BG/Q nodes
-  \begin{itemize}
-    \item 1024 $\rightarrow$ 2048 partitioning is 40\% faster on Stampede
-    \item 2048 $\rightarrow$ 4096 partitioning is 8\% slower on Stampede
-  \end{itemize}
-  \item Vertex balancing of 3M element mesh on 128 parts
-  \begin{itemize}
-    \item 2 Phis 2.48 seconds (mvapich2-mic)
-    \item {\bf 3 Phis 1.88 seconds (mvapich2-mic)}
-    \item 2 BGQ nodes 3.74 seconds (gnu4.7)
-    \item 4 BGQ nodes 2.49 seconds (gnu4.7)
-    \item 8 BGQ nodes 2.16 seconds (gnu4.7)
-  \end{itemize}
+  \item 1024 $\rightarrow$ 2048 partitioning is 40\% faster on Stampede
+  \item 2048 $\rightarrow$ 4096 partitioning is 8\% slower on Stampede
 \end{itemize}
+Vertex balancing of 3M element mesh on 128 parts
+{\tiny
+\begin{table}
+  \begin{tabular} { c | c | c | c }
+    system & nodes & time (s) & env \\
+    \hline 
+    Stampede & 2   & 2.48       & mvapich2-mic \\
+             & 3   & {\bf 1.88} &  \\
+    \hline
+    BGQ      & 2   & 3.74 & gnu 4.7 \\
+             & 4   & 2.49 & \\
+             & 8   & 2.16 & \\
+  \end{tabular}
+\end{table}
+}
 }
