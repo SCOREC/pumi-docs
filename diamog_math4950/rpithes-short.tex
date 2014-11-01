@@ -1,0 +1,160 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%                       rpithes-short.tex                         %
+%         Template for a short thesis all in one file             %
+%        (titlepage info below assumes masters degree}            %
+%  Just run latex (or pdflatex) on this file to see how it looks  %
+%      Be sure to run twice to get correct TOC and citations      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%
+%  To produce the abstract title page followed by the abstract,
+%  see the template file, "abstitle-mas.tex"
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass{thesis}
+\usepackage{graphicx}   % if you want to include graphics files
+
+% Use the first command below if you want captions over 1 line indented.
+% A side effect of this is to remove the use of bold for captions. 
+% To restore bold, also include the second line below.
+%\usepackage[hang]{caption}     % to indent subsequent lines of captions
+%\renewcommand{\captionfont}{\bfseries} % only needed with caption package;
+                                        %   otherwise bold is default)
+                                        
+%%%%%%%%%%%%%%%%%%%%  supply titlepage info  %%%%%%%%%%%%%%%%%%%%%
+\thesistitle{\bf Diffusive Load Balancing\\of Shape and Neighbor Counts}        
+\author{Gerrett Diamond, Cameron Smith}        
+\degree{Bachelors of Science}
+\department{Mathematics} % provide your area of study here; e.g.,
+%  "Mechanical Engineering", "Nuclear Engineering", "Physics", etc.
+\thadviser{Mark Shephard}
+%\cothadviser{First co-adviser} %if needed
+%\cocothadviser{Second co-adviser} % if needed
+%  For a masters project use \projadviser instead of \thadviser, 
+%  and \coprojadviser and \cocoprojadviser if needed. 
+\submitdate{December 2014\\(For Graduation May 2015)}        
+%\copyrightyear{1685}  % if date omitted, current year is used. 
+%%%%%%%%%%%%%%%%%%%%%   end titlepage info  %%%%%%%%%%%%%%%%%%%%%%
+      
+\begin{document} 
+\titlepage             % Print titlepage   
+%\copyrightpage        % optional         
+\tableofcontents       % required 
+\listoftables          % required if there are tables
+\listoffigures         % required if there are figures
+
+\specialhead{ACKNOWLEDGMENT}
+The acknowledgment text goes here. Unlike chapter headings, 
+this heading is not numbered.
+
+\specialhead{ABSTRACT}
+Massively parallelized mesh simulations require the mesh to be distributed
+throughout many processes(parts) and be balanced in terms of computation and
+communicaion. 
+Many algorithms exist that target having an equal number mesh entities of a
+specified dimension on each part. 
+The most powerful of these, in terms of partition quality and runtime are the
+multi-level (hyper)graph-based methods and the recusive geometric sectioning
+methods. 
+Multi-level (hyper)graph methods describe the mesh in terms of graph nodes and
+(hyper)edges and then use a v-cycle of coarsening followed by un-coarsening to
+divide the graph into subgraphs while recursive sectioning geometric methods use
+a coordinate system such as the cartesian location or centroids to recursivly
+section the mesh along coordinate or inertial axis. 
+The faster geometric methods tend to create parts that have large inter-part
+surface area, and many neighbors relative to the (hyper)graph based methods
+which causes an increase in communication.
+(Hyper)Graph-based methods can also suffer from similar issues as the number of
+parts gets very large and the number of elements per part drops to several
+hundreds. 
+An alternative method that uses mesh data directly, ParMA, performs load 
+balancing without the need to construct a graph. 
+With access to all the mesh, partition, and model data, including topological 
+and geometric coordinates, partitioning methods analogous to those used by 
+(hyper)graph and geometric based procedures can be defined.
+Towards this, ParMA paritioning methods will be extended to improve the overall 
+shape of a part in order to reduce the number of neighbors each part has and 
+thus reduce application communication times.
+
+\chapter{INTRODUCTION}
+The text of the first chapter goes here. To cite a reference for the
+bibliography, use a command such as:\cite{thisbook}
+\section{Motivation}
+This is a sentence to take up space and look like text.
+%describe terminology (heavy vs light parts)
+
+\chapter{Related Works}
+
+Many different distributed methods to balance unstructured meshes have been explored in the 
+past. Here we discuss the three most commonly used methods: diffusive, hypergraph, 
+and multilevel.
+
+\section{Diffusive load balancing}
+Willebeek-LeMair and Reeves describe diffusive load balancing techniques with 
+4 steps \cite{loadbalance}. The first is evaluating the processor load, then 
+determining the profitability of the load balancing, followed by a task 
+migration strategy, and finally a task selection strategy. They review over 5 
+different strategies and how they perform on the second and thrid task. The first 
+method reviewed was the Sender Initiated Diffusion method (SID). This method 
+restricts parts to only communicate with their neighbors and the heavy parts or 
+senders are the migration selectors. The second technique is similar to the first 
+and called Reciever Initiated Diffusion (RID). Once again parts can only 
+communicate with their neighbors, but instead of the heavy parts selecting 
+migration targets, the light parts select heavier neighbors to recieve load from. 
+Our method for shape optimization is similar to the idea of a RID method. In the 
+Gradient Method (GM), light parts inform nearby parts in search of a heavy part 
+which causes heavy parts to send load towards the closest light part. The 
+Hierarchial Balancing Method (HBM) breaks up load balancing into a hierarchy of 
+parts and performs load balancing at a low level and then continues to balance 
+while moving up a hierarchy. The final method is the Dimmension Exchange Method
+ (DEM). Similar to the HBM, the DEM approach balances at a low level and works 
+up, but the DEM balances synchronously in all dimensions one at a time.
+
+\section{Hypergraph methods}
+
+\section{Multilevel methods}
+
+Another citation for the bibliography:\cite{anotherbook}
+
+
+\chapter{Methods}
+
+\section {Load Evaluation}
+
+\section{Task migration strategy}
+
+\section{Task selection strategy}
+
+
+\chapter{Implementation}
+% The following produces a numbered bibliography where the numbers
+% correspond to the \cite commands in the text.
+\specialhead{LITERATURE CITED}
+\begin{singlespace}
+\begin{thebibliography}{99}
+\bibitem{multidiffuse} Meyerhenke, H.; Monien, B.; Sauerwald, T., "A new diffusion-based multilevel algorithm for computing graph partitions of very high quality," Parallel and Distributed Processing, 2008. IPDPS 2008. IEEE International Symposium on , vol., no., pp.1,13, 14-18 April 2008
+\bibitem{diffuseshape} Ralf Diekmann, Robert Preis, Frank Schlimbach, Chris Walshaw, Shape-optimized mesh partitioning and load balancing for parallel adaptive FEM, Parallel Computing, Volume 26, Issue 12, November 2000, Pages 1555-1581, ISSN 0167-8191, http://dx.doi.org/10.1016/S0167-8191(00)00043-0.
+\bibitem{loadbalance} Willebeek-LeMair, M.H.; Reeves, AP., "Strategies for dynamic load balancing on highly parallel computers," Parallel and Distributed Systems, IEEE Transactions on , vol.4, no.9, pp.979,993, Sep 1993
+\bibitem{thisbook} This is the first item in the Bibliography.
+Let's make it very long so it takes more than one line.
+Let's make it very long so it takes more than one line.
+\bibitem{anotherbook} The second item in the Bibliography.
+\end{thebibliography}
+\end{singlespace}
+
+%%%%%%%%%%%%%%%%%%%%%%%  For Appendices  %%%%%%%%%%%%%%%%%%%
+\appendix    % This command is used only once!
+\addtocontents{toc}{\parindent0pt\vskip12pt APPENDICES} %toc entry, no page #
+\chapter{THIS IS AN APPENDIX}
+Note the numbering of the chapter heading is changed.
+This is a sentence to take up space and look like text.
+\section{A Section Heading}
+This is how equations are numbered in an appendix:
+\begin{equation}
+x^2 + y^2 = z^2
+\end{equation} 
+
+\chapter{THIS IS ANOTHER APPENDIX}
+This is a sentence to take up space and look like text.
+
+\end{document}
