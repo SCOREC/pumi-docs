@@ -1,13 +1,18 @@
 \frame{\frametitle{BGQ Experience}
 5D torus, 16 cores/node, 4 HW threads/core, 16GB/node
 \bigskip \\
-48 rack Mira runs - 92B mesh elements
+48 rack Mira runs - 92B mesh elements, 3M parts
 \begin{itemize}
-\item Fairly easy migration from BGP
-\item Pipeline stalls on data dependencies - use more threads
-\item 6 cycle branch instructions
-\item System comm threads can compete with user threads
-\item Very few commercial codes ported - can't buy a baby BG
+\item Painless migration from BGP
+\item Good support through ALCF ESP and IBM HPC group
+\end{itemize}
+Performance
+\begin{itemize}
+\item Stalls on data dependencies - use more threads
+\item 6 cycle branch, at least 13 cycles for mis-predicted branch
+\item System communication threads can compete with user threads
+\item Small message AllReduce time on $\ge$ 16k cores reduced by 100x 
+      (1k ${\mu}s$ to 10 ${\mu}s$) with pre-barrier
 \end{itemize}
 }
 
@@ -15,15 +20,12 @@
 2-level fat-tree, 6,400 nodes \\
 node: 2x E5 8 core sockets (32GB) + 60 core Phi (8GB)
 \bigskip \\
-Growing pains - running natively on Phi
+Growing pains running natively on Phi
 \begin{itemize}
-  \item TACC support has been very helpful
-  \item Kicked off the system twice 
-  \begin{itemize}
-    \item Crashed fens after posix file i/o from Phi (NFS + Lustre)
-    \item Crashed 30+ compute nodes - new and mysterious Intel bug
-  \end{itemize}
+  \item Crashed fens - posix file i/o from Phi (NFS + Lustre) created corrupt files
+  \item Crashed 30+ compute nodes - Intel network stack bug 
   \item Complex infrastructure and environment requirements
+  \item TACC support has been very helpful
 \end{itemize}
 Partitioning 25M element mesh on an equal number of Phi and BG/Q nodes
 \begin{itemize}

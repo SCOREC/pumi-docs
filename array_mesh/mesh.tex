@@ -1,0 +1,68 @@
+\documentclass{article}
+\title{Efficient Data Structures for Topological Meshes}
+\author{Dan Ibanez \and Mark S Shephard}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Topological data structures are useful in many areas.
+The BRep family of data structures for CAD models
+are topological complexes,
+as are the various mesh data structures used in
+finite element applications.
+We present a graph-theoretic foundation for
+these data structures and derive an efficient
+finite element
+mesh data structure based on several optimizations
+to a generic graph data structure.
+The result is a compact array-based structure that is also
+easy to modify locally at runtime
+\end{abstract}
+
+\section{Introduction}
+Describe the needs of parallel adaptive mesh data structures
+
+\section{Related Work}
+STK, MOAB, FMDB, etc...
+
+\section{Graph Data Structure}
+Describe an object-oriented graph data structure that allows
+constant-time addition and removal of edges and vertices.
+
+\begin{verbatim}
+struct vertex {
+  struct edge* first_edge_from;
+  struct edge* first_edge_to;
+};
+
+struct edge {
+  struct vertex* from;
+  struct edge* next_edge_from;
+  struct edge* prev_edge_from;
+  struct edge* next_edge_to;
+  struct edge* prev_edge_to;
+  struct vertex* to;
+};
+\end{verbatim}
+
+\section{Structure of Arrays}
+Describe how object-oriented, pointer-based, linked structures
+can be recast into arrays of indices to themselves.
+Also include here the algorithms for object addition and removal.
+
+\section{Topology Graph}
+Reduce the representation of a topological complex
+to the topological adjacency graph.
+
+Include several examples of mesh topology graphs,
+relate to the various mesh representations.
+
+\section{Mesh Structure}
+Derive the mesh structure by starting with a
+one-level topology graph and applying optimizations
+including recasting into arrays.
+
+% \bibliographystyle{plain}
+% \bibliography{topo}
+
+\end{document}
