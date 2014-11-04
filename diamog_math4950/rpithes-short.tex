@@ -113,8 +113,21 @@ up, but the DEM balances synchronously in all dimensions one at a time.
 \section{Hypergraph methods}
 
 \section{Multilevel methods}
+Buluc et al. descirbe the multilevel methods as the most successful approach to 
+graph partitioning \cite{surveygraph}. They descirbe multilevel methods generally 
+as a 3 step process that start with coarsening the mesh until it reaches a small 
+level then an inital partition or balance of the graph or mesh is made and finally
+a step of working back up balancing at each level to progressively refine the 
+load balance as the mesh is rebuilt. This general design allows for most 
+algorithms to be altered to work in a multilevel form. Meyerhenke et al. 
+port a diffusive method previously used for shape optimization into a 
+multilevel algorithm \cite{multidiffuse}. They use the multilevel structure in 
+order to use the expensive but more effective balancing portion of the 
+algorithm, Bubble-FOS/C, when at a small level and then do small refinements, 
+TruncCons, when at the larger levels of the load balancer. This method was 
+shown to be much faster than the original method of just the Bubble-FOS/C and 
+also produces a better quality of load balancing. 
 
-Another citation for the bibliography:\cite{anotherbook}
 
 
 \chapter{Methods}
@@ -135,10 +148,8 @@ Another citation for the bibliography:\cite{anotherbook}
 \bibitem{multidiffuse} Meyerhenke, H.; Monien, B.; Sauerwald, T., "A new diffusion-based multilevel algorithm for computing graph partitions of very high quality," Parallel and Distributed Processing, 2008. IPDPS 2008. IEEE International Symposium on , vol., no., pp.1,13, 14-18 April 2008
 \bibitem{diffuseshape} Ralf Diekmann, Robert Preis, Frank Schlimbach, Chris Walshaw, Shape-optimized mesh partitioning and load balancing for parallel adaptive FEM, Parallel Computing, Volume 26, Issue 12, November 2000, Pages 1555-1581, ISSN 0167-8191, http://dx.doi.org/10.1016/S0167-8191(00)00043-0.
 \bibitem{loadbalance} Willebeek-LeMair, M.H.; Reeves, AP., "Strategies for dynamic load balancing on highly parallel computers," Parallel and Distributed Systems, IEEE Transactions on , vol.4, no.9, pp.979,993, Sep 1993
-\bibitem{thisbook} This is the first item in the Bibliography.
-Let's make it very long so it takes more than one line.
-Let's make it very long so it takes more than one line.
-\bibitem{anotherbook} The second item in the Bibliography.
+\bibitem{surveygraph} A. Buluc, H. Meyerhenke, I. Safro, P. Sanders, and C. Schulz, Recent advances in graph partitioning , (2013), p. arXiv:1311.3144.
+
 \end{thebibliography}
 \end{singlespace}
 
