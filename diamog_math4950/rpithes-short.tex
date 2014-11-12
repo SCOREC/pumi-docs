@@ -77,17 +77,19 @@ shape of a part in order to reduce the number of neighbors each part has and
 thus reduce application communication times.
 
 \chapter{INTRODUCTION}
-The text of the first chapter goes here. To cite a reference for the
-bibliography, use a command such as:\cite{thisbook}
-\section{Motivation}
-This is a sentence to take up space and look like text.
+The text of the first chapter goes here. 
+
 %describe terminology (heavy vs light parts)
+\section{Motivation}
+In various applications it is important to reduce the average number of neighbors
+a part has. If parts share boundaries with many neighbors there will be lots of 
+time spent sending and receiving information from each part's neighbors.
 
 \chapter{Related Works}
 
 Many different distributed methods to balance unstructured meshes have been explored in the 
-past. Here we discuss the three most commonly used methods: diffusive, hypergraph, 
-and multilevel.
+past \cite{multidiffuse,surveygraph}. Here we discuss the three most commonly 
+used methods: diffusive, hypergraph, and multilevel.
 
 \section{Diffusive load balancing}
 Willebeek-LeMair and Reeves describe diffusive load balancing techniques with 
@@ -110,7 +112,21 @@ while moving up a hierarchy. The final method is the Dimmension Exchange Method
  (DEM). Similar to the HBM, the DEM approach balances at a low level and works 
 up, but the DEM balances synchronously in all dimensions one at a time.
 
-\section{Hypergraph methods}
+\section{(Hyper)graph methods}
+Graph and Hypergraph load balancing methods use an abstraction of the mesh in 
+order to balance the work load between processes. \cite{surveygraph} gives an
+overview of graph methods in the field for both graphs and hypergraphs. They 
+also discuss the challenges and NP-hardness of many of the algorithms for graph
+balancing. Two terms that are used to model the overall shape for graph methods
+are the edge cut and communication volume. The authors show that communication
+volume is a better measurement which leads to hypergraph methods which target 
+the communication volume using hyperedges. Devine et al. discuss methods 
+to use hypergraphs for parallel scientific computing \cite{hypergraph}. They
+use hypergraphs to accurately represent communication volume and as a result
+part neighbors. The hypergraph method uses hyperedges or nets which connects 
+several vertices in the graph that may be on different parts. Therefore 
+balancing a hypergraph naturally puts an effort towards balancing the overall
+shape and neighbors of parts. 
 
 \section{Multilevel methods}
 Buluc et al. descirbe the multilevel methods as the most successful approach to 
@@ -149,23 +165,8 @@ also produces a better quality of load balancing.
 \bibitem{diffuseshape} Ralf Diekmann, Robert Preis, Frank Schlimbach, Chris Walshaw, Shape-optimized mesh partitioning and load balancing for parallel adaptive FEM, Parallel Computing, Volume 26, Issue 12, November 2000, Pages 1555-1581, ISSN 0167-8191, http://dx.doi.org/10.1016/S0167-8191(00)00043-0.
 \bibitem{loadbalance} Willebeek-LeMair, M.H.; Reeves, AP., "Strategies for dynamic load balancing on highly parallel computers," Parallel and Distributed Systems, IEEE Transactions on , vol.4, no.9, pp.979,993, Sep 1993
 \bibitem{surveygraph} A. Buluc, H. Meyerhenke, I. Safro, P. Sanders, and C. Schulz, Recent advances in graph partitioning , (2013), p. arXiv:1311.3144.
-
+\bibitem{hypergraph}  Karen D. Devine , Erik G. Boman , Robert T. Heaphy , Rob H. Bisseling , Umit V. Catalyurek, Parallel hypergraph partitioning for scientific computing, Proceedings of the 20th international conference on Parallel and distributed processing, p.124-124, April 25-29, 2006, Rhodes Island, Greece 
 \end{thebibliography}
 \end{singlespace}
-
-%%%%%%%%%%%%%%%%%%%%%%%  For Appendices  %%%%%%%%%%%%%%%%%%%
-\appendix    % This command is used only once!
-\addtocontents{toc}{\parindent0pt\vskip12pt APPENDICES} %toc entry, no page #
-\chapter{THIS IS AN APPENDIX}
-Note the numbering of the chapter heading is changed.
-This is a sentence to take up space and look like text.
-\section{A Section Heading}
-This is how equations are numbered in an appendix:
-\begin{equation}
-x^2 + y^2 = z^2
-\end{equation} 
-
-\chapter{THIS IS ANOTHER APPENDIX}
-This is a sentence to take up space and look like text.
 
 \end{document}

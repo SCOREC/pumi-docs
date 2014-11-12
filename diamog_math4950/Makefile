@@ -1,4 +1,4 @@
-TARGET=parmaShape
+TARGET=rpithes-short
 OUTPUT_DIR=build
 
 # make pdf by default
