@@ -28,7 +28,7 @@
 \begin{figure}
   \centering
   \includegraphics[width=1\textwidth]{knapsack.PNG}
-  \caption{\label{fig:knapsacktable}Table of knapsack input calculation}
+  \caption{\label{fig:knapsacktable}Table of knapsack input calculation for part three of the Torus-4 partition depicted in Figure~\ref{fig:torus4imb}.}
 \end{figure} 
 
 \begin{figure}
@@ -98,7 +98,7 @@ This knapsack example is used on the Torus4-Imb ~\cite{meshes} mesh provided by 
 
 \todo[inline, color=green!40]{Talk about what debug setting you should put for output to check if weight edits function also add ref to figure in text}
 
-In Figure \ref{fig:knapsacktable}, the Weight Capacity, 5588.99, is defined as the Heavy Imbalance, 10488.98, minus the self weight, 4899.99. We then calculate that the combined weights of parts one and two are 4521, meaning that they can be merged into self without exceeding the capacity. \todo{CWS, look good? - CWS(8/22) yes}
+In Figure \ref{fig:knapsacktable}, the Weight Capacity of part three, 5588.99, is defined as the Heavy Imbalance, 10488.98, minus the self weight, 4899.99. We then calculate that the combined weights of parts one and two are 4521, meaning that they can be merged into self without exceeding the capacity. \todo{CWS, look good? - CWS(8/22) yes}
 With $f=1$, we see that the Original Rounded Knapsack Capacity is 2, parts one and two have a value of 1 and 2, respectively, and knapsack can only select one of the parts for merging. 
 With $f=.5$, more merges are selected. Here, Parts one and two have a value of 2 and 3, respectively, and since the Divided Rounded Knapsack Capacity is 5, knapsack will select both parts for merging.
 
@@ -278,26 +278,3 @@ All MIS tests were successfully passed and the ported version of MIS works exact
 \bibliography{references.bib}
 
 \end{document}
-
-
-
-Outline for doing graph
-
-% \begin{tikzpicture}
-% \SetGraphUnit{2}
-% \GraphInit[vstyle=Normal]
-% \Vertex{S}
-% \NOEA(S){A} \SOEA(S){B}
-% \EA(A){T1} \EA(B){T2}
-% \SOEA(T1){F}
-% \Edges[label=1](S,A)
-% \Edges[label=1](S,B)
-% \Edges[label=4](A,T1)
-% \Edges[label=2](B,T2)
-% \Edges[label=1](T1,F)
-% \Edges[label=1](T2,F)
-% \Edges[style={pos=.25},label=3](A,T2)
-% \Edges[style={pos=.25},label=2](B,T1)
-% %Could use this for bending%
-% \tikzset{EdgeStyle/.append style = {bend left}}
-% \end{tikzpicture}
