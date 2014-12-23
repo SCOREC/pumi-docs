@@ -39,9 +39,9 @@ You can refer to the following FAQ webpage on how to get CCI account and access 
 
 \section{Getting Started at SCOREC/CCI}
 
-For users new to SCOREC and IBM BlueGene/Q or new to linux system, you can find detailed instructions about how to connect to the workstations, how to move files into or out of the workstations and some basics about the file system in Appendix \ref{ch:1.1} to Appendix \ref{ch:1.3}.
+For users new to SCOREC and IBM BlueGene/Q or new to linux system, you can find detailed instructions about how to connect to the systems, how to move files into or out of the systems and some basics about the file system in Appendix \ref{ch:1.1} to Appendix \ref{ch:1.3}.
 
-New users need to get an environment set up on either SCOREC or IBM BlueGene/Q workstation. There are several pieces of third-party software required to compile PHASTA and its preprocessor, as well as other programs that you may find useful in development. For various reasons these are not available by default, and need to be activated through the module system. You can download the core tools and compile the stack by following the instructions in Appendix \ref{ch:1.4}. After setting up the environment and compiling the stack, you can build the PHASTA pre-processor \textit{chef}, download and build PHASTA and Model and mesh converters. Detailed instructions can be found in Appendix \ref{ch:2}.
+New users need to get an environment set up on either SCOREC or IBM BlueGene/Q. There are several pieces of third-party software required to compile PHASTA and its preprocessor, as well as other programs that you may find useful in development. For various reasons these are not available by default, and need to be activated through the module system. You can download the core tools and compile the stack by following the instructions in Appendix \ref{ch:1.4}. After setting up the environment and compiling the stack, you can build the PHASTA pre-processor \textit{chef}, download and build PHASTA and Model and mesh converters. Detailed instructions can be found in Appendix \ref{ch:2}.
 
 \section{Test Case Setup}
 
@@ -107,14 +107,14 @@ Other than generating a simple mesh like this case, SimModeler is able to genera
 After generating the required mesh files, you can run preprocessor \textit{chef} to partition the mesh and generate the PHASTA input files. Then you can run PHASTA.
 
 \subsection{Run Preprocessor}
-You can run preprocessor \textit{chef} using the following commands. For SCOREC workstation:
+You can run preprocessor \textit{chef} using the following commands. For SCOREC computer:
 \begin{lstlisting}
 cd crossflow
 source /users/myusername/core-sim/env-scorec.sh
 cd 4-1chef
 /users/myusername/coreSim/build/test/chef 
 \end{lstlisting}
-For IBM BlueGene/Q workstation:
+For IBM BlueGene/Q:
 \begin{lstlisting}
 cd crossflow
 module clear
@@ -127,14 +127,14 @@ This should create a 4-procs\_case directory containing the PHASTA input files i
 
 \subsection{Run PHASTA}
 
-First you need to run program converterO2N to generate PHASTA input files in the syncoIO format, then you can run PHASTA. For SCOREC workstations: 
+First you need to run program converterO2N to generate PHASTA input files in the syncoIO format, then you can run PHASTA. For SCOREC computer: 
 \begin{lstlisting}
 cd 4posixToSync
 mpirun -np 4 /path/to/phasta/mrPhasta/build/bin/converterO2N 
 cd 4solve
 mpirun -np 4 /path/to/phasta/mrPhasta/build/bin/phastaIC.exe 
 \end{lstlisting}
-For IBM BlueGene/Q workstation:
+For IBM BlueGene/Q:
 \begin{lstlisting}
 cd 4posixToSync
 srun -t 20 -n 4 -o log /gpfs/u/barn/myprojectname/myusername/phasta/ & 
@@ -237,7 +237,7 @@ After running PHASTA, the output files can be visualized by Paraview. Figure \re
 
 \section{Getting Started at SCOREC/CCI}
 \label{ch:1}
-\subsection{Connecting to the workstations}
+\subsection{Connecting to the systems}
 \label{ch:1.1}
 \subsubsection{SCOREC}
 After getting an account on SCOREC systems you should have a username and password. To access SCOREC systems, you must first go through the gateway machine at SCOREC called jumpgate. Running this from a terminal on your home computer will access jumpgate.
@@ -255,7 +255,7 @@ ssh othello
 \end{lstlisting}
 
 \subsubsection{CCI}
-The instructions of connecting to IBM BlueGene/Q workstation can be found in here: \\
+The instructions of connecting to IBM BlueGene/Q can be found in here: \\
 \url{https://secure.cci.rpi.edu/wiki/index.php/Landing_Pad}
 
 \subsection{File Systems}
@@ -313,18 +313,18 @@ cd /gpfs/u/barn/myprojectname/myusername/
 cp -r /users/mengf5/coresimBGQ.tar.gz ./
 tar xzf coresimBGQ.tar.gz
 \end{lstlisting}
-for IBM BlueGene/Q workstation.
+for IBM BlueGene/Q.
 
 Then you have a new directory called 'core-sim' containing the code. Move into it.
 \begin{lstlisting}
 cd core-sim
 \end{lstlisting}
 
-We have prepared a basic set of modules necessary to compile the code. This script should be executed once right after logging in to a workstation. For SCOREC you should run:
+We have prepared a basic set of modules necessary to compile the code. This script should be executed once right after logging in to a computer. For SCOREC you should run:
 \begin{lstlisting}
 source env-scorec.sh
 \end{lstlisting}
-The script for loading software dependencies on SCOREC systems env-scorec.sh won't work on IBM BlueGene/Q workstation. For IBM BlueGene/Q workstation you should run:
+The script for loading software dependencies on SCOREC systems env-scorec.sh won't work on IBM BlueGene/Q. For IBM BlueGene/Q you should run:
 \begin{lstlisting}
 source env-amos.sh
 \end{lstlisting}
@@ -376,13 +376,13 @@ cd core-sim/test/cadToSim/
 More reference about PHASTA can be found at:\\
 \url{https://www.scorec.rpi.edu/wiki/PHASTA_Documentation} 
 
-You can download the PHASTA code for SCOREC workstation following:
+You can download the PHASTA code for SCOREC following:
 \begin{lstlisting}
 cd 
 cp -r /lore/cwsmith/develop/phasta.tar.gz ./
 tar xzf phasta.tar.gz
 \end{lstlisting}
-for IBM BlueGene/Q workstation:
+for IBM BlueGene/Q:
 \begin{lstlisting}
 cd /gpfs/u/barn/myprojectname/myusername/
 cp -r /users/mengf5/phastaBGQ.tar.gz ./
@@ -417,13 +417,13 @@ After successfully generating the Simmetrix mesh (.sms file), there is a convert
 convert <simmetrix model> <simmetrix mesh> <scorec mesh>
 \end{lstlisting}
 
-You can download the test case for SCOREC workstation at:
+You can download the test case for SCOREC at:
 \begin{lstlisting}
 cd
 cp -r /users/mengf5/crossflow.tar.gz ./
 tar xzf crossflow.tar.gz
 \end{lstlisting}
-for IBM BlueGene/Q workstation at:
+for IBM BlueGene/Q at:
 \begin{lstlisting}
 cd /gpfs/u/scratch/myprojectname/myusername/
 cp -r /users/mengf5/crossflowBGQ.tar.gz ./
