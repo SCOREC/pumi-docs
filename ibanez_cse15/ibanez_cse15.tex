@@ -33,9 +33,9 @@ stiffness matrix assembly, etc.
 \vskip 20pt
 
 \begin{center}
-\includegraphics{ibanez_cse15-1.eps}
+\includegraphics[width=0.4\textwidth]{ibanez_cse15-1.png}
 \hspace{30pt}
-\includegraphics{ibanez_cse15-2.eps}
+\includegraphics[width=0.4\textwidth]{ibanez_cse15-2.png}
 \end{center}
 }
 
@@ -47,7 +47,7 @@ have the same degree.
 In the example, both elements are quadrilaterals.
 
 \begin{center}
-\includegraphics{ibanez_cse15-3.eps}
+\includegraphics[width=0.6\textwidth]{ibanez_cse15-3.png}
 \end{center}
 }
 
@@ -60,7 +60,7 @@ This is harder, because the degrees are not the same.
 Object-based structures may store many small arrays.
 
 \begin{center}
-\includegraphics{ibanez_cse15-4.eps}
+\includegraphics[width=0.6\textwidth]{ibanez_cse15-4.png}
 \end{center}
 
 Required during any kind of mesh modification, including
@@ -78,7 +78,7 @@ That is because {\emph each entry represents an adjacency
 graph edge}, in both arrays.
 
 \begin{center}
-\includegraphics{ibanez_cse15-5.eps}
+\includegraphics[width=0.6\textwidth]{ibanez_cse15-5.png}
 \end{center}
 }
 
@@ -88,7 +88,7 @@ to match the ordering of the downward array, such
 that the same graph edge has the same index.
 
 \begin{center}
-\includegraphics{ibanez_cse15-6.eps}
+\includegraphics[width=0.6\textwidth]{ibanez_cse15-6.png}
 \end{center}
 
 Element id is now implicit by location, but
@@ -103,7 +103,7 @@ Another array for the nodes points to the head
 of the list.
 
 \begin{center}
-\includegraphics{ibanez_cse15-7.eps}
+\includegraphics[width=\textwidth]{ibanez_cse15-7.png}
 \end{center}
 
 Array indices are used instead of pointers.
@@ -152,7 +152,7 @@ C's realloc is more efficient due
 to mmap on Linux systems.
 \end{itemize}
 \begin{center}
-\includegraphics{ibanez_cse15-9.eps}
+\includegraphics[width=\textwidth]{ibanez_cse15-9.png}
 \end{center}
 }
 
@@ -185,7 +185,7 @@ the first hole from the list and fill it.
 \end{itemize}
 
 \begin{center}
-\includegraphics{ibanez_cse15-8.eps}
+\includegraphics[width=\textwidth]{ibanez_cse15-8.png}
 \end{center}
 }
 
@@ -269,7 +269,7 @@ and additional field arrays.
 \end{itemize}
 
 \begin{center}
-\includegraphics{ibanez_cse15-10.eps}
+\includegraphics[width=\textwidth]{ibanez_cse15-10.png}
 \end{center}
 }
 

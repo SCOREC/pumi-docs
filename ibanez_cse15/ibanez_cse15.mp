@@ -1,6 +1,8 @@
-outputformat := "eps";
+outputformat := "png";
 outputtemplate := "%j-%c.%o";
 prologues := 3;
+hppp := 0.25;
+vppp := 0.25;
 input boxes
 
 beginfig(1);
