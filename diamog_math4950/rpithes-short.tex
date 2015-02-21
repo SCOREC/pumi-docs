@@ -32,7 +32,7 @@
 %\cocothadviser{Second co-adviser} % if needed
 %  For a masters project use \projadviser instead of \thadviser, 
 %  and \coprojadviser and \cocoprojadviser if needed. 
-\submitdate{December 2014\\(For Graduation May 2015)}        
+\submitdate{March 2015\\(For Graduation May 2015)}        
 %\copyrightyear{1685}  % if date omitted, current year is used. 
 %%%%%%%%%%%%%%%%%%%%%   end titlepage info  %%%%%%%%%%%%%%%%%%%%%%
       
@@ -81,6 +81,7 @@ The text of the first chapter goes here.
 
 %describe terminology (heavy vs light parts)
 \section{Definition of mesh and graph terminology} 
+
 \section{Motivation}
 In various applications it is important to reduce the average number of 
 neighbors a part has. If parts share boundaries with many neighbors there will 
@@ -130,15 +131,15 @@ Graph and Hypergraph methods for load balancing are said to be the most
 effective \cite{zhougraph,surveygraph}. Still there are some draw backs 
 presented by Zhou et al. \cite{zhougraph}. First off since the graph targets 
 a specific dimension, the other dimensions can become unbalanced. Also 
-graph/hypergraph methods do not scale well when working with more than 100K
-processors. The authors explain that using both local partitioning and 
-global partitioning can result in good partitions that can scale out to
+graph/hypergraph methods do not scale well when working with more than 
+100,000 processors. The authors explain that using both local partitioning 
+and global partitioning can result in good partitions that can scale out to
 large part counts. Also with large part counts some parts become much 
 heavier than others which limits the scalability of these methods.
 
 \section{Diffusive load balancing}
 Willebeek-LeMair and Reeves describe diffusive load balancing techniques with 
-4 steps \cite{loadbalance}. The first is evaluating the processor load, then 
+four steps \cite{loadbalance}. The first is evaluating the processor load, then 
 determining the profitability of the load balancing, followed by a task 
 migration strategy, and finally a task selection strategy. They review over 
 five different strategies and how they perform on the second and third task. 
@@ -161,7 +162,7 @@ a time.
 Zhou et al. developed a diffusive algorithm to balance the heavy parts produced 
 by graph/hypergraph methods \cite{zhougraph}. They target balancing the mesh vertices for each
 part of the partition by offloading certain entities from heavy parts to 
-lightier parts. Their method, the local iterative interpart boundary 
+lighter parts. Their method, the local iterative interpart boundary 
 modification algorithm (LIIPBMod), identifies mesh vertices on the heavy parts
 that are bounded by a small number of elements. By doing this, LIIPBMod 
 balances the vertex partitioning while still maintaining the element balance
@@ -170,7 +171,7 @@ results in a partition that has vertex balance with a minor decrease in the
 good element balance. The results of their method shows a dramatic improvement
 of vertex imbalance sometimes reducing from over 20\% to around 5\%. They 
 discuss that the scaling is not so significant because much more time is spent 
-on the graph/hypgraph partitioning than their method.
+on the graph/hypergraph partitioning than their method.
 
 
 \section{Multilevel methods}
@@ -205,17 +206,16 @@ much higher run time. They expect reasonable scaling for the algorithm but
 results show the algorithm taking minutes rather than seconds like other 
 methods.
 
+\chapter{GAP}
 
-\chapter{Methods}
+\chapter{Limitations}
 
-\section {Load Evaluation}
+\chapter{Results}
 
-\section{Task migration strategy}
+\chapter{Future Work}
 
-\section{Task selection strategy}
+\chapter{Conclusion}
 
-
-\chapter{Implementation}
 % The following produces a numbered bibliography where the numbers
 % correspond to the \cite commands in the text.
 \specialhead{LITERATURE CITED}
