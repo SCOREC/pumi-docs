@@ -206,13 +206,55 @@ much higher run time. They expect reasonable scaling for the algorithm but
 results show the algorithm taking minutes rather than seconds like other 
 methods.
 
-\chapter{GAP}
+\chapter{Method}
+
+The approach we take to fixing small sides builds off a diffusive parallel 
+mesh adaptation framework called ParMA \cite{parma}. Thus our algorithm, Gap,
+ adapts a series of steps defined in the ParMA load balancing method to target
+ small sides and migrate elements to increase the size of these bounaries. Here 
+we describe the base framework of ParMA and how it is extended to create Gap.
+
+\section{ParMA}
+
+ParMA load balancing methods follow a five step plan. These five steps 
+are the sides determination, weight assignment, target phase, selection
+phase, and the stepper phase. The sides determination is when each part 
+determines which parts are its neighbors. These sides are defined for some
+ dimension $d$ as a part that shares a $M^d$ entity. After sides are 
+determined, the weight assignment phase gives a weight to every element 
+(face for two dimensional meshes and region for three dimensional). The 
+target phase defines which parts will be sending and the parts each one 
+will be sending to. The target phase also defines an amount of weight to 
+be transferred from each sending part to each of its targets. The selection 
+phase determines which elements of the mesh will be sent to the targets 
+until the given amount of weight is satisfied. The final stepper phase is 
+to migrate the elements between each part and complete the load balancing 
+step. These steps are repeated until a stopping criteria is satisfied 
+during the stepper phase. 
+
+Each diffusive load balancing algorithm derived from ParMA implements these 
+steps to target the criteria of the algorithm [CITE?]. The most important 
+steps of the ParMA framework is the target phase and selection phase which 
+defines the problem specific actions that will be taken to balance the parts
+[Citation of other parma algos?]. The stopping criteria is typically to go below some balancing threshold of a certain dimension.
+ 
+  
+\section{Gap}
+
+\section{Maximimal Independent Set}
 
 \chapter{Limitations}
+%Small Isolated Components
+
+%Exchanging elements that revert a previous change
 
 \chapter{Results}
 
 \chapter{Future Work}
+
+%Talk more about fixing the limitations
+
+%A method to fix more general partitions
 
 \chapter{Conclusion}
 
@@ -242,6 +284,8 @@ Rob H. Bisseling , Umit V. Catalyurek, Parallel hypergraph partitioning for
 scientific computing, Proceedings of the 20th international conference on 
 Parallel and distributed processing, p.124-124, April 25-29, 2006, Rhodes 
 Island, Greece 
+\bibitem{parma} Smith, C.W., Rasquin, M., Ibanez, D., Jansen, K.E., Shephard,
+M.S., "Application Specific Mesh Partition Improvement", Submitted to SIAM Journal on Scientific Computing, 2015.
 \end{thebibliography}
 \end{singlespace}
 
