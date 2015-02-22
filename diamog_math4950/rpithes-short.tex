@@ -253,7 +253,7 @@ boundaries between two parts. We choose this in order to locate single vertex
 boundaries between parts. Fixing these single vertex junctions allows gap to 
 decrease the number of neighbors by turning the single vertex junction into 
 an edge. The sides are also used to count how many vertices a given boundary 
-has. This quantizes the length of the boundaries for the later phases of the 
+has. This quantifies the length of the boundaries for the later phases of the 
 algorithm.
 
 \subsection{Receiver based targeting}
@@ -272,7 +272,7 @@ boundary it has and checks if the length of this boundary is less than
 some percentage of the average length of all boundaries. Each iteration 
 the percentage that is multiplied by the average side length increases 
 towards 100\%. Once the small sides are found, pairs of parts that share 
-these small boundaries attempt to confirm eachother. All of the matches 
+these small boundaries attempt to confirm each other. All of the matches 
 that are found become the receivers of this step. The receivers then 
 traverse along the small boundary to find the parts that share a vertex 
 with the two receiving parts. Figure \ref{fig:boundary} shows an example 
@@ -282,7 +282,7 @@ senders to inform them. At that point the senders set each receiver as a
 target and calculates the weight to send to the targets.
 
 % Maximal Independent Set
-One problem that can occur during the target phase is if a part is designated as a receiver and a sender. This causes elements to be sent to the part and from the part which will cause gaps throughout the mesh and fail to achieve the end goal. Figure \ref{fig:recvsend} depicts this error and shows the direction of the element sending. [Describe more about the figure]. Our solution to this problem is implementing an algorithm to find maximal independent sets (MIS). We used Luby's randomized parallel MIS algorithm \cite{luby} to separate which parts find the small boundaries. This separates parts into subsets such that none of the parts within a subset are neighbors to eachother. Thus each step of the load balancing algorithm uses a different subset from the maximal independent sets. So the first part of the target phase is each part in the MIS subset finds its smallest side. If this side is less than the percent of the average side length then it sends a message to the part on the other side of the boundary. This other part then determines the senders and the rest of the algorithm follows. The MIS subsets guarentee that two adjacent parts cannot find small sides that would cause the sender and receiver conflict. 
+One problem that can occur during the target phase is if a part is designated as a receiver and a sender. This causes elements to be sent to the part and from the part which will cause gaps throughout the mesh and fail to achieve the end goal. Figure \ref{fig:recvsend} depicts this error and shows the direction of the element sending. [Describe more about the figure]. Our solution to this problem is implementing an algorithm to find maximal independent sets (MIS). We used Luby's randomized parallel MIS algorithm \cite{luby} to separate which parts find the small boundaries. This separates parts into subsets such that none of the parts within a subset are neighbors to each other. Thus each step of the load balancing algorithm uses a different subset from the maximal independent sets. So the first part of the target phase is each part in the MIS subset finds its smallest side. If this side is less than the percent of the average side length then it sends a message to the part on the other side of the boundary. This other part then determines the senders and the rest of the algorithm follows. The MIS subsets guarantee that two adjacent parts cannot find small sides that would cause the sender and receiver conflict. 
 
 
 \subsection{Centroid Selection}
