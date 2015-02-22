@@ -101,7 +101,7 @@ Another array for the nodes points to the head
 of the list.
 
 \begin{center}
-\includegraphics[width=0.8\textwidth]{ibanez_cse15-7.png}
+\includegraphics[width=0.6\textwidth]{ibanez_cse15-7.png}
 \end{center}
 
 Array indices are used instead of pointers.
@@ -111,20 +111,25 @@ these lists-in-arrays.
 
 \frame{\frametitle{Upward Adjacency Rationale}
 
+\begin{itemize}
+\item
 lists-in-array structure uses the same storage pattern
 as contiguous arrays structure.
-
+\item
 Elements can be \emph{added} by growing the array
 with new list nodes and linking them into the lists.
-
+\item
 Elements can be \emph{removed} by unlinking their list nodes
 from the lists.
-
+\item
 However, unlinking from singly-linked list is $O($list size$)$,
 which is $O($elements around vertex$)$. 
 So, we assume that the latter is $O(1)$.
+\end{itemize}
 
+\begin{center}
 \includegraphics[width=0.3\textwidth]{fan.png}
+\end{center}
 }
 
 \frame{\frametitle{Mesh Modification}
@@ -163,11 +168,11 @@ We use $\frac32(c+1)$.
 \item
 Result is amortized $O(1)$ insertion at the end.
 \item
-C's realloc can be more efficient due
-to mmap on Linux systems.
+{\bf C}'s \texttt{realloc()} can be more efficient due
+to virtual memory page mapping...
 \end{itemize}
 \begin{center}
-\includegraphics[width=0.6\textwidth]{ibanez_cse15-9.png}
+\includegraphics[width=0.4\textwidth]{ibanez_cse15-9.png}
 \end{center}
 }
 
@@ -191,7 +196,7 @@ So, keep the holes and track them
 \item
 One array per entity type, tracks holes in other arrays
 \item
-Holes are linked together in to one ``free list".
+Holes are linked together in one ``free list".
 \item
 On removal, new hole is linked to front of list.
 \item
@@ -222,9 +227,10 @@ bigger capacity
 Increment used size, return last index
 \end{enumerate}
 
-This logic is applied to all arrays associated
-with that entity type: downward adjacency,
-upward adjacency, and the free list array itself.
+\vspace{20pt}
+
+\includegraphics[width=0.8\textwidth]{flex.png}
+
 }
 
 \frame{\frametitle{Element-Vertex Structure}
@@ -239,26 +245,28 @@ and vertices would use the following set of arrays:
 \item Vertex to element lists-in-arrays
 \item Simulation field arrays, indexed by vertex id
 \end{itemize}
+
+\begin{center}
+\end{center}
 }
 
 \frame{\frametitle{Full Topological Representation}
+For flexible adaptive meshes, as well as for simulations
+with high-order field nodes, it is useful to represent
+multiple dimensions of entities. 
+The presence of edges and faces greatly simplifies
+mesh adaptation code.
 \begin{columns}[T]
 \begin{column}{0.4\textwidth}
 \includegraphics[width=\textwidth]{full.png}
 \end{column}
 \begin{column}{0.6\textwidth}
-\begin{itemize}
-\item Each dimension explicitly represented
-\item Adjacency between each pair of dimensions
-\item Uses
-\begin{itemize}
-\item Faces for bounday conditions
-\item Edge-driven mesh adaptation
-\item Better parallel decoupling
-\end{itemize}
-\end{itemize}
+\includegraphics[width=\textwidth]{mia.png}
 \end{column}
 \end{columns}
+To do this, create upward/downward relation arrays
+for each pair of entity types.
+Above is an edges-to-triangles example.
 }
 
 \frame{\frametitle{Full Topological Structure}
