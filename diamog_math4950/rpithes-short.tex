@@ -79,14 +79,16 @@ has and thus reduce application communication times.
 \chapter{INTRODUCTION}
 The text of the first chapter goes here. 
 
-%describe terminology (heavy vs light parts)
-\section{Definition of mesh and graph terminology} 
 
 \section{Motivation}
 In various applications it is important to reduce the average number of 
 neighbors a part has. If parts share boundaries with many neighbors there will 
 be lots of time spent sending and receiving information from each part's 
 neighbors.
+
+%describe terminology (heavy vs light parts)
+\section{Definition of mesh and graph terminology} 
+
 
 \chapter{Related Works}
 Many different distributed methods to balance unstructured meshes have been 
@@ -208,9 +210,9 @@ methods.
 
 \chapter{Method}
 
-The approach we take to fixing small sides builds off a diffusive parallel 
-mesh adaptation framework called ParMA \cite{parma}. Thus our algorithm, Gap,
- adapts a series of steps defined in the ParMA load balancing method to target
+The approach we take to fixing small sides builds off a parallel 
+dynamic partitioning framework called ParMA \cite{parma}. Thus our algorithm, Gap,
+ defines a series of steps defined in the ParMA load balancing method to target
  small sides and migrate elements to increase the size of these boundaries. Here 
 we describe the base framework of ParMA and how it is extended to create Gap.
 
@@ -221,8 +223,9 @@ are the sides determination, weight assignment, target phase, selection
 phase, and the stepper phase. The sides determination is when each part 
 determines which parts are its neighbors. These sides are defined for some
  dimension $d$ as a part that shares a $M^d$ entity. After sides are 
-determined, the weight assignment phase gives a weight to every element 
-(face for two dimensional meshes and region for three dimensional). The 
+determined, the weight assignment phase collects the weight (for a certain 
+mesh entity order (vertex, edge, face, or region)) of the neighbor parts 
+defined by the sides. The 
 target phase defines which parts will be sending and the parts each one 
 will be sending to. The target phase also defines an amount of weight to 
 be transferred from each sending part to each of its targets. The selection 
@@ -233,11 +236,11 @@ step. These steps are repeated until a stopping criteria is satisfied
 during the stepper phase. 
 
 Each diffusive load balancing algorithm derived from ParMA implements these 
-steps to target the criteria of the algorithm [CITE?]. The most important 
+steps to target the criteria of the algorithm \cite{parma}. The most important 
 steps of the ParMA framework is the target phase and selection phase which 
-defines the problem specific actions that will be taken to balance the parts
-[Citation of other ParMA algos?]. The stopping criteria is typically to go 
-below some balancing threshold of a certain dimension.
+defines the problem specific actions that will be taken to balance the parts. 
+The stopping criteria is typically to go below some balancing threshold of 
+a given mesh entity order(s). The balancing threshold is some percent imbalance of the given mesh entity order among all of the parts. The percent is typically between 1\% and 10\%. The stopping criteria can also be appended to include problem specific endpoints such as ???.
  
   
 \section{Gap}
@@ -285,7 +288,7 @@ target and calculates the weight to send to the targets.
 One problem that can occur during the target phase is if a part is designated as a receiver and a sender. This causes elements to be sent to the part and from the part which will cause gaps throughout the mesh and fail to achieve the end goal. Figure \ref{fig:recvsend} depicts this error and shows the direction of the element sending. [Describe more about the figure]. Our solution to this problem is implementing an algorithm to find maximal independent sets (MIS). We used Luby's randomized parallel MIS algorithm \cite{luby} to separate which parts find the small boundaries. This separates parts into subsets such that none of the parts within a subset are neighbors to each other. Thus each step of the load balancing algorithm uses a different subset from the maximal independent sets. So the first part of the target phase is each part in the MIS subset finds its smallest side. If this side is less than the percent of the average side length then it sends a message to the part on the other side of the boundary. This other part then determines the senders and the rest of the algorithm follows. The MIS subsets guarantee that two adjacent parts cannot find small sides that would cause the sender and receiver conflict. 
 
 
-\subsection{Centroid Selection}
+\subsection{Selection by Centroid}
 
 
 
