@@ -19,6 +19,8 @@
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
+\usepackage{url}
+\usepackage[font=small,labelfont=bf]{caption}
 \renewcommand{\algorithmicforall}{\textbf{for each}}
 \let\ForEach\ForAll
 % Use the first command below if you want captions over 1 line indented.
@@ -284,10 +286,19 @@ these small boundaries attempt to confirm each other. All of the matches
 that are found become the receivers of this step. The receivers then 
 traverse along the small boundary to find the parts that share a vertex 
 with the two receiving parts. Figure \ref{fig:boundary} shows an example 
-of this. Parts \# and \# detect the small boundary which then determine 
-parts \# and \# as the senders. The receivers then send messages to the 
+of this. Parts 2 and 1 detect the small boundary which then determine 
+parts 0 and 3 as the senders. The receivers then send messages to the 
 senders to inform them. At that point the senders set each receiver as a 
-target and calculates the weight to send to the targets.
+target and calculates the number of elements to send to the targets 
+based on the difference between the average length of a side and the 
+small side's length.
+
+\begin{figure} 
+\centering
+\captionsetup{justification=centering,margin=1cm}
+\includegraphics[width=.6\textwidth]{target_example.png}
+\caption{\label{fig:boundary} \textnormal{Four part plate mesh after targeting phase. Part 2(red) finds the small side with part 1(green). Part 1 labels the parts 0 and 3 (blue) as the senders.}}
+\end{figure}
 
 \begin{algorithm}
 \caption{Gap Target phase}
@@ -315,17 +326,22 @@ target and calculates the weight to send to the targets.
 \end{algorithmic}
 \end{algorithm}
 
+
 % Maximal Independent Set
 One problem that can occur during the target phase is if a part is 
 designated as a receiver and a sender. This causes elements to be sent 
 to the part and from the part in the same migration which will cause 
-disconnected components throughout the boundary between the parts. Figure 
-\ref{fig:recvsend} depicts this error and shows the direction of the element 
-sending. [Describe more about the figure]. Our solution to this problem is 
-to not allow neighboring parts to send to each other by using a  maximal 
-independent sets (MIS) on non-neighboring parts. We used Luby's randomized 
-parallel MIS algorithm \cite{luby} to separate which parts find the small 
-boundaries. This separates parts into subsets such that none of the parts 
+disconnected components throughout the boundary between the parts. In Figure 
+\ref{fig:recvsend} Gap finds small sides on the boundaries 11-9, 14-9, and 15-9.
+The arrows in the figure shows the resulting direction of migration. The color 
+of an arrow represents the migration caused by the small side of that color. 
+For example the red arrows are for the 15-9 boundary migration. There are 
+conflicts that occur in the migration along the 14-15 boundary and the 11-15 
+boundary where elements are migrated in both directions.  Our solution to this 
+problem is to not allow neighboring parts to send to each other by using a 
+maximal independent sets (MIS) of non-neighboring parts. We used Luby's 
+randomized parallel MIS algorithm \cite{luby} to separate which parts find the 
+small boundaries by making subsets of the parts such that none of the parts 
 within a subset are neighbors to each other. Thus each step of the load 
 balancing algorithm uses a different subset from the maximal independent sets. 
 So the first part of the target phase is each part in the MIS subset 
@@ -335,6 +351,16 @@ boundary. This other part then determines the senders and the rest of the
 algorithm follows. These changes to the target phase are included in Algorithm 
 \ref{alg:targets}. The MIS subsets guarantee that two adjacent parts cannot 
 find small sides that would cause the sender and receiver conflict. 
+%do I add reference to the above figure too???
+
+
+\begin{figure} 
+\centering
+\captionsetup{justification=centering,margin=1cm}
+\includegraphics[width=.8\textwidth]{MIS_problem.png}
+\caption{\label{fig:recvsend} \textnormal{Possible error if two small sides occur next to eachother. Small sides between 9 and 11,9 and 14, and  9 and 15. Arrows show migration direction for the color of the part finding the small side. Conflicts exist between the migrations of the 15-14 boundary and the 15-11 boundary}}
+%REALLY long caption...
+\end{figure}
 
 \subsection{Selection by Centroid}
 After targets have been found each sender must choose which elements close 
@@ -367,7 +393,9 @@ the small side is between parts \# and \#. The black represents the initial
 boundary lines and the red is the boundaries after a step of the shape 
 balancing.
 
+
 \subsection{Stopping Criteria}
+Gap's goal is to increase the length of small boundaries
 Gap does not directly attempt to decrease the imbalance of entities within 
 the mesh. In fact, Gap will sacrifice imbalance in order to achieve an improved 
 shape quality. Therefore the stopping criteria for Gap is when it goes above a 
@@ -378,7 +406,7 @@ complete if the mesh becomes too imbalanced or the smallest sides have been
 widened towards the average. For our tests we used 20\% imbalance and 70\% 
 of the initial average side length. We choose 20\% imbalance because this 
 imbalance is still easily fixed by ParMA entity imbalance improvement 
-[CITE ParMA paper?].
+\cite{parma,zhougraph,zhou2012}.
 
 \chapter{Results}
 
@@ -387,9 +415,22 @@ imbalance is still easily fixed by ParMA entity imbalance improvement
 
 \section{Plate testing}
 
-Our initial testing of Gap has been done on a two dimensional flat plate mesh. A 16 part version of the plate mesh partitioned by  the Recursive Inertial Bisection (RIB) method [Reference? idk] is included in Figure \ref{fig:plate}. 
+Our initial testing of Gap has been done on a two dimensional flat plate mesh. 
+A 16 part version of the plate mesh partitioned by  the Recursive Inertial 
+Bisection (RIB) method \cite{williamsRIB,taylorRIB} is included in Figure 
+\ref{fig:plate}. 
+
+\begin{figure} 
+\centering
+\captionsetup{justification=centering,margin=1cm}
+\includegraphics[width=.8\textwidth]{results_before.png}
+\caption{\label{fig:plate} \textnormal{16 part plate mesh before Gap is run. Small sides exist between parts 13 and 14, 9 and 15, etc. A single vertex junction is found between parts 0,1,2, and 3}}
+\end{figure}
 
 \chapter{Limitations and Future Work} 
+
+%Testing (if not sufficient) 
+%Make sure to move the first sentence of the next paragraph if added
 
 %Geometric centroids to topological centroids
 Gap is a work in progress and as such has several extensions required to make 
@@ -409,7 +450,7 @@ the boundary between two parts which can be see in Figure \ref{fig:ocean}.
 Currently if one of these regions is the smallest side between the two parts, 
 the parts will continuously try to fix those small sides rather than target 
 ones that have sender parts incident on the small side. We would like to have 
-Gap ignore these unfixable boundaries in order to target small sides that can 
+Gap ignore these un-fixable boundaries in order to target small sides that can 
 be fixed by the algorithm.
 
 %Multiple boundaries 
@@ -422,34 +463,19 @@ be fixed by the algorithm.
 We presented a method to improve the shape of a mesh in order to reduce costs of communication across different processes.
 % The following produces a numbered bibliography where the numbers
 % correspond to the \cite commands in the text.
+
+
 \specialhead{LITERATURE CITED}
 \begin{singlespace}
 \begin{thebibliography}{99}
-\bibitem{multidiffuse} Meyerhenke, H.; Monien, B.; Sauerwald, T., "A new 
-diffusion-based multilevel algorithm for computing graph partitions of very 
-high quality," Parallel and Distributed Processing, 2008. IPDPS 2008. IEEE 
-International Symposium on , vol., no., pp.1,13, 14-18 April 2008
-\bibitem{diffuseshape} Ralf Diekmann, Robert Preis, Frank Schlimbach, Chris 
-Walshaw, Shape-optimized mesh partitioning and load balancing for parallel 
-adaptive FEM, Parallel Computing, Volume 26, Issue 12, November 2000, Pages 
-1555-1581, ISSN 0167-8191, http://dx.doi.org/10.1016/S0167-8191(00)00043-0.
-\bibitem{loadbalance} Willebeek-LeMair, M.H.; Reeves, AP., "Strategies for 
-dynamic load balancing on highly parallel computers," Parallel and Distributed 
-Systems, IEEE Transactions on , vol.4, no.9, pp.979,993, Sep 1993
-\bibitem{zhougraph} Zhou M, Sahni O, Devine KD, Shephard MS, Jansen KE (2010) 
-Controlling unstructured mesh partitions for massively parallel simulations. 
-SIAM J Sci Comput 32:3201–3227
-\bibitem{surveygraph} A. Buluc, H. Meyerhenke, I. Safro, P. Sanders, and C. 
-Schulz, Recent advances in graph partitioning , (2013), p. arXiv:1311.3144.
-\bibitem{hypergraph}  Karen D. Devine , Erik G. Boman , Robert T. Heaphy , 
-Rob H. Bisseling , Umit V. Catalyurek, Parallel hypergraph partitioning for 
-scientific computing, Proceedings of the 20th international conference on 
-Parallel and distributed processing, p.124-124, April 25-29, 2006, Rhodes 
-Island, Greece 
 \bibitem{parma} Smith, C.W., Rasquin, M., Ibanez, D., Jansen, K.E., Shephard,
-M.S., "Application Specific Mesh Partition Improvement", Submitted to SIAM Journal on Scientific Computing, 2015.
-\bibitem{luby} M Luby. 1985. A simple parallel algorithm for the maximal independent set problem. In Proceedings of the seventeenth annual ACM symposium on Theory of computing (STOC '85). ACM, New York, NY, USA, 1-10. DOI=10.1145/22145.22146 
+M.S., "Application Specific Mesh Partition Improvement", Submitted to SIAM Journal on Scientific Computing, 2015. %not in references.bib
 \end{thebibliography}
 \end{singlespace}
+
+
+%\newpage
+\bibliographystyle{plain}
+\bibliography{references.bib}
 
 \end{document}
