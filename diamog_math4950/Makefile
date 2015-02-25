@@ -8,13 +8,13 @@ all: ${TARGET}.pdf
 %.pdf : %.dvi
 	pdflatex -output-directory=${OUTPUT_DIR} $* 
 
-#${TARGET}.bbl: references.bib
+${TARGET}.bbl: references.bib
 # in case we don't already have a .aux file listing citations
 # this should probably be a separate makefile target/dependency instead
 # of doing it every time... but *shrug*
 	pdflatex -output-directory=${OUTPUT_DIR} ${TARGET}.tex 
 # get the citations out of the bibliography
-#	bibtex ${OUTPUT_DIR}/${TARGET} 
+	bibtex ${OUTPUT_DIR}/${TARGET} 
 # do it again in case there are out-of-order cross-references
 	@pdflatex -output-directory=${OUTPUT_DIR} ${TARGET}.tex 
 

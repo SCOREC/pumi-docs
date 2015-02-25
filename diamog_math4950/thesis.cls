@@ -96,6 +96,8 @@
 \setcounter{secnumdepth}{3}    % Number subsubsections in the chapters
 \setcounter{tocdepth}{3}       % Put subsubsections in the table of contents
 
+\renewcommand{\clearpage}{}
+
 % Print "CHAPTER" if chap option is specified:
 \ifchap
   \renewcommand\@chapapp{\chaptername}
@@ -104,6 +106,7 @@
 \fi
 
 \def\specialhead#1{%   GENERAL HEADING WITHOUT A NUMBER (for abstract, etc.)
+     \newpage
      \ifx\phantomsection\undefined
      \else
         \clearpage\phantomsection

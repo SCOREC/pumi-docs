@@ -80,10 +80,15 @@ Towards this, ParMA partitioning methods will be extended to improve the
 overall shape of a part in order to reduce the number of neighbors each part 
 has and thus reduce application communication times.
 
+\newpage
+
 \chapter{INTRODUCTION}
 
 %Descrube an unstructured mesh and its uses in the scientific world
+In many scientific applications, real world models are used to develop simulations of real world scenarios. These models are represented by either two dimensional or three dimensional unstructured mesh of vertices, edges, faces, and regions (for three dimensional meshes). For large models with significantly accurate meshes. The mesh may contain millions of elements. To run a simulation of this size it is neccessary to distribute the elements across several processes. In the end there is a distributed unstructured mesh consisting of a number of parts where each part can be stored and used on a single process. 
 
+To ensure the effectiveness of distributing the mesh amongst parts it is important to balance the loads evenly throughout the parts. This load is expressed as the combination of the computational costs and the communication costs which depend on the application. Computational costs include the application's work that has to be done on the local elements of the part. The communication costs are any calculations that need to be done on elements of the global mesh that involve sending and receiveing information from other parts.  Balancing both of these based on the application leads to the least overhead of the application.
+%This doesn't flow very well anymore but it is salvagable I think
 
 In various distributed mesh-based applications it is important to reduce the 
 number of neighbors and have long part boundaries. If parts share boundaries 
