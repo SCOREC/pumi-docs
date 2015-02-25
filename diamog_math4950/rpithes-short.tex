@@ -242,10 +242,10 @@ steps to target the criteria of the algorithm \cite{parma}. The most important
 steps of the ParMA framework is the target phase and selection phase which 
 defines the problem specific actions that will be taken to balance the parts. 
 The stopping criteria is typically to go below some balancing threshold of 
-a given mesh entity order(s). The balancing threshold is some percent imbalance 
-of the given mesh entity order among all of the parts. The percent is typically 
-between 1\% and 10\%. The stopping criteria can also be appended to include 
-problem specific endpoints.
+a given mesh entity order(s). We define the balancing threshold to be a 
+percent imbalance of the given mesh entity order among all of the parts. 
+The percent is typically between 1\% and 10\%. The stopping criteria can also 
+be appended to include problem specific endpoints.
  
   
 \section{Gap}
@@ -318,20 +318,22 @@ target and calculates the weight to send to the targets.
 % Maximal Independent Set
 One problem that can occur during the target phase is if a part is 
 designated as a receiver and a sender. This causes elements to be sent 
-to the part and from the part which will cause gaps throughout the mesh 
-and fail to achieve the end goal. Figure \ref{fig:recvsend} depicts this 
-error and shows the direction of the element sending. [Describe more 
-about the figure]. Our solution to this problem is implementing an 
-algorithm to find maximal independent sets (MIS). We used Luby's randomized 
+to the part and from the part in the same migration which will cause 
+disconnected components throughout the boundary between the parts. Figure 
+\ref{fig:recvsend} depicts this error and shows the direction of the element 
+sending. [Describe more about the figure]. Our solution to this problem is 
+to not allow neighboring parts to send to each other by using a  maximal 
+independent sets (MIS) on non-neighboring parts. We used Luby's randomized 
 parallel MIS algorithm \cite{luby} to separate which parts find the small 
 boundaries. This separates parts into subsets such that none of the parts 
 within a subset are neighbors to each other. Thus each step of the load 
-balancing algorithm uses a different subset from the maximal independent 
-sets. So the first part of the target phase is each part in the MIS subset 
+balancing algorithm uses a different subset from the maximal independent sets. 
+So the first part of the target phase is each part in the MIS subset 
 finds its smallest side. If this side is less than the percent of the average 
 side length then it sends a message to the part on the other side of the 
 boundary. This other part then determines the senders and the rest of the 
-algorithm follows. The MIS subsets guarantee that two adjacent parts cannot 
+algorithm follows. These changes to the target phase are included in Algorithm 
+\ref{alg:targets}. The MIS subsets guarantee that two adjacent parts cannot 
 find small sides that would cause the sender and receiver conflict. 
 
 \subsection{Selection by Centroid}
@@ -344,7 +346,7 @@ element that is vertex adjacent to the small side. As there is likely
 multiple elements adjacent to the small side boundary we use the element 
 that is furthest from the centroid of the part. This is found by the euclidean 
 distance from the element's centroid to the part's centroid. Once the seed 
-element is selected and marked to send additional elements are chosen that 
+element is selected additional elements are chosen that 
 are adjacent by one mesh entity order less than the dimension of the mesh 
 (edge in two dimensions and face in three dimensions). Each additional edge 
 is added to a priority queue that is sorted by the distance of the element 
@@ -367,16 +369,25 @@ balancing.
 
 \subsection{Stopping Criteria}
 Gap does not directly attempt to decrease the imbalance of entities within 
-the mesh. In fact it is more likely Gap will create a more imbalanced mesh 
-in order to achieve a better shape. Therefore the stopping criteria for Gap 
-is when it goes above a given imbalance percentage. In addition to the 
-imbalance criteria Gap also finishes once the minimum boundary length is 
-greater than a percentage of the original average boundary length. With both 
-of these conditions Gap will complete if the mesh becomes too imbalanced or 
-the smallest sides have been widened towards the average. For our tests we 
-used 20\% imbalance and 70\% of the initial average side length.
+the mesh. In fact, Gap will sacrifice imbalance in order to achieve an improved 
+shape quality. Therefore the stopping criteria for Gap is when it goes above a 
+given level of imbalance. In addition to the imbalance criteria Gap also 
+finishes once the minimum boundary length is greater than a percentage of the 
+original average boundary length. With both of these conditions Gap will 
+complete if the mesh becomes too imbalanced or the smallest sides have been 
+widened towards the average. For our tests we used 20\% imbalance and 70\% 
+of the initial average side length. We choose 20\% imbalance because this 
+imbalance is still easily fixed by ParMA entity imbalance improvement 
+[CITE ParMA paper?].
 
 \chapter{Results}
+
+\section{Metrics of shape}
+
+
+\section{Plate testing}
+
+Our initial testing of Gap has been done on a two dimensional flat plate mesh. A 16 part version of the plate mesh partitioned by  the Recursive Inertial Bisection (RIB) method [Reference? idk] is included in Figure \ref{fig:plate}. 
 
 \chapter{Limitations and Future Work} 
 
