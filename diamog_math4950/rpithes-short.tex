@@ -81,17 +81,45 @@ overall shape of a part in order to reduce the number of neighbors each part
 has and thus reduce application communication times.
 
 \chapter{INTRODUCTION}
-The text of the first chapter goes here. 
+
+%Descrube an unstructured mesh and its uses in the scientific world
 
 
-\section{Motivation}
-In various applications it is important to reduce the average number of 
-neighbors a part has. If parts share boundaries with many neighbors there will 
-be lots of time spent sending and receiving information from each part's 
-neighbors.
+In various distributed mesh-based applications it is important to reduce the 
+number of neighbors and have long part boundaries. If parts share boundaries 
+with many neighbors there will be a lot of time spent sending and receiving 
+information from each part's neighbors. Also if these boundaries are short, it 
+may be neccessary to receive information from non neighboring parts as there 
+may not be enough along the short boundary. 
+%This last sentence may be total BS but it sounds reasonable most likely a better reason
 
-%describe terminology (heavy vs light parts)
-\section{Definition of mesh and graph terminology} 
+Typical parallel mesh load balancing algorithms target distributing the 
+computational load of an application evenly across all parts. Even with the 
+computational load of each part balanced, a part with many neighbors can be a 
+huge overhead of communication load. In order to fix such boundary problems a 
+balancing algorithm must take into account the overall shape of the parts. 
+More precisely the algorithm must try to create long part boundaries and remove 
+single vertex junctions where several parts.
+
+The work presented here suggests a method that given a prebalanced mesh will 
+increase the length of small sides and remove single vertex junctions. Our work 
+uses a distributive load balancing method to increase the length of small 
+boundaries by sending neighboring elements along the boundary to the parts on 
+either side of the boundary. The format of the paper is as follows. Section 2 
+discusses common approaches to mesh load balancing and there use in shape 
+correction. Section 3 describes our algorithm to fix part shape. Section 4 
+shows results from our testing. Section 5 and 6 list our plans to improve the 
+method. Some terminology used in the paper is defined as follows:
+
+{\bf Mesh Entity ($M^d$)} - A piece of the mesh representation of order $d$ where $d \in [0,3]$ which refers to vertex, edge, face, region in order.
+
+{\bf Element} - A mesh entity that is a face for a two dimensional mesh or a region for a three dimensional mesh.
+
+{\bf Imbalance of order $d$} - the maximum number of entities,$M^d$, on any part divided by the average across all parts
+
+{\bf Boundary length} - the number of vertices along a boundary of two parts.
+
+{\bf Small Side/Boundary} - a boundary between two parts that has a bounary length less than a given percentage of the average boundary length.
 
 
 \chapter{Related Works}
@@ -388,13 +416,15 @@ The closeness of an element to a part is defined as the euclidean distance
 from the elements centroid to the target part's centroid. Thus the element 
 is migrated to the receiving part that has the lower of these distances. 
 These migration choices lead to the small side being extended towards the 
-sender parts. A simple example is shown in Figure \ref{fig:selection}. Here 
-the small side is between parts \# and \#. The black represents the initial 
-boundary lines and the red is the boundaries after a step of the shape 
-balancing.
+sender parts. 
+%A simple example is shown in Figure \ref{fig:selection}. Here 
+%the small side is between parts \# and \#. The black represents the initial 
+%boundary lines and the red is the boundaries after a step of the shape 
+%balancing.
 
 
 \subsection{Stopping Criteria}
+% reorder discussion of this at some point.
 Gap's goal is to increase the length of small boundaries
 Gap does not directly attempt to decrease the imbalance of entities within 
 the mesh. In fact, Gap will sacrifice imbalance in order to achieve an improved 
@@ -461,15 +491,12 @@ be fixed by the algorithm.
 \chapter{Closing Remark}
 
 We presented a method to improve the shape of a mesh in order to reduce costs of communication across different processes.
+
 % The following produces a numbered bibliography where the numbers
 % correspond to the \cite commands in the text.
-
-
 \specialhead{LITERATURE CITED}
 \begin{singlespace}
 \begin{thebibliography}{99}
-\bibitem{parma} Smith, C.W., Rasquin, M., Ibanez, D., Jansen, K.E., Shephard,
-M.S., "Application Specific Mesh Partition Improvement", Submitted to SIAM Journal on Scientific Computing, 2015. %not in references.bib
 \end{thebibliography}
 \end{singlespace}
 
