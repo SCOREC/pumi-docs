@@ -392,15 +392,34 @@ Our initial testing of Gap has been done on a two dimensional flat plate mesh. A
 \chapter{Limitations and Future Work} 
 
 %Geometric centroids to topological centroids
+Gap is a work in progress and as such has several extensions required to make 
+it a more general algorithm. First of all as seen in the images after being 
+balanced by gap \ref{fig:gap1...n},  the boundaries are jagged which allows a 
+longer boundary length but a smoother boundary would be ideal. These jagged 
+boundaries are a result of using geometric centroids to compute distances for 
+migration selection. The geometric centroid takes no topological information 
+into account which causes the topology to be sacrificed in order to achieve the 
+goal. In future testing we would like to try using topological centroids 
+instead of geometric centroids. (describe what topological centroids are)
 
-%Small Isolated Components
+%Small Isolated Components and non fixable regions
+Due to the nature of Gap's targeting, there are some regions that cannot be 
+fixed by Gap. Namely these are areas where there are no sender parts around 
+the boundary between two parts which can be see in Figure \ref{fig:ocean}. 
+Currently if one of these regions is the smallest side between the two parts, 
+the parts will continuously try to fix those small sides rather than target 
+ones that have sender parts incident on the small side. We would like to have 
+Gap ignore these unfixable boundaries in order to target small sides that can 
+be fixed by the algorithm.
+
+%Multiple boundaries 
+
 
 %Exchanging elements that revert a previous change
 
-%A method to fix more general partitions
-
 \chapter{Closing Remark}
 
+We presented a method to improve the shape of a mesh in order to reduce costs of communication across different processes.
 % The following produces a numbered bibliography where the numbers
 % correspond to the \cite commands in the text.
 \specialhead{LITERATURE CITED}
