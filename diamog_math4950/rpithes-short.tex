@@ -88,16 +88,16 @@ has and thus reduce application communication times.
 \chapter{INTRODUCTION}
 
 %Descrube an unstructured mesh and its uses in the scientific world
-In many scientific applications, real world models are used to develop simulations of real world scenarios. These models are represented by either two dimensional or three dimensional unstructured mesh of vertices, edges, faces, and regions (for three dimensional meshes). For large models with significantly accurate meshes. The mesh may contain millions of elements. To run a simulation of this size it is neccessary to distribute the elements across several processes. In the end there is a distributed unstructured mesh consisting of a number of parts where each part can be stored and used on a single process. 
+In many scientific applications, real world models are used to develop simulations of real world scenarios. These models are represented by either two dimensional or three dimensional unstructured mesh of vertices, edges, faces, and regions (for three dimensional meshes). For large models with significantly accurate meshes. The mesh may contain millions of elements. To run a simulation of this size it is necessary to distribute the elements across several processes. In the end there is a distributed unstructured mesh consisting of a number of parts where each part can be stored and used on a single process. 
 
-To ensure the effectiveness of distributing the mesh amongst parts it is important to balance the loads evenly throughout the parts. This load is expressed as the combination of the computational costs and the communication costs which depend on the application. Computational costs include the application's work that has to be done on the local elements of the part. The communication costs are any calculations that need to be done on elements of the global mesh that involve sending and receiveing information from other parts.  Balancing both of these based on the application leads to the least overhead of the application.
+To ensure the effectiveness of distributing the mesh among parts it is important to balance the loads evenly throughout the parts. This load is expressed as the combination of the computational costs and the communication costs which depend on the application. Computational costs include the application's work that has to be done on the local elements of the part. The communication costs are any calculations that need to be done on elements of the global mesh that involve sending and receiving information from other parts.  Balancing both of these based on the application leads to the least overhead of the application.
 %This doesn't flow very well anymore but it is salvagable I think
 
 In various distributed mesh-based applications it is important to reduce the 
 number of neighbors and have long part boundaries. If parts share boundaries 
 with many neighbors there will be a lot of time spent sending and receiving 
 information from each part's neighbors. Also if these boundaries are short, it 
-may be neccessary to receive information from non neighboring parts as there 
+may be necessary to receive information from non neighboring parts as there 
 may not be enough along the short boundary. 
 %This last sentence may be total BS but it sounds reasonable most likely a better reason
 
@@ -109,7 +109,7 @@ balancing algorithm must take into account the overall shape of the parts.
 More precisely the algorithm must try to create long part boundaries and remove 
 single vertex junctions where several parts.
 
-The work presented here suggests a method that given a prebalanced mesh will 
+The work presented here suggests a method that given a balanced mesh will 
 increase the length of small sides and remove single vertex junctions. Our work 
 uses a distributive load balancing method to increase the length of small 
 boundaries by sending neighboring elements along the boundary to the parts on 
@@ -127,7 +127,7 @@ method. Some terminology used in the paper is defined as follows:
 
 {\bf Boundary length} - the number of vertices along a boundary of two parts.
 
-{\bf Small Side/Boundary} - a boundary between two parts that has a bounary length less than a given percentage of the average boundary length.
+{\bf Small Side/Boundary} - a boundary between two parts that has a boundary length less than a given percentage of the average boundary length.
 
 
 \chapter{Related Works}
@@ -288,7 +288,7 @@ be appended to include problem specific endpoints.
   
 \section{Gap}
 
-Gap derives from ParMA and thus must define the phases in order to target 
+Gap derives from ParMA and thus must define the phases to sepcifically target 
 small boundaries and select elements around the small boundaries in order 
 to increase the length of these small sides. 
 
@@ -296,34 +296,34 @@ to increase the length of these small sides.
 
 For sides, we decide to use vertex sides ($d$=0) in order to represent the 
 boundaries between two parts. We choose this in order to locate single vertex 
-boundaries between parts. Fixing these single vertex junctions allows gap to 
+junctions between parts. Fixing these single vertex junctions allows gap to 
 decrease the number of neighbors by turning the single vertex junction into 
-an edge. The sides are also used to count how many vertices a given boundary 
-has. This quantifies the length of the boundaries for the later phases of the 
-algorithm.
+a small side that can later be increased. The sides are also used to count how 
+many vertices a given boundary has. This quantifies the length of the 
+boundaries for the later phases of the algorithm.
 
 \subsection{Receiver based targeting}
 
 %General Discussion
 Gap uses a reverse method of deciding targets. The targets of Gap are the 
 parts that share a small boundary. To detect these small boundaries the 
-targets must detect them rather than the senders. Therefore, Gap implements 
-a receiver based targeting where parts detect that they are receivers and 
-inform the sending parts to send elements to the receivers. 
+targets must detect themselves rather than the senders. Thus, Gap 
+implements a receiver based targeting where parts detect that they are 
+receivers and inform the sending parts to send elements to the receivers. 
 
 %Description of Algorithm
 Algorithm \ref{alg:targets} outlines the method for finding small sides 
 and determining the sending parts. First each part finds the smallest 
 boundary it has and checks if the length of this boundary is less than 
-some percentage of the average length of all boundaries. Each iteration 
+a given percentage of the average length of all boundaries. Each iteration 
 the percentage that is multiplied by the average side length increases 
 towards 100\%. Once the small sides are found, pairs of parts that share 
 these small boundaries attempt to confirm each other. All of the matches 
 that are found become the receivers of this step. The receivers then 
 traverse along the small boundary to find the parts that share a vertex 
 with the two receiving parts. Figure \ref{fig:boundary} shows an example 
-of this. Parts 2 and 1 detect the small boundary which then determine 
-parts 0 and 3 as the senders. The receivers then send messages to the 
+of this. Parts one and two detect the small boundary which then determine 
+parts zero and three as the senders. The receivers then send messages to the 
 senders to inform them. At that point the senders set each receiver as a 
 target and calculates the number of elements to send to the targets 
 based on the difference between the average length of a side and the 
@@ -333,7 +333,7 @@ small side's length.
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{target_example.png}
-\caption{\label{fig:boundary} \textnormal{Four part plate mesh after targeting phase. Part 2(red) finds the small side with part 1(green). Part 1 labels the parts 0 and 3 (blue) as the senders.}}
+\caption{\label{fig:boundary} \textnormal{Four part plate mesh after targeting phase. Part two(red) finds the small side with part one(green). Part one labels the parts zero and three (blue) as the senders.}}
 \end{figure}
 
 \begin{algorithm}
@@ -342,7 +342,7 @@ small side's length.
 \begin{algorithmic}[1]
 \Require {mesh $M$ of dimension $d$, sides $s$, weights $w$}
 \Procedure{targets}{$M$, $s$, $w$}
-%  \State $targets \leftarrow \emptyset$
+  \State $targets \leftarrow \emptyset$
   \If {part is in MIS subset AND smallest\_side$<$tolerance}
     \State $other = $ part opposite small side
     \State send message to $other$
@@ -356,7 +356,7 @@ small side's length.
   \EndFor
   \If {receives message}
     \State $targets \leftarrow [parts,calcWeight(parts)]$
-%    \State $targets \leftarrow [secondpart,calcWeight(second)]$
+    \State $targets \leftarrow [secondpart,calcWeight(second)]$
   \EndIf
 \EndProcedure
 \end{algorithmic}
@@ -367,7 +367,7 @@ small side's length.
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{MIS_problem.png}
-\caption{\label{fig:recvsend} \textnormal{Possible error if two small sides occur next to eachother. Small sides between 9 and 11,9 and 14, and  9 and 15. Arrows show migration direction for the color of the part finding the small side. Conflicts exist between the migrations of the 15-14 boundary and the 15-11 boundary}}
+\caption{\label{fig:recvsend} \textnormal{Possible error if two small sides occur next to each other. There are small boundaries between parts nine and eleven, nice and fourteen, and nine and fifteen. Arrows show migration direction for the color of the part finding the small side. Conflicts exist between the migrations of the fifteen-fourteen boundary and the fifteen-eleven boundary}}
 %REALLY long caption...
 \end{figure}
 
@@ -376,11 +376,14 @@ One problem that can occur during the target phase is if a part is
 designated as a receiver and a sender. This causes elements to be sent 
 to the part and from the part in the same migration which will cause 
 disconnected components throughout the boundary between the parts. In Figure 
-\ref{fig:recvsend} Gap finds small sides on the boundaries 11-9, 14-9, and 15-9.
+\ref{fig:recvsend} Gap finds small sides on the boundaries eleven-nine, 
+fouteen-nine, and fifteen-nine.
 The arrows in the figure shows the resulting direction of migration. The color 
 of an arrow represents the migration caused by the small side of that color. 
-For example the red arrows are for the 15-9 boundary migration. There are 
-conflicts that occur in the migration along the 14-15 boundary and the 11-15 
+For example the red arrows are for the fifteen-nine boundary migration. There 
+are 
+conflicts that occur in the migration along the fourteen-fifteen boundary and 
+the eleven-fifteen 
 boundary where elements are migrated in both directions.  Our solution to this 
 problem is to not allow neighboring parts to send to each other by using a 
 maximal independent sets (MIS) of non-neighboring parts. We used Luby's 
@@ -452,27 +455,31 @@ imbalance is still easily fixed by ParMA entity imbalance improvement
 Our initial testing of Gap has been done on a two dimensional flat plate mesh. 
 A 16 part version of the plate mesh partitioned by  the Recursive Inertial 
 Bisection (RIB) method \cite{williamsRIB,taylorRIB} is included in Figure 
-\ref{fig:plate}. There are single vertex junctions between parts 0-1-2-3, 
-parts 4-5-6-7, parts 1-5-7-8, parts 7-8-12-14, and parts 1-3-8-9. There are 
-also 2 vertex sides on the 13-14 boundary, the 9-15 boundary, and 7-12 
-boundary. Gap was run on the mesh until the smallest boundary was 3 after 9 
+\ref{fig:plate}. There are single vertex junctions between parts 
+zero-one-two-three, 
+parts four-five-six-seven, parts one-five-seven-eight, parts 
+seven-eight-twelve-forteen, and parts one-three-eight-nine. There are 
+also two vertex sides on the thirteen-fourteen boundary, the nine-fifteen 
+boundary, and seven-twelve 
+boundary. Gap was run on the mesh until the smallest boundary was three after 
+nine 
 iterations of the balancing algorithm. Figure \ref{fig:plate_gap} shows the 
 resulting mesh. Here all of the single vertex junctions have been replaced with 
 new part boundaries and increased accordingly. Also several boundaries were 
-altered to even out the lengths to at least 3. 
+altered to even out the lengths to at least three. 
 
-\begin{figure} [!hb]
+\begin{figure} [!hp]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{results_before.png}
-\caption{\label{fig:plate} \textnormal{16 part plate mesh with 634 faces before Gap is run. Small sides exist between parts 13 and 14, 9 and 15, etc. A single vertex junction is found between parts 0,1,2, and 3}}
+\caption{\label{fig:plate} \textnormal{16 part plate mesh with 634 faces before Gap is run. Small sides exist between parts thirteen and fourteen, nine and fifteen, etc. Several single vertex junction exist like the one between parts zero, one, two, and three}}
 \end{figure}
 
-\begin{figure} [!ht]
+\begin{figure} [!hp]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{results_after.png}
-\caption{\label{fig:plate_gap} \textnormal{The same 16 part plate mesh after Gap has been run. The single vertex junctions have been removed and the minimum side length has been increased to 3.}}
+\caption{\label{fig:plate_gap} \textnormal{The same 16 part plate mesh after Gap has been run. The single vertex junctions have been removed and the minimum side length has been increased to three.}}
 \end{figure}
 
 Several larger cases of gap are run and shown in Figures \ref{fig:gap1}, \ref{fig:gap2}, and \ref{fig:gap3}. These are larger 16 part plate meshes with 876 faces, 1273 faces, and 1885 faces respectively.  
@@ -542,20 +549,20 @@ to the red or orange parts.
 \begin{figure} [!ht]
 \centering
 \captionsetup{justification=centering,margin=1cm}
-\includegraphics[width=.7\textwidth]{Ocean_Isolated.png}
+\includegraphics[width=.65\textwidth]{Ocean_Isolated.png}
 \caption{\label{fig:ocean} \textnormal{Several isolated components that cause the two parts to have small sides that cannot be fixed by Gap since there are no parts next to the boundary.}}
 \end{figure}
 
 
-\chapter{Closing Remark}
+\chapter{Closing Remarks}
 
 We presented a method to improve the shape of a mesh in order to reduce costs 
 of communication across different processes. Out implementation worked off of 
 a parallel dynamic partitioning framework, ParMA, to target small boundaries 
 and migrate elements at the end of the boundaries based on distances from 
-centroids to lenghten the sides. The key of our method is to improve shape 
+centroids to increase the length sides. The key of our method is to improve shape 
 at the cost of imbalance in the idea that the imbalance sacrificed can be 
-rebalanced without losing the shape quality created by Gap. Our initial testing 
+re-balanced without losing the shape quality created by Gap. Our initial testing 
 shows for a simple two dimensional mesh that Gap successfully lengthens the 
 small edges and removes single vertex junctions. Since the plate mesh is 
 simplistic there were several extra considerations that must be implemented 
