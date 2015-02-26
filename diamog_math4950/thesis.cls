@@ -200,8 +200,8 @@
 \renewcommand\topfraction{.8}
 \setcounter{bottomnumber}{2}
 \renewcommand\bottomfraction{.8}
-\setcounter{totalnumber}{4}
-\renewcommand\textfraction{.2}
+\setcounter{totalnumber}{2}
+\renewcommand\textfraction{.1}
 \renewcommand\floatpagefraction{.8}
 \setcounter{dbltopnumber}{2}
 \renewcommand\dbltopfraction{.8}

@@ -326,7 +326,7 @@ target and calculates the number of elements to send to the targets
 based on the difference between the average length of a side and the 
 small side's length.
 
-\begin{figure} 
+\begin{figure} [!h]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{target_example.png}
@@ -339,7 +339,7 @@ small side's length.
 \begin{algorithmic}[1]
 \Require {mesh $M$ of dimension $d$, sides $s$, weights $w$}
 \Procedure{targets}{$M$, $s$, $w$}
-  \State $targets \leftarrow \emptyset$
+%  \State $targets \leftarrow \emptyset$
   \If {part is in MIS subset AND smallest\_side$<$tolerance}
     \State $other = $ part opposite small side
     \State send message to $other$
@@ -352,13 +352,21 @@ small side's length.
     \State send self and other in message to send
   \EndFor
   \If {receives message}
-    \State $targets \leftarrow [firstpart,calcWeight(first)]$
-    \State $targets \leftarrow [secondpart,calcWeight(second)]$
+    \State $targets \leftarrow [parts,calcWeight(parts)]$
+%    \State $targets \leftarrow [secondpart,calcWeight(second)]$
   \EndIf
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
+
+\begin{figure} [hb]
+\centering
+\captionsetup{justification=centering,margin=1cm}
+\includegraphics[width=.6\textwidth]{MIS_problem.png}
+\caption{\label{fig:recvsend} \textnormal{Possible error if two small sides occur next to eachother. Small sides between 9 and 11,9 and 14, and  9 and 15. Arrows show migration direction for the color of the part finding the small side. Conflicts exist between the migrations of the 15-14 boundary and the 15-11 boundary}}
+%REALLY long caption...
+\end{figure}
 
 % Maximal Independent Set
 One problem that can occur during the target phase is if a part is 
@@ -387,13 +395,6 @@ find small sides that would cause the sender and receiver conflict.
 %do I add reference to the above figure too???
 
 
-\begin{figure} 
-\centering
-\captionsetup{justification=centering,margin=1cm}
-\includegraphics[width=.8\textwidth]{MIS_problem.png}
-\caption{\label{fig:recvsend} \textnormal{Possible error if two small sides occur next to eachother. Small sides between 9 and 11,9 and 14, and  9 and 15. Arrows show migration direction for the color of the part finding the small side. Conflicts exist between the migrations of the 15-14 boundary and the 15-11 boundary}}
-%REALLY long caption...
-\end{figure}
 
 \subsection{Selection by Centroid}
 After targets have been found each sender must choose which elements close 
@@ -445,22 +446,33 @@ imbalance is still easily fixed by ParMA entity imbalance improvement
 
 \chapter{Results}
 
-\section{Metrics of shape}
-
-
-\section{Plate testing}
-
 Our initial testing of Gap has been done on a two dimensional flat plate mesh. 
 A 16 part version of the plate mesh partitioned by  the Recursive Inertial 
 Bisection (RIB) method \cite{williamsRIB,taylorRIB} is included in Figure 
-\ref{fig:plate}. 
+\ref{fig:plate}. There are single vertex junctions between parts 0-1-2-3, 
+parts 4-5-6-7, parts 1-5-7-8, parts 7-8-12-14, and parts 1-3-8-9. There are 
+also 2 vertex sides on the 13-14 boundary, the 9-15 boundary, and 7-12 
+boundary. Gap was run on the mesh until the smallest boundary was 3 after 9 
+iterations of the balancing algorithm. Figure \ref{fig:plate_gap} shows the 
+resulting mesh. Here all of the single vertex junctions have been replaced with 
+new part boundaries and increased accordingly. Also several boundaries were 
+altered to even out the lengths to at least 3. 
 
-\begin{figure} 
+\begin{figure} [!hb]
 \centering
 \captionsetup{justification=centering,margin=1cm}
-\includegraphics[width=.8\textwidth]{results_before.png}
+\includegraphics[width=.6\textwidth]{results_before.png}
 \caption{\label{fig:plate} \textnormal{16 part plate mesh before Gap is run. Small sides exist between parts 13 and 14, 9 and 15, etc. A single vertex junction is found between parts 0,1,2, and 3}}
 \end{figure}
+
+\begin{figure} [!ht]
+\centering
+\captionsetup{justification=centering,margin=1cm}
+\includegraphics[width=.6\textwidth]{results_after.png}
+\caption{\label{fig:plate_gap} \textnormal{The 16 part plate mesh after Gap has been run. The single vertex junctions have been removed and the minimum side length has been increased to 3.}}
+\end{figure}
+
+
 
 \chapter{Limitations and Future Work} 
 
