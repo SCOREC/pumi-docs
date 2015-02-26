@@ -88,42 +88,60 @@ has and thus reduce application communication times.
 \chapter{INTRODUCTION}
 
 %Descrube an unstructured mesh and its uses in the scientific world
-In many scientific applications, real world models are used to develop simulations of real world scenarios. These models are represented by either two dimensional or three dimensional unstructured mesh of vertices, edges, faces, and regions (for three dimensional meshes). For large models with significantly accurate meshes. The mesh may contain millions of elements. To run a simulation of this size it is necessary to distribute the elements across several processes. In the end there is a distributed unstructured mesh consisting of a number of parts where each part can be stored and used on a single process. 
+In many scientific applications, mathematical models are used to develop 
+simulations of real world scenarios. These models often are discretized over
+either two dimensional or three dimensional unstructured mesh of vertices, 
+edges, 
+faces, and regions (for three dimensional meshes).  Complexities in the model 
+and the domain can easily require meshes with billions of elements.
+To run a simulation of this size it is necessary to distribute the elements 
+across hundreds of thousands of processors where each processor gets a portion 
+of the elements, a mesh 'part'.
 
-To ensure the effectiveness of distributing the mesh among parts it is important to balance the loads evenly throughout the parts. This load is expressed as the combination of the computational costs and the communication costs which depend on the application. Computational costs include the application's work that has to be done on the local elements of the part. The communication costs are any calculations that need to be done on elements of the global mesh that involve sending and receiving information from other parts.  Balancing both of these based on the application leads to the least overhead of the application.
+To ensure the effectiveness of distributing the mesh among parts it is 
+important to balance the loads evenly throughout the parts. This load is 
+expressed as the combination of the computational costs and the communication 
+costs which depend on the application. Computational costs include the 
+application's work that has to be done on the local elements of the part. The 
+communication costs involve sending and receiving information between parts, 
+often defined by mesh entity adjacencies across part boundaries. Balancing 
+both of these based on the application leads to the least overhead of the 
+application.
 %This doesn't flow very well anymore but it is salvagable I think
 
-In various distributed mesh-based applications it is important to reduce the 
-number of neighbors and have long part boundaries. If parts share boundaries 
-with many neighbors there will be a lot of time spent sending and receiving 
-information from each part's neighbors. Also if these boundaries are short, it 
-may be necessary to receive information from non neighboring parts as there 
-may not be enough along the short boundary. 
-%This last sentence may be total BS but it sounds reasonable most likely a better reason
+When communication costs are measured by, or a direct result of, the number 
+of entities cut by part boundaries the costs can be lowered by (1) reducing 
+the number of entities cut by the boundary and (2) reducing the number of 
+parts, processes, a part borders.  The former objective is the typical 
+secondary objective of most partitioning tools, reducing the cut size.  The 
+latter objective, assuming equal cut size, reflects the potentially increased 
+cost of sending several small messages to many endpoints versus sending large 
+messages to fewer endpoints \cite{MPIpresent,MPImessage}.
 
 Typical parallel mesh load balancing algorithms target distributing the 
 computational load of an application evenly across all parts. Even with the 
-computational load of each part balanced, a part with many neighbors can be a 
-huge overhead of communication load. In order to fix such boundary problems a 
+computational load of each part balanced, a part with many neighbors can have 
+increased communication overheads. In order to fix such boundary problems a 
 balancing algorithm must take into account the overall shape of the parts. 
-More precisely the algorithm must try to create long part boundaries and remove 
-single vertex junctions where several parts.
+More precisely the algorithm must try to remove part boundaries cutting only a 
+small number of mesh vertices.
 
-The work presented here suggests a method that given a balanced mesh will 
-increase the length of small sides and remove single vertex junctions. Our work 
-uses a distributive load balancing method to increase the length of small 
-boundaries by sending neighboring elements along the boundary to the parts on 
-either side of the boundary. The format of the paper is as follows. Section 2 
+The work presented here suggests a method that given a mesh will 
+increase the length of small part boundaries. Our work 
+sends a small number of elements bounded by the ends, in 2D the endpoints of 
+the line formed by the part boundary, in 3D the segments bounding the part 
+boundary surface, of the targeted part boundary to incrementally increase its 
+size. The format of the paper is as follows. Section 2 
 discusses common approaches to mesh load balancing and there use in shape 
 correction. Section 3 describes our algorithm to fix part shape. Section 4 
 shows results from our testing. Section 5 and 6 list our plans to improve the 
 method. Some terminology used in the paper is defined as follows:
 
-{\bf Mesh Entity ($M^d$)} - A piece of the mesh representation of order $d$ where $d \in [0,3]$ which refers to vertex, edge, face, region in order.
+{\bf Mesh Entity } - A piece of the mesh representation of order $d$ where $d \in [0,3]$ which refers to vertex, edge, face, region in order.
 
 {\bf Element} - A mesh entity that is a face for a two dimensional mesh or a region for a three dimensional mesh.
 
-{\bf Imbalance of order $d$} - the maximum number of entities,$M^d$, on any part divided by the average across all parts
+{\bf Imbalance of order $d$} - the maximum number of entities of order $d$ on any part divided by the average across all parts
 
 {\bf Boundary length} - the number of vertices along a boundary of two parts.
 
@@ -262,7 +280,7 @@ ParMA load balancing methods follow a five step plan. These five steps
 are the sides determination, weight assignment, target phase, selection
 phase, and the stepper phase. The sides determination is when each part 
 determines which parts are its neighbors. These sides are defined for some
- dimension $d$ as a part that shares a $M^d$ entity. After sides are 
+ dimension $d$ as a part that shares a mesh entityof order $d$. After sides are 
 determined, the weight assignment phase collects the weight (for a certain 
 mesh entity order (vertex, edge, face, or region)) of the neighbor parts 
 defined by the sides. The 
@@ -466,7 +484,7 @@ nine
 iterations of the balancing algorithm. Figure \ref{fig:plate_gap} shows the 
 resulting mesh. Here all of the single vertex junctions have been replaced with 
 new part boundaries and increased accordingly. Also several boundaries were 
-altered to even out the lengths to at least three. 
+altered to even out the lengths to at least three. Several larger cases of gap are run and shown in Figures \ref{fig:gap1}, \ref{fig:gap2}, and \ref{fig:gap3}. These are larger 16 part plate meshes with 876 faces, 1273 faces, and 1885 faces respectively.  \\[5cm]
 
 \begin{figure} [!hp]
 \centering
@@ -481,8 +499,6 @@ altered to even out the lengths to at least three.
 \includegraphics[width=.6\textwidth]{results_after.png}
 \caption{\label{fig:plate_gap} \textnormal{The same 16 part plate mesh after Gap has been run. The single vertex junctions have been removed and the minimum side length has been increased to three.}}
 \end{figure}
-
-Several larger cases of gap are run and shown in Figures \ref{fig:gap1}, \ref{fig:gap2}, and \ref{fig:gap3}. These are larger 16 part plate meshes with 876 faces, 1273 faces, and 1885 faces respectively.  
 
 
 \begin{figure} [!h]
@@ -556,15 +572,16 @@ to the red or orange parts.
 
 \chapter{Closing Remarks}
 
-We presented a method to improve the shape of a mesh in order to reduce costs 
-of communication across different processes. Out implementation worked off of 
+We presented a method to improve the shape of a mesh in order to reduce 
+communication costs across different processes. Out implementation worked off of 
 a parallel dynamic partitioning framework, ParMA, to target small boundaries 
 and migrate elements at the end of the boundaries based on distances from 
-centroids to increase the length sides. The key of our method is to improve shape 
-at the cost of imbalance in the idea that the imbalance sacrificed can be 
-re-balanced without losing the shape quality created by Gap. Our initial testing 
-shows for a simple two dimensional mesh that Gap successfully lengthens the 
-small edges and removes single vertex junctions. Since the plate mesh is 
+centroids to increase the length sides. The key to our method is improving 
+shape at the cost of small imbalance increases which can be quickly recovered 
+with ParMA diffusive improvement procedures without losing the shape 
+improvements. Our initial testing shows for a simple two dimensional mesh that 
+Gap successfully lengthens the small edges and removes single vertex junctions. 
+Since the plate mesh is 
 simplistic there were several extra considerations that must be implemented 
 to create a method that works in general cases of both two dimensional and 
 three dimensional meshes. 
