@@ -82,6 +82,9 @@ has and thus reduce application communication times.
 
 \newpage
 
+\begingroup
+\let\clearpage\relax
+
 \chapter{INTRODUCTION}
 
 %Descrube an unstructured mesh and its uses in the scientific world
@@ -543,14 +546,23 @@ to the red or orange parts.
 \caption{\label{fig:ocean} \textnormal{Several isolated components that cause the two parts to have small sides that cannot be fixed by Gap since there are no parts next to the boundary.}}
 \end{figure}
 
-%Multiple boundaries 
-
-
-%Exchanging elements that revert a previous change
 
 \chapter{Closing Remark}
 
-We presented a method to improve the shape of a mesh in order to reduce costs of communication across different processes.
+We presented a method to improve the shape of a mesh in order to reduce costs 
+of communication across different processes. Out implementation worked off of 
+a parallel dynamic partitioning framework, ParMA, to target small boundaries 
+and migrate elements at the end of the boundaries based on distances from 
+centroids to lenghten the sides. The key of our method is to improve shape 
+at the cost of imbalance in the idea that the imbalance sacrificed can be 
+rebalanced without losing the shape quality created by Gap. Our initial testing 
+shows for a simple two dimensional mesh that Gap successfully lengthens the 
+small edges and removes single vertex junctions. Since the plate mesh is 
+simplistic there were several extra considerations that must be implemented 
+to create a method that works in general cases of both two dimensional and 
+three dimensional meshes. 
+
+\endgroup
 
 % The following produces a numbered bibliography where the numbers
 % correspond to the \cite commands in the text.
