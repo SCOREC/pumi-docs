@@ -96,7 +96,7 @@
 \setcounter{secnumdepth}{3}    % Number subsubsections in the chapters
 \setcounter{tocdepth}{3}       % Put subsubsections in the table of contents
 
-\renewcommand{\clearpage}{}
+%\renewcommand{\clearpage}{}
 
 % Print "CHAPTER" if chap option is specified:
 \ifchap

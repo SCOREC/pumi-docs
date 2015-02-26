@@ -18,7 +18,7 @@ ${TARGET}.bbl: references.bib
 # do it again in case there are out-of-order cross-references
 	@pdflatex -output-directory=${OUTPUT_DIR} ${TARGET}.tex 
 
-${TARGET}.dvi: ${TARGET}.tex
+${TARGET}.dvi: ${TARGET}.tex ${TARGET}.bbl
 	@pdflatex -output-directory=${OUTPUT_DIR} ${TARGET}.tex 
 
 # shortcut, so we can say "make ps"

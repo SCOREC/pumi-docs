@@ -512,13 +512,22 @@ it a more general algorithm. First of all as seen in the Figure \ref{fig:gap3} a
 %Small Isolated Components and non fixable regions
 Due to the nature of Gap's targeting, there are some regions that cannot be 
 fixed by Gap. Namely these are areas where there are no sender parts around 
-the boundary between two parts which can be see in Figure \ref{fig:ocean}. 
-Currently if one of these regions is the smallest side between the two parts, 
-the parts will continuously try to fix those small sides rather than target 
-ones that have sender parts incident on the small side. We would like to have 
-Gap ignore these un-fixable boundaries in order to target small sides that can 
-be fixed by the algorithm.
+the boundary between two parts. Currently if one of these regions is the 
+smallest side between the two parts, the parts will continuously try to fix 
+those small sides rather than target ones that have sender parts incident on 
+the small side. We would like to have Gap ignore these un-fixable boundaries 
+in order to target small sides that can be fixed by the algorithm. In Figure 
+\ref{fig:ocean} there are several small red isolated components of the red 
+part that cause a small side with the orange part. These sides cannot be 
+increased because there are no parts next to the boundary to migrate elements 
+to the red or orange parts.
 
+\begin{figure} [!ht]
+\centering
+\captionsetup{justification=centering,margin=1cm}
+\includegraphics[width=.7\textwidth]{Ocean_Isolated.png}
+\caption{\label{fig:ocean} \textnormal{Several isolated components that cause the two parts to have small sides that cannot be fixed by Gap since there are no parts next to the boundary.}}
+\end{figure}
 
 %Multiple boundaries 
 
