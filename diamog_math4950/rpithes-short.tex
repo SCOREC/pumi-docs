@@ -507,7 +507,21 @@ Several larger cases of gap are run and shown in Figures \ref{fig:gap1}, \ref{fi
 
 %Geometric centroids to topological centroids
 Gap is a work in progress and as such has several extensions required to make 
-it a more general algorithm. First of all as seen in the Figure \ref{fig:gap3} after being balanced by gap, the boundaries are jagged and branch out in a nonuniform path which allows longer boundary lengths but a smoother boundary and more elliptical shape would be ideal.  These jagged boundaries are a result of using geometric centroids to compute distances for migration selection. The geometric centroid takes no topological information into account which causes the topology to be sacrificed in order to achieve the goal. In future testing we would like to try using topological centroids instead of geometric centroids. (describe what topological centroids are)
+it a more general algorithm. First of all as seen in the Figure \ref{fig:gap3} 
+after being balanced by gap, the boundaries are jagged and branch out in a 
+nonuniform path which allows longer boundary lengths but a smoother boundary 
+and more elliptical shape would be ideal.  These jagged boundaries are a 
+result of using geometric centroids to compute distances for migration 
+selection. The geometric centroid takes no topological information into account 
+which causes the topology to be sacrificed in order to achieve the goal. In 
+future testing we would like to try using topological centroids instead of 
+geometric centroids. Topological centroids are defined by the distance from the 
+boundary by a breadth first search traversal. This gives each vertex a number 
+of the shortest path to the boundary. The topological centroid is the vertex 
+with the highest number is defined as the topological centroid. Since this 
+centroid is defined based on the actual boundary, the distance from the 
+centroid is based on element distance rather than element size which leads to 
+better topological choices.
 
 %Small Isolated Components and non fixable regions
 Due to the nature of Gap's targeting, there are some regions that cannot be 
