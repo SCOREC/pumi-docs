@@ -462,16 +462,42 @@ altered to even out the lengths to at least 3.
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{results_before.png}
-\caption{\label{fig:plate} \textnormal{16 part plate mesh before Gap is run. Small sides exist between parts 13 and 14, 9 and 15, etc. A single vertex junction is found between parts 0,1,2, and 3}}
+\caption{\label{fig:plate} \textnormal{16 part plate mesh with 634 faces before Gap is run. Small sides exist between parts 13 and 14, 9 and 15, etc. A single vertex junction is found between parts 0,1,2, and 3}}
 \end{figure}
 
 \begin{figure} [!ht]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{results_after.png}
-\caption{\label{fig:plate_gap} \textnormal{The 16 part plate mesh after Gap has been run. The single vertex junctions have been removed and the minimum side length has been increased to 3.}}
+\caption{\label{fig:plate_gap} \textnormal{The same 16 part plate mesh after Gap has been run. The single vertex junctions have been removed and the minimum side length has been increased to 3.}}
 \end{figure}
 
+Several larger cases of gap are run and shown in Figures \ref{fig:gap1}, \ref{fig:gap2}, and \ref{fig:gap3}. These are larger 16 part plate meshes with 876 faces, 1273 faces, and 1885 faces respectively.  
+
+
+\begin{figure} [!h]
+\centering
+\captionsetup{justification=centering,margin=1cm}
+\includegraphics[width=.4\textwidth]{before_876.png}
+\includegraphics[width=.4\textwidth]{after_876.png}
+\caption{\label{fig:gap1} \textnormal{16 part plate mesh with 876 faces before gap (left) and after gap (right)}}
+\end{figure}
+
+\begin{figure} [!h]
+\centering
+\captionsetup{justification=centering,margin=1cm}
+\includegraphics[width=.4\textwidth]{before_1273.png}
+\includegraphics[width=.4\textwidth]{after_1273.png}
+\caption{\label{fig:gap2} \textnormal{16 part plate mesh with 1273 faces before gap (left) and after gap (right)}}
+\end{figure}
+
+\begin{figure} [!h]
+\centering
+\captionsetup{justification=centering,margin=1cm}
+\includegraphics[width=.4\textwidth]{before_1885.png}
+\includegraphics[width=.4\textwidth]{after_1885.png}
+\caption{\label{fig:gap3} \textnormal{16 part plate mesh with 1885 faces before gap (left) and after gap (right)}}
+\end{figure}
 
 
 \chapter{Limitations and Future Work} 
@@ -481,14 +507,7 @@ altered to even out the lengths to at least 3.
 
 %Geometric centroids to topological centroids
 Gap is a work in progress and as such has several extensions required to make 
-it a more general algorithm. First of all as seen in the images after being 
-balanced by gap \ref{fig:gap1...n},  the boundaries are jagged which allows a 
-longer boundary length but a smoother boundary would be ideal. These jagged 
-boundaries are a result of using geometric centroids to compute distances for 
-migration selection. The geometric centroid takes no topological information 
-into account which causes the topology to be sacrificed in order to achieve the 
-goal. In future testing we would like to try using topological centroids 
-instead of geometric centroids. (describe what topological centroids are)
+it a more general algorithm. First of all as seen in the Figure \ref{fig:gap3} after being balanced by gap, the boundaries are jagged and branch out in a nonuniform path which allows longer boundary lengths but a smoother boundary and more elliptical shape would be ideal.  These jagged boundaries are a result of using geometric centroids to compute distances for migration selection. The geometric centroid takes no topological information into account which causes the topology to be sacrificed in order to achieve the goal. In future testing we would like to try using topological centroids instead of geometric centroids. (describe what topological centroids are)
 
 %Small Isolated Components and non fixable regions
 Due to the nature of Gap's targeting, there are some regions that cannot be 
@@ -499,6 +518,7 @@ the parts will continuously try to fix those small sides rather than target
 ones that have sender parts incident on the small side. We would like to have 
 Gap ignore these un-fixable boundaries in order to target small sides that can 
 be fixed by the algorithm.
+
 
 %Multiple boundaries 
 
@@ -512,11 +532,6 @@ We presented a method to improve the shape of a mesh in order to reduce costs of
 % The following produces a numbered bibliography where the numbers
 % correspond to the \cite commands in the text.
 \specialhead{LITERATURE CITED}
-\begin{singlespace}
-\begin{thebibliography}{99}
-\end{thebibliography}
-\end{singlespace}
-
 
 %\newpage
 \bibliographystyle{plain}
