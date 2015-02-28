@@ -198,17 +198,18 @@ several nodes in the graph that may be on different parts. Therefore
 balancing a hypergraph naturally puts an effort towards balancing the overall
 shape and neighbors of parts. 
 
-%Maybe add talking about how local cannot fix bad partitions
+%add talking about how local cannot fix bad partitions
 There are some draw backs to graph and hypergraph methods as discussed 
 by Zhou et al. \cite{zhougraph}. First, since the graph targets 
 entities of one dimension, the entities of other dimensions can become 
 unbalanced. Also graph/hypergraph methods do not scale well when working with 
-more than 100,000 processors \cite{zhougraph}. The authors explain that 
-using both local partitioning where each part uses its own mesh data to 
-partition  and global partitioning where each part uses the entire mesh 
-data can result in good partitions that can scale out to large part counts. 
-Also with large part counts some parts become much heavier than others which 
-limits the scalability of these methods.
+more than 100,000 processors \cite{zhougraph}. The authors explain how 
+local partitioning methods where each part uses its own mesh data to 
+partition cannot improve unbalanced partitions. They discuss that using 
+both local partitioning and global partitioning where each part uses the 
+entire mesh data can result in good partitions that can scale out to large 
+part counts. Also with large part counts some parts become much heavier than 
+others which limits the scalability of these methods.
 
 \section{Diffusive load balancing}
 Willebeek-LeMair and Reeves describe diffusive load balancing techniques with 
