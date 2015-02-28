@@ -105,11 +105,10 @@ expressed as the combination of the computational costs and the communication
 costs which depend on the application. Computational costs include the 
 application's work that has to be done on the local elements of the part. The 
 communication costs involve sending and receiving information between parts, 
-often defined by mesh entity adjacencies across part boundaries. Balancing 
+often defined by mesh entity adjancencies across part boundaries. Balancing 
 both of these based on the application leads to the least overhead of the 
 application.
 
-%Massage this a bit
 When communication costs are measured by, or a direct result of, the number 
 of entities cut by part boundaries the costs can be lowered by (1) reducing 
 the number of entities cut by the boundary and (2) reducing the number of 
@@ -117,8 +116,9 @@ parts, processes, a part borders. Objective 1 is a typical objective of most
 partitioning tools which is to reduce the cut size. The latter objective, 
 assuming equal cut size, reflects the potentially increased cost of sending 
 several small messages to many endpoints versus sending large 
-messages to fewer endpoints \cite{MPIpresent,MPImessage}. 
-%should I mention something about how we target the second point.
+messages to fewer endpoints \cite{MPIpresent,MPImessage}. Our method targets 
+the latter objective to reduce the number of neighbors and also evening out 
+the cut sizes without dramatic increases in the cut size.
 
 Typical parallel mesh load balancing algorithms target distributing the 
 computational load of an application evenly across all parts. Even with the 
@@ -129,15 +129,15 @@ More precisely the algorithm must try to remove part boundaries cutting only a
 small number of mesh vertices.
 
 We present  a method that given a mesh will 
-increase the length of small part boundaries. Our work 
+increase the length of small partition model face. Our work 
 sends a small number of elements bounded by the ends, in 2D the endpoints of 
 the line formed by the part boundary, in 3D the segments bounding the part 
 boundary surface, of the targeted part boundary to incrementally increase its 
 size. The format of the paper is as follows. Section 2 
 discusses common approaches to mesh load balancing and there use in shape 
 correction. Section 3 describes our algorithm to fix part shape. Section 4 
-shows results from our testing. Section 5 and 6 list our plans to improve the 
-method. 
+shows results from testing the algorithm on a two dimensional mesh. Section 5 
+and 6 list our plans to improve the method. 
 
 Some terminology used in the paper is defined as follows:
 
@@ -156,11 +156,13 @@ Some terminology used in the paper is defined as follows:
 A number of distributed methods to balance unstructured meshes have been 
 explored in the past \cite{multidiffuse,surveygraph}. Here we overview the 
 three most commonly used methods: graph/hypergraph, diffusive, and multilevel. 
-Graph and Hypergraph methods balance the mesh based on a graph structure built 
-on top of the mesh. Diffusive methods migrate elements from parts with high 
-imbalance to neighboring parts with lower imbalance. Multilevel methods use 
-a combination of load balancing methods to balance a mesh starting at a 
-coarser level and maintaining the balance as it is refined.
+Powerful graph and hypergraph build a (hyper)graph structure from the mesh, 
+compute the partition, and then execute a single migration of the mesh 
+elements. Typically less powerful but faster diffusive methods iteratively 
+migrate elements from parts with high imbalance to neighboring parts with 
+lower imbalance. Even more powerful multilevel methods use a combination of 
+load balancing methods to balance a mesh starting at a coarser level and 
+maintaining the balance as it is refined.
 
 \section{(Hyper)graph methods}
 Graph and Hypergraph load balancing methods use an abstraction of the mesh in 
@@ -198,18 +200,20 @@ several nodes in the graph that may be on different parts. Therefore
 balancing a hypergraph naturally puts an effort towards balancing the overall
 shape and neighbors of parts. 
 
-%add talking about how local cannot fix bad partitions
 There are some draw backs to graph and hypergraph methods as discussed 
 by Zhou et al. \cite{zhougraph}. First, since the graph targets 
 entities of one dimension, the entities of other dimensions can become 
 unbalanced. Also graph/hypergraph methods do not scale well when working with 
-more than 100,000 processors \cite{zhougraph}. The authors explain how 
-local partitioning methods where each part uses its own mesh data to 
-partition cannot improve unbalanced partitions. They discuss that using 
-both local partitioning and global partitioning where each part uses the 
-entire mesh data can result in good partitions that can scale out to large 
-part counts. Also with large part counts some parts become much heavier than 
-others which limits the scalability of these methods.
+more than 100,000 processors \cite{zhougraph}. To address the scalability 
+problem, they discuss using a combination of local and global partitioning. 
+Global partitioning involves using a (hyper)graph method over the entire mesh 
+where a local partitioning applies a given method to a single part, the 
+portion available on a single process. Local partitioning methods can however 
+maintain quality at a much cheaper cost and quicker than global methods. 
+Combining global with local avoids local partitioning method's inability 
+to improve an unbalanced partition; It cannot move elements to other processes. 
+Also with large part counts some parts become much heavier than others which 
+limits the scalability of these methods.
 
 \section{Diffusive load balancing}
 Willebeek-LeMair and Reeves describe diffusive load balancing techniques with 
@@ -219,7 +223,7 @@ migration strategy, and finally a task selection strategy. They review
 five different strategies and how they perform on the second and third task. 
 The first method reviewed was the Sender Initiated Diffusion method (SID). 
 This method restricts parts to only communicate with their neighbors. The 
-parts with a large imbalance, refered to as heavy parts, are the migration 
+parts with a large imbalance, referred to as heavy parts, are the migration 
 selectors or sender parts. The second technique is 
 similar to the first and called Receiver Initiated Diffusion (RID). Once again 
 parts can only communicate with their neighbors, but instead of the heavy parts
@@ -253,8 +257,9 @@ improvement of the vertex imbalance also has a cost of increasing the element
 imbalance. For their tests the element imbalance increased by 1\% to 3\%. In 
 one of their tests on a mesh with 16,384 parts, the vertex imbalance decreased 
 from 14.46\% to 4.92\% while the element imbalance increased from 2.64\% to 
-4.54 \%.The decrease in total solution time due to the improved partition 
-quality is much larger than the time required to improve the partition.
+4.54 \% \cite{zhougraph}.The decrease in total solution time due to the 
+improved partition quality is much larger than the time required to improve the 
+partition.
 
 \section{Multilevel methods}
 Buluc et al. describe the multilevel methods as the most successful approach to 
@@ -280,7 +285,7 @@ TruncCons (truncated diffusion consolidations), into the v-cycle. This
 algorithm is faster than Bubble for large mesh sizes and is used for small
 diffusive improvements. They use the multilevel structure in order to use 
 the expensive but more effective Bubble-FOS/C when at the the lower levels of 
-the v-cycle because the parts are smaler and then use TruncCons to balance the 
+the v-cycle because the parts are smaller and then use TruncCons to balance the 
 larger parts of the v-cycle. 
 This method was shown to be much faster than the original method 
 of just the Bubble-FOS/C and also produces a better quality of load balancing. 
@@ -290,23 +295,25 @@ much higher run time. They expect reasonable scaling for the algorithm but
 results show the algorithm taking minutes rather than seconds like other 
 methods.
 
-The diffusive method for load balancing is heavily used throughout our 
-algorithm as our method iteratively migrates elements by direcly using the 
-mesh entities. Our method creates a graph like structure of the parts in 
-order to represent part adjacencies similar to graph and hypergraph approaches 
-to load balancing. Although we do not implement a multilevel approach, our 
-algorithm does operate on multiple levels of the mesh and partition 
-granularity like the mesh, partition model and entity topology.
+As is the approach with multi-level procedures, our method draws on a
+combination of techniques that operate on different levels of the partitions 
+representation to improve a partitions shape. In particular, as Zhou 
+\cite{zhougraph} and later Smith \cite{parma} have done, we directly use 
+mesh and partition model adjancencies to quickly make migration selections 
+and avoid the expense of (hyper)graph construction.
 
 \chapter{Shape Improvement Algorithm}
 
-The approach we take to fixing small patition faces builds off a parallel 
+The approach we take to fixing small partition faces builds off a parallel 
 dynamic partitioning framework called ParMA \cite{parma}. Thus our algorithm, 
 Gap, defines a series of steps defined in the ParMA load balancing method. 
 Currently Gap targets small partition model faces and migrate elements to 
-increase the size of these boundaries. There is also the possiblity to remove 
-small partition model faces, but we have not implemented this in Gap. Here we 
-describe the base framework of ParMA and how it is extended to create Gap.
+increase the size of these boundaries. Another approach would be to remove 
+small partition model faces, which is not implemented in Gap. However in the 
+case of a single vertex junction a partition model vertex exists. By converting 
+the partition model vertex into a partition model face, Gap decreases the 
+number of neighbors. Here we describe the base framework of ParMA and how it 
+is extended to create Gap.
 
 \section{ParMA}
 
@@ -340,13 +347,13 @@ be appended to include problem specific endpoints.
   
 \section{Gap}
 
-Gap derives from ParMA and thus must define the phases to sepcifically target 
+Gap derives from ParMA and thus must define the phases to specifically target 
 small boundaries and select elements around the small boundaries in order 
 to increase the length of these small partition model faces. 
 
 \subsection{Vertex Sides}
 
-We define the sides used in gap to be any two parts that share a patition model 
+We define the sides used in gap to be any two parts that share a partition model 
 vertex. We choose this in order to locate single vertex 
 junctions between parts. Fixing these single vertex junctions allows gap to 
 decrease the number of neighbors by turning the single vertex junction into 
@@ -402,7 +409,7 @@ W_i = .5*(\bar{s}-s_i)
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{target_example.png}
-\caption{\label{fig:boundary} \textnormal{Four part plate mesh after targeting phase. Part two(red) finds the small bounary with part one(green). Part one labels the parts zero and three (blue) as the senders.}}
+\caption{\label{fig:boundary} \textnormal{Four part plate mesh after targeting phase. Part two(red) finds the small boundary with part one(green). Part one labels the parts zero and three (blue) as the senders.}}
 \end{figure}
 
 \begin{algorithm}
@@ -446,7 +453,7 @@ designated as a receiver and a sender. This causes elements to be sent
 to the part and from the part in the same migration which can cause 
 disconnected components throughout the boundary between the parts. In Figure 
 \ref{fig:recvsend} Gap finds small boundaries between  eleven-nine, 
-fouteen-nine, and fifteen-nine.
+fourteen-nine, and fifteen-nine.
 The arrows in the figure shows the resulting direction of migration. The color 
 of an arrow represents the migration caused by the small boundary of that color. 
 For example the red arrows are for the fifteen-nine boundary migration. There 
@@ -461,9 +468,9 @@ small boundaries by making subsets of the parts such that none of the parts
 within a subset are neighbors to each other. Thus each step of the load 
 balancing algorithm uses a different subset from the maximal independent sets. 
 So the first part of the target phase is each part in the MIS subset 
-finds its smallest side. If the side satisfies Equation \ref{eqn:avgSide} 
+finds its smallest partition model face. If the face satisfies Equation \ref{eqn:avgSide} 
 then the part sends a message to the part on the other side of the 
-boundary informing it that the part has a small patition model face. This 
+boundary informing it that the part has a small partition model face. This 
 other part then 
 determines the senders and the rest of the 
 algorithm follows. These changes to the target phase are included in Algorithm 
@@ -507,7 +514,7 @@ four elements have been selected.
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{selector_example.png}
-\caption{\label{fig:selector} \textnormal{Example of the selection phase. Part C finds the seed element that is furthest from its centroid (circle). Follwing face adjacent elements are chosen by distance from centroid. Shaded elements show the distance queue after 4 elements have been selected. }}
+\caption{\label{fig:selector} \textnormal{Example of the selection phase. Part C finds the seed element that is furthest from its centroid (circle). Foll wing face adjacent elements are chosen by distance from centroid. Shaded elements show the distance queue after 4 elements have been selected. }}
 \end{figure}
 
 Since each sender has two target parts, one on each side of the small 
@@ -544,7 +551,7 @@ Bisection (RIB) method \cite{williamsRIB,taylorRIB} is included in Figure
 \ref{fig:plate}. There are single vertex junctions between parts 
 zero-one-two-three, 
 parts four-five-six-seven, parts one-five-seven-eight, parts 
-seven-eight-twelve-forteen, and parts one-three-eight-nine. There are 
+seven-eight-twelve-for teen, and parts one-three-eight-nine. There are 
 also two vertex sides on the thirteen-fourteen boundary, the nine-fifteen 
 boundary, and seven-twelve 
 boundary. Gap was run on the mesh until the smallest boundary was three after 
