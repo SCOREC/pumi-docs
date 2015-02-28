@@ -244,6 +244,7 @@ modification algorithm (LIIPBMod), identifies mesh vertices on the heavy parts
 that are bounded by parts with a small number of elements. By doing this, LIIPBMod 
 balances the vertex partitioning while still maintaining the element balance
 produced from the graph/hypergraph partition. This process when repeated 
+%not sure of Mark's suggestion
 results in a partition that has vertex balance with a minor decrease in the 
 good element balance. The results of their method shows a dramatic improvement
 of vertex imbalance sometimes reducing from over 20\% to around 5\%. The improvement of the vertex imbalance has a cost of increasing the element imbalance. For their tests the element imbalance increased by 1\% to 3\% starting at an imbalance of 2\%. %check this with cameron
@@ -267,7 +268,7 @@ employ a
 previously used distributed load balancing algorithm, Bubble-FOS/C (First order
 diffusion scheme with constant drain) for load balancing in their multilevel
 method. This Bubble method is an iterative scheme based on Lloyd's k-means 
-algorithm. This method involves solving linear systems repeatedly which causes 
+algorithm. This method involves solving linear systems iteratively which causes 
 a high run time. Thus the authors introduce a second balancing algorithm, 
 TruncCons (truncated diffusion consolidations), into the v-cycle. This 
 algorithm is faster than Bubble for large mesh sizes and is used for small
@@ -283,7 +284,15 @@ much higher run time. They expect reasonable scaling for the algorithm but
 results show the algorithm taking minutes rather than seconds like other 
 methods.
 
-\chapter{Shape Load Balancing Algorithm}
+The diffusive method for load balancing is heavily used throughout our 
+algorithm as our method iteratively migrates elements by direcly using the 
+mesh entities. Our method creates a graph like structure of the parts in 
+order to represent part adjacencies similar to graph and hypergraph approaches 
+to load balancing. Although we do not implement a multilevel approach, our 
+algorithm does operate on multiple levels of the mesh and partition 
+granularity like the mesh, partition model and entity topology.
+
+\chapter{Shape Improvement Algorithm}
 
 The approach we take to fixing small patition faces builds off a parallel 
 dynamic partitioning framework called ParMA \cite{parma}. Thus our algorithm, 
@@ -493,7 +502,7 @@ four elements have been selected.
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{selector_example.png}
-\caption{\label{fig:selector} \textnormal{}}
+\caption{\label{fig:selector} \textnormal{Example of the selection phase. Part C finds the seed element that is furthest from its centroid (circle). Follwing face adjacent elements are chosen by distance from centroid. Shaded elements show the distance queue after 4 elements have been selected. }}
 \end{figure}
 
 Since each sender has two target parts, one on each side of the small 
