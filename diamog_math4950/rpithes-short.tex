@@ -203,13 +203,12 @@ There are some draw backs to graph and hypergraph methods as discussed
 by Zhou et al. \cite{zhougraph}. First, since the graph targets 
 entities of one dimension, the entities of other dimensions can become 
 unbalanced. Also graph/hypergraph methods do not scale well when working with 
-more than 
-100,000 processors \cite{zhougraph}. The authors explain that using both 
-local partitioning where each part uses its own mesh data to partition  
-and global partitioning where each part uses the entire mesh data can result 
-in good partitions that can scale out to
-large part counts. Also with large part counts some parts become much 
-heavier than others which limits the scalability of these methods.
+more than 100,000 processors \cite{zhougraph}. The authors explain that 
+using both local partitioning where each part uses its own mesh data to 
+partition  and global partitioning where each part uses the entire mesh 
+data can result in good partitions that can scale out to large part counts. 
+Also with large part counts some parts become much heavier than others which 
+limits the scalability of these methods.
 
 \section{Diffusive load balancing}
 Willebeek-LeMair and Reeves describe diffusive load balancing techniques with 
@@ -237,18 +236,24 @@ level and works up, but the DEM balances synchronously in all dimensions one at
 a time.
 
 Zhou et al. developed a diffusive algorithm to balance the heavy parts produced 
-by graph/hypergraph methods \cite{zhougraph}. They target balancing the mesh vertices for each
+by graph/hypergraph methods \cite{zhougraph}. They target balancing the mesh 
+vertices for each
 part of the partition by offloading certain entities from heavy parts to 
 lighter parts. Their method, the local iterative interpart boundary 
 modification algorithm (LIIPBMod), identifies mesh vertices on the heavy parts
-that are bounded by parts with a small number of elements. By doing this, LIIPBMod 
-balances the vertex partitioning while still maintaining the element balance
-produced from the graph/hypergraph partition. This process when repeated 
+that are bounded by parts with a small number of elements. By doing this, 
+LIIPBMod balances the vertex partitioning while still maintaining the element 
+balance produced from the graph/hypergraph partition. This process when repeated 
 %not sure of Mark's suggestion
 results in a partition that has vertex balance with a minor decrease in the 
 good element balance. The results of their method shows a dramatic improvement
-of vertex imbalance sometimes reducing from over 20\% to around 5\%. The improvement of the vertex imbalance has a cost of increasing the element imbalance. For their tests the element imbalance increased by 1\% to 3\% starting at an imbalance of 2\%. %check this with cameron
-The decrease in total solution time due to the improved partition quality is much larger than the time required to improve the partition.
+of vertex imbalance sometimes reducing from over 20\% to around 5\%. The 
+improvement of the vertex imbalance also has a cost of increasing the element 
+imbalance. For their tests the element imbalance increased by 1\% to 3\%. In 
+one of their tests on a mesh with 16,384 parts, the vertex imbalance decreased 
+from 14.46\% to 4.92\% while the element imbalance increased from 2.64\% to 
+4.54 \%.The decrease in total solution time due to the improved partition 
+quality is much larger than the time required to improve the partition.
 
 \section{Multilevel methods}
 Buluc et al. describe the multilevel methods as the most successful approach to 
@@ -457,7 +462,6 @@ balancing algorithm uses a different subset from the maximal independent sets.
 So the first part of the target phase is each part in the MIS subset 
 finds its smallest side. If the side satisfies Equation \ref{eqn:avgSide} 
 then the part sends a message to the part on the other side of the 
-%Is this better
 boundary informing it that the part has a small patition model face. This 
 other part then 
 determines the senders and the rest of the 
