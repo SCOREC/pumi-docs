@@ -32,7 +32,7 @@
                                         
 %%%%%%%%%%%%%%%%%%%%  supply titlepage info  %%%%%%%%%%%%%%%%%%%%%
 \thesistitle{\bf Diffusive Load Balancing\\of Shape and Neighbor Counts}        
-\author{Gerrett Diamond, Cameron Smith}        
+\author{Gerrett Diamond}
 \degree{Bachelors of Science}
 \department{Mathematics} % provide your area of study here; e.g.,
 %  "Mechanical Engineering", "Nuclear Engineering", "Physics", etc.
@@ -53,12 +53,12 @@
 
 \specialhead{ABSTRACT}
 Massively parallel mesh simulations require the mesh to be distributed
-throughout many processes(parts) and be balanced in terms of computation and
+throughout many processes (parts) and be balanced in terms of computation and
 communication. 
 Many algorithms exist that target having an equal number mesh entities of a
 specified dimension on each part. 
 The most powerful of these, in terms of partition quality and run time are the
-malt's-level (hyper)graph-based methods and the recursive geometric sectioning
+multi-level (hyper)graph-based methods and the recursive geometric sectioning
 methods. 
 Multi-level (hyper)graph methods describe the mesh in terms of graph nodes and
 (hyper)edges and then use a v-cycle of coarsening followed by un-coarsening to
@@ -76,9 +76,10 @@ balancing without the need to construct a graph.
 With access to all the mesh, partition, and model data, including topological 
 and geometric coordinates, partitioning methods analogous to those used by 
 (hyper)graph and geometric based procedures can be defined.
-Towards this, ParMA partitioning methods will be extended to improve the 
+Towards this, ParMA partitioning methods were extended to improve the 
 overall shape of a part in order to reduce the number of neighbors each part 
-has and thus reduce application communication times.
+has and increase small part boundaries and thus reduce application 
+communication times.
 
 \newpage
 
@@ -107,16 +108,17 @@ communication costs involve sending and receiving information between parts,
 often defined by mesh entity adjacencies across part boundaries. Balancing 
 both of these based on the application leads to the least overhead of the 
 application.
-%This doesn't flow very well anymore but it is salvagable I think
 
+%Massage this a bit
 When communication costs are measured by, or a direct result of, the number 
 of entities cut by part boundaries the costs can be lowered by (1) reducing 
 the number of entities cut by the boundary and (2) reducing the number of 
-parts, processes, a part borders.  The former objective is the typical 
-secondary objective of most partitioning tools, reducing the cut size.  The 
-latter objective, assuming equal cut size, reflects the potentially increased 
-cost of sending several small messages to many endpoints versus sending large 
-messages to fewer endpoints \cite{MPIpresent,MPImessage}.
+parts, processes, a part borders. Objective 1 is a typical objective of most 
+partitioning tools which is to reduce the cut size. The latter objective, 
+assuming equal cut size, reflects the potentially increased cost of sending 
+several small messages to many endpoints versus sending large 
+messages to fewer endpoints \cite{MPIpresent,MPImessage}. 
+%should I mention something about how we target the second point.
 
 Typical parallel mesh load balancing algorithms target distributing the 
 computational load of an application evenly across all parts. Even with the 
@@ -126,7 +128,7 @@ balancing algorithm must take into account the overall shape of the parts.
 More precisely the algorithm must try to remove part boundaries cutting only a 
 small number of mesh vertices.
 
-The work presented here suggests a method that given a mesh will 
+We present  a method that given a mesh will 
 increase the length of small part boundaries. Our work 
 sends a small number of elements bounded by the ends, in 2D the endpoints of 
 the line formed by the part boundary, in 3D the segments bounding the part 
@@ -135,7 +137,9 @@ size. The format of the paper is as follows. Section 2
 discusses common approaches to mesh load balancing and there use in shape 
 correction. Section 3 describes our algorithm to fix part shape. Section 4 
 shows results from our testing. Section 5 and 6 list our plans to improve the 
-method. Some terminology used in the paper is defined as follows:
+method. 
+
+Some terminology used in the paper is defined as follows:
 
 {\bf Mesh Entity } - A piece of the mesh representation of order $d$ where $d \in [0,3]$ which refers to vertex, edge, face, region in order.
 
@@ -143,19 +147,25 @@ method. Some terminology used in the paper is defined as follows:
 
 {\bf Imbalance of order $d$} - the maximum number of entities of order $d$ on any part divided by the average across all parts
 
-{\bf Boundary length} - the number of vertices along a boundary of two parts.
+{\bf Boundary length} - the number of vertices on the boundary between two parts.
 
-{\bf Small Side/Boundary} - a boundary between two parts that has a boundary length less than a given percentage of the average boundary length.
+{\bf Small Boundary} - a partition model edge/face between two parts that has a boundary length less than a given percentage of the average boundary length.
 
 
 \chapter{Related Works}
-Many different distributed methods to balance unstructured meshes have been 
-explored in the past \cite{multidiffuse,surveygraph}. Here we discuss the 
-three most commonly used methods: graph/hypergraph, diffusive, and multilevel.
+A number of distributed methods to balance unstructured meshes have been 
+explored in the past \cite{multidiffuse,surveygraph}. Here we overview the 
+three most commonly used methods: graph/hypergraph, diffusive, and multilevel. 
+Graph and Hypergraph methods balance the mesh based on a graph structure built 
+on top of the mesh. Diffusive methods migrate elements from parts with high 
+imbalance to neighboring parts with lower imbalance. Multilevel methods use 
+a combination of load balancing methods to balance a mesh starting at a 
+coarser level and maintaining the balance as it is refined.
 
 \section{(Hyper)graph methods}
 Graph and Hypergraph load balancing methods use an abstraction of the mesh in 
-order to balance the work load between processes. The first step to using 
+order to balance the work load between processes \cite{surveygraph}. The 
+first step to using 
 hypergraph/graph methods is creating this abstraction. Zhou et al. define that 
 the graph nodes are built off of a specific mesh entity typically either faces 
 for 2D or regions for 3D \cite{zhougraph}. The edges are then built based on the
@@ -172,7 +182,8 @@ of its face adjancencies. The overall goal of hypergraphs and hyperedges is to
 partition the graph while minimizing the number of parts the hyperedges extend 
 over.
 
-Buluc et al. \cite{surveygraph} give an overview of graph methods in the field 
+Buluc et al. \cite{surveygraph} give an overview of graph methods as used in 
+load balancing 
 for both graphs and hypergraphs. They also discuss the challenges and 
 NP-hardness of many of the algorithms for graph balancing. Two metrics that 
 are used to model the overall shape for graph methods are the edge cut and 
@@ -187,13 +198,16 @@ several nodes in the graph that may be on different parts. Therefore
 balancing a hypergraph naturally puts an effort towards balancing the overall
 shape and neighbors of parts. 
 
-Graph and Hypergraph methods for load balancing are said to be the most 
-effective \cite{zhougraph,surveygraph}. Still there are some draw backs 
-presented by Zhou et al. \cite{zhougraph}. First off since the graph targets 
-a specific dimension, the other dimensions can become unbalanced. Also 
-graph/hypergraph methods do not scale well when working with more than 
-100,000 processors. The authors explain that using both local partitioning 
-and global partitioning can result in good partitions that can scale out to
+%Maybe add talking about how local cannot fix bad partitions
+There are some draw backs to graph and hypergraph methods as discussed 
+by Zhou et al. \cite{zhougraph}. First, since the graph targets 
+entities of one dimension, the entities of other dimensions can become 
+unbalanced. Also graph/hypergraph methods do not scale well when working with 
+more than 
+100,000 processors \cite{zhougraph}. The authors explain that using both 
+local partitioning where each part uses its own mesh data to partition  
+and global partitioning where each part uses the entire mesh data can result 
+in good partitions that can scale out to
 large part counts. Also with large part counts some parts become much 
 heavier than others which limits the scalability of these methods.
 
@@ -201,18 +215,21 @@ heavier than others which limits the scalability of these methods.
 Willebeek-LeMair and Reeves describe diffusive load balancing techniques with 
 four steps \cite{loadbalance}. The first is evaluating the processor load, then 
 determining the profitability of the load balancing, followed by a task 
-migration strategy, and finally a task selection strategy. They review over 
+migration strategy, and finally a task selection strategy. They review 
 five different strategies and how they perform on the second and third task. 
 The first method reviewed was the Sender Initiated Diffusion method (SID). 
-This method restricts parts to only communicate with their neighbors and the 
-heavy parts or senders are the migration selectors. The second technique is 
+This method restricts parts to only communicate with their neighbors. The 
+parts with a large imbalance, refered to as heavy parts, are the migration 
+selectors or sender parts. The second technique is 
 similar to the first and called Receiver Initiated Diffusion (RID). Once again 
 parts can only communicate with their neighbors, but instead of the heavy parts
-selecting migration targets, the light parts select heavier neighbors to receive
-load from. Our method for shape optimization is similar to the idea of a RID 
-method. In the Gradient Method (GM), light parts inform nearby parts in search 
-of a heavy part which causes heavy parts to send load towards the closest light 
-part. The Hierarchical Balancing Method (HBM) breaks up load balancing into a 
+selecting migration targets, the parts with lower imbalance select heavier 
+neighbors to receive
+load from. The third method is the Gradient Method (GM) where light parts send 
+messages to all of the parts asking to receive load. Heavy parts then choose 
+the closest light part and migrate elements to neighboring parts in that 
+direction. The Hierarchical Balancing Method (HBM) breaks up load balancing 
+into a 
 hierarchy of parts and performs load balancing at a low level and then continues
 to balance while moving up a hierarchy. The final method is the Dimension 
 Exchange Method (DEM). Similar to the HBM, the DEM approach balances at a low 
@@ -224,15 +241,13 @@ by graph/hypergraph methods \cite{zhougraph}. They target balancing the mesh ver
 part of the partition by offloading certain entities from heavy parts to 
 lighter parts. Their method, the local iterative interpart boundary 
 modification algorithm (LIIPBMod), identifies mesh vertices on the heavy parts
-that are bounded by a small number of elements. By doing this, LIIPBMod 
+that are bounded by parts with a small number of elements. By doing this, LIIPBMod 
 balances the vertex partitioning while still maintaining the element balance
 produced from the graph/hypergraph partition. This process when repeated 
 results in a partition that has vertex balance with a minor decrease in the 
 good element balance. The results of their method shows a dramatic improvement
-of vertex imbalance sometimes reducing from over 20\% to around 5\%. They 
-discuss that the scaling is not so significant because much more time is spent 
-on the graph/hypergraph partitioning than their method.
-
+of vertex imbalance sometimes reducing from over 20\% to around 5\%. The improvement of the vertex imbalance has a cost of increasing the element imbalance. For their tests the element imbalance increased by 1\% to 3\% starting at an imbalance of 2\%. %check this with cameron
+The decrease in total solution time due to the improved partition quality is much larger than the time required to improve the partition.
 
 \section{Multilevel methods}
 Buluc et al. describe the multilevel methods as the most successful approach to 
@@ -247,7 +262,8 @@ generality of the design allows most algorithms to be altered to work in a
 multilevel form. 
 
 Meyerhenke et al. port a diffusive method previously used for 
-shape optimization into a multilevel algorithm \cite{multidiffuse}. They use a 
+shape optimization into a multilevel algorithm \cite{multidiffuse}. They 
+employ a 
 previously used distributed load balancing algorithm, Bubble-FOS/C (First order
 diffusion scheme with constant drain) for load balancing in their multilevel
 method. This Bubble method is an iterative scheme based on Lloyd's k-means 
@@ -256,8 +272,9 @@ a high run time. Thus the authors introduce a second balancing algorithm,
 TruncCons (truncated diffusion consolidations), into the v-cycle. This 
 algorithm is faster than Bubble for large mesh sizes and is used for small
 diffusive improvements. They use the multilevel structure in order to use 
-the expensive but more effective Bubble-FOS/C when at the small levels of the 
-v-cycle and then use TruncCons to balance the larger parts of the v-cycle. 
+the expensive but more effective Bubble-FOS/C when at the the lower levels of 
+the v-cycle because the parts are smaler and then use TruncCons to balance the 
+larger parts of the v-cycle. 
 This method was shown to be much faster than the original method 
 of just the Bubble-FOS/C and also produces a better quality of load balancing. 
 They compared this new method to the popular methods KMetis and JOSTLE and 
@@ -266,13 +283,15 @@ much higher run time. They expect reasonable scaling for the algorithm but
 results show the algorithm taking minutes rather than seconds like other 
 methods.
 
-\chapter{Method}
+\chapter{Shape Load Balancing Algorithm}
 
-The approach we take to fixing small sides builds off a parallel 
-dynamic partitioning framework called ParMA \cite{parma}. Thus our algorithm, Gap,
- defines a series of steps defined in the ParMA load balancing method to target
- small sides and migrate elements to increase the size of these boundaries. Here 
-we describe the base framework of ParMA and how it is extended to create Gap.
+The approach we take to fixing small patition faces builds off a parallel 
+dynamic partitioning framework called ParMA \cite{parma}. Thus our algorithm, 
+Gap, defines a series of steps defined in the ParMA load balancing method. 
+Currently Gap targets small partition model faces and migrate elements to 
+increase the size of these boundaries. There is also the possiblity to remove 
+small partition model faces, but we have not implemented this in Gap. Here we 
+describe the base framework of ParMA and how it is extended to create Gap.
 
 \section{ParMA}
 
@@ -280,7 +299,7 @@ ParMA load balancing methods follow a five step plan. These five steps
 are the sides determination, weight assignment, target phase, selection
 phase, and the stepper phase. The sides determination is when each part 
 determines which parts are its neighbors. These sides are defined for some
- dimension $d$ as a part that shares a mesh entityof order $d$. After sides are 
+ dimension $d$ as a part that shares a mesh entity of order $d$. After sides are 
 determined, the weight assignment phase collects the weight (for a certain 
 mesh entity order (vertex, edge, face, or region)) of the neighbor parts 
 defined by the sides. The 
@@ -299,7 +318,7 @@ steps of the ParMA framework is the target phase and selection phase which
 defines the problem specific actions that will be taken to balance the parts. 
 The stopping criteria is typically to go below some balancing threshold of 
 a given mesh entity order(s). We define the balancing threshold to be a 
-percent imbalance of the given mesh entity order among all of the parts. 
+percent imbalance of the given mesh entity order among all of the parts.
 The percent is typically between 1\% and 10\%. The stopping criteria can also 
 be appended to include problem specific endpoints.
  
@@ -308,61 +327,78 @@ be appended to include problem specific endpoints.
 
 Gap derives from ParMA and thus must define the phases to sepcifically target 
 small boundaries and select elements around the small boundaries in order 
-to increase the length of these small sides. 
+to increase the length of these small partition model faces. 
 
 \subsection{Vertex Sides}
 
-For sides, we decide to use vertex sides ($d$=0) in order to represent the 
-boundaries between two parts. We choose this in order to locate single vertex 
+We define the sides used in gap to be any two parts that share a patition model 
+vertex. We choose this in order to locate single vertex 
 junctions between parts. Fixing these single vertex junctions allows gap to 
 decrease the number of neighbors by turning the single vertex junction into 
-a small side that can later be increased. The sides are also used to count how 
-many vertices a given boundary has. This quantifies the length of the 
-boundaries for the later phases of the algorithm.
+a small boundary that can later be increased. The boundaries are also used 
+to count how many vertices a given boundary has. This quantifies the length 
+of the boundaries so that Gap can find small partition model faces and increase the length of them.
 
 \subsection{Receiver based targeting}
 
 %General Discussion
-Gap uses a reverse method of deciding targets. The targets of Gap are the 
-parts that share a small boundary. To detect these small boundaries the 
-targets must detect themselves rather than the senders. Thus, Gap 
-implements a receiver based targeting where parts detect that they are 
-receivers and inform the sending parts to send elements to the receivers. 
+The targets of Gap are the parts that share a small boundary. To detect 
+these small boundaries the targets must detect themselves rather than the 
+senders. Thus, Gap implements a receiver based targeting where parts detect 
+that they are receivers and inform the sending parts to send elements to the 
+receivers. 
 
 %Description of Algorithm
-Algorithm \ref{alg:targets} outlines the method for finding small sides 
+Algorithm \ref{alg:targets} outlines the method for finding small partition 
+model faces 
 and determining the sending parts. First each part finds the smallest 
-boundary it has and checks if the length of this boundary is less than 
-a given percentage of the average length of all boundaries. Each iteration 
-the percentage that is multiplied by the average side length increases 
-towards 100\%. Once the small sides are found, pairs of parts that share 
-these small boundaries attempt to confirm each other. All of the matches 
+boundary it has. This boundary is targeted as a small partition model face if 
+Equation 
+\ref{eqn:avgSide} is satisfied where $s$ is the length of the smallest 
+boundary, $\bar{s}$ is the average length of all boundaries, and $\alpha$ is 
+a percent that defines the upper bound of a small partition model face. 
+
+\begin{equation}
+\label{eqn:avgSide}
+s < \alpha * \bar{s}
+\end{equation}
+
+Each iteration $\alpha$ increases towards 100\% to allow larger boundaries to 
+be targeted. Once the small boundaries are found, pairs of parts that share 
+these small boundaries send messages to one another to confirm both parts 
+agree on the small partition model face. If they disagree then a match is 
+not made from one of the parts and the small boundary is ignored for the 
+iteration. All of the matches 
 that are found become the receivers of this step. The receivers then 
 traverse along the small boundary to find the parts that share a vertex 
 with the two receiving parts. Figure \ref{fig:boundary} shows an example 
 of this. Parts one and two detect the small boundary which then determine 
 parts zero and three as the senders. The receivers then send messages to the 
 senders to inform them. At that point the senders set each receiver as a 
-target and calculates the number of elements to send to the targets 
-based on the difference between the average length of a side and the 
-small side's length.
+target and calculates the number of elements to send to the targets defined 
+by Equation \ref{eqn:weight}. The weight, $W_i$ is set to 50\% of the amount the small boundary of part $i$, $s_i$, is from the average boundary length. %Is the last sentence overkill/should I explain the 50%/ maybe make it beta and say that we find 50% to have good results 
+
+\begin{equation}
+\label{eqn:weight}
+W_i = .5*(\bar{s}-s_i)
+\end{equation}  
 
 \begin{figure} [!h]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{target_example.png}
-\caption{\label{fig:boundary} \textnormal{Four part plate mesh after targeting phase. Part two(red) finds the small side with part one(green). Part one labels the parts zero and three (blue) as the senders.}}
+\caption{\label{fig:boundary} \textnormal{Four part plate mesh after targeting phase. Part two(red) finds the small bounary with part one(green). Part one labels the parts zero and three (blue) as the senders.}}
 \end{figure}
 
 \begin{algorithm}
 \caption{Gap Target phase}
 \label{alg:targets}
 \begin{algorithmic}[1]
-\Require {mesh $M$ of dimension $d$, sides $s$, weights $w$}
+\Require {mesh $M$ of dimension $d$, sides $s$ of dimension $0$, weights $w$ of entities of dimension $d$}
 \Procedure{targets}{$M$, $s$, $w$}
   \State $targets \leftarrow \emptyset$
   \If {part is in MIS subset AND smallest\_side$<$tolerance}
-    \State $other = $ part opposite small side
+    \State $other = $ part opposite small partition model face
     \State send message to $other$
   \EndIf
   \If {receives message}
@@ -385,19 +421,19 @@ small side's length.
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{MIS_problem.png}
-\caption{\label{fig:recvsend} \textnormal{Possible error if two small sides occur next to each other. There are small boundaries between parts nine and eleven, nice and fourteen, and nine and fifteen. Arrows show migration direction for the color of the part finding the small side. Conflicts exist between the migrations of the fifteen-fourteen boundary and the fifteen-eleven boundary}}
+\caption{\label{fig:recvsend} \textnormal{Possible error if two small boundaries occur next to each other. There are small boundaries between parts nine and eleven, nice and fourteen, and nine and fifteen. Arrows show migration direction for the color of the part finding the small boundary. Conflicts exist between the migrations of the fifteen-fourteen boundary and the fifteen-eleven boundary}}
 %REALLY long caption...
 \end{figure}
 
 % Maximal Independent Set
 One problem that can occur during the target phase is if a part is 
 designated as a receiver and a sender. This causes elements to be sent 
-to the part and from the part in the same migration which will cause 
+to the part and from the part in the same migration which can cause 
 disconnected components throughout the boundary between the parts. In Figure 
-\ref{fig:recvsend} Gap finds small sides on the boundaries eleven-nine, 
+\ref{fig:recvsend} Gap finds small boundaries between  eleven-nine, 
 fouteen-nine, and fifteen-nine.
 The arrows in the figure shows the resulting direction of migration. The color 
-of an arrow represents the migration caused by the small side of that color. 
+of an arrow represents the migration caused by the small boundary of that color. 
 For example the red arrows are for the fifteen-nine boundary migration. There 
 are 
 conflicts that occur in the migration along the fourteen-fifteen boundary and 
@@ -410,63 +446,81 @@ small boundaries by making subsets of the parts such that none of the parts
 within a subset are neighbors to each other. Thus each step of the load 
 balancing algorithm uses a different subset from the maximal independent sets. 
 So the first part of the target phase is each part in the MIS subset 
-finds its smallest side. If this side is less than the percent of the average 
-side length then it sends a message to the part on the other side of the 
-boundary. This other part then determines the senders and the rest of the 
+finds its smallest side. If the side satisfies Equation \ref{eqn:avgSide} 
+then the part sends a message to the part on the other side of the 
+%Is this better
+boundary informing it that the part has a small patition model face. This 
+other part then 
+determines the senders and the rest of the 
 algorithm follows. These changes to the target phase are included in Algorithm 
 \ref{alg:targets}. The MIS subsets guarantee that two adjacent parts cannot 
-find small sides that would cause the sender and receiver conflict. 
-%do I add reference to the above figure too???
-
-
+find small boundaries that would cause the sender and receiver conflict. 
 
 \subsection{Selection by Centroid}
 After targets have been found each sender must choose which elements close 
-to the small side will be migrated to the neighboring parts and which part 
-each element will migrate to. To do this Gap's selection phase uses geometric 
-centroids to determine which elements to send first and which part will 
-receive them. The process begins with the sender part determining a seed 
+to the small partition model face will be migrated to the neighboring parts 
+and which part each element will migrate to. To do this Gap's selection phase 
+uses geometric centroids to determine which elements to send first and which 
+part will receive them. The centroid is found by Equation \ref{eqn:centroid} where $C(p_i$ is the centroid of part $i$, $C(M^d)$ is the centroid of the the ith mesh element of dimension $d$, and $N$ is the number of mesh entities of dimension $d$ in part $i$.
+\begin{equation}
+\label{eqn:centroid}
+C(p_i) = \sum_{M^d \in p_i}C(M^d)/N
+\end{equation}
+The process begins with the sender part determining a seed 
 element that is vertex adjacent to the small side. As there is likely 
 multiple elements adjacent to the small side boundary we use the element 
-that is furthest from the centroid of the part. This is found by the euclidean 
-distance from the element's centroid to the part's centroid. Once the seed 
-element is selected additional elements are chosen that 
+that minimizes Equation \ref{eqn:dist}. 
+\begin{equation}
+\label{eqn:dist}
+D = ||C(p_i)-C(M^d)||
+\end{equation}
+Once the seed element is selected additional elements are chosen that 
 are adjacent by one mesh entity order less than the dimension of the mesh 
 (edge in two dimensions and face in three dimensions). Each additional edge 
-is added to a priority queue that is sorted by the distance of the element 
-to the part centroid. This queue is traversed continuously adding more 
-elements until the sum of the elements weight sent is greater than the total 
-weight calculated in the targets phase. This selection causes the sender 
-parts to become rounder as the furthest away elements are sent first.
+is added to a priority queue that is sorted by Equation \ref{eqn:dist} from 
+highest distance to lowest. This queue is traversed continuously adding more 
+elements until the sum of the elements' weight sent is greater than the total 
+weight calculated in the targets phase. In Figure \ref{fig:selector} parts A 
+and B share a small partition model face and have sender parts C and D. The 
+circles on parts A, B, and C mark the part centroids. The element with a star 
+is the seed element in selection. The two elements neighboring the seed 
+element, marked one and two, are added to the distance queue. Since element 
+1 is further from the part centroid, it will be the next element selected. 
+The colored elements are the elements in the distance queue after the first 
+four elements have been selected.
+
+\begin{figure} [!ht]
+\centering
+\captionsetup{justification=centering,margin=1cm}
+\includegraphics[width=.6\textwidth]{selector_example.png}
+\caption{\label{fig:selector} \textnormal{}}
+\end{figure}
 
 Since each sender has two target parts, one on each side of the small 
 boundary, each element to be migrated must choose one of the target parts to 
-migrate to. We choose to send each element to the closest part geometrically. 
+migrate to. Each element chooses the part to be migrated to minimize Equation \ref{eqn:dist} where $C(p_i)$ is the centroid of the target parts. 
 The closeness of an element to a part is defined as the euclidean distance 
 from the elements centroid to the target part's centroid. Thus the element 
 is migrated to the receiving part that has the lower of these distances. 
-These migration choices lead to the small side being extended towards the 
-sender parts. 
-%A simple example is shown in Figure \ref{fig:selection}. Here 
-%the small side is between parts \# and \#. The black represents the initial 
-%boundary lines and the red is the boundaries after a step of the shape 
-%balancing.
+In Figure \ref{fig:selector} the seed element, one and three are sent to 
+part A and element two is sent to B.These migration choices lead to the 
+small partition model face being extended towards the sender parts. 
 
 
 \subsection{Stopping Criteria}
 % reorder discussion of this at some point.
 Gap's goal is to increase the length of small boundaries
 Gap does not directly attempt to decrease the imbalance of entities within 
-the mesh. In fact, Gap will sacrifice imbalance in order to achieve an improved 
-shape quality. Therefore the stopping criteria for Gap is when it goes above a 
-given level of imbalance. In addition to the imbalance criteria Gap also 
-finishes once the minimum boundary length is greater than a percentage of the 
-original average boundary length. With both of these conditions Gap will 
-complete if the mesh becomes too imbalanced or the smallest sides have been 
-widened towards the average. For our tests we used 20\% imbalance and 70\% 
-of the initial average side length. We choose 20\% imbalance because this 
-imbalance is still easily fixed by ParMA entity imbalance improvement 
-\cite{parma,zhougraph,zhou2012}.
+the mesh. In fact, Gap will sacrifice imbalance in order to increase the 
+length of partition model boundaries. Therefore the stopping criteria for Gap 
+is when it goes above a given level of imbalance. In addition to the imbalance 
+criteria Gap also finishes once the minimum boundary length is greater than 
+a percentage of the original average boundary length. With both of these 
+conditions Gap will complete if the mesh becomes too imbalanced or the 
+smallest sides have been widened towards the average. For our tests we 
+used 20\% imbalance and 70\% of the initial average side length. We choose 
+20\% imbalance because this imbalance is still easily fixed by ParMA entity 
+imbalance improvement \cite{parma,zhougraph,zhou2012}.
 
 \chapter{Results}
 
@@ -484,16 +538,16 @@ nine
 iterations of the balancing algorithm. Figure \ref{fig:plate_gap} shows the 
 resulting mesh. Here all of the single vertex junctions have been replaced with 
 new part boundaries and increased accordingly. Also several boundaries were 
-altered to even out the lengths to at least three. Several larger cases of gap are run and shown in Figures \ref{fig:gap1}, \ref{fig:gap2}, and \ref{fig:gap3}. These are larger 16 part plate meshes with 876 faces, 1273 faces, and 1885 faces respectively.  \\[5cm]
+altered to even out the lengths to at least three. Several larger cases of gap are run and shown in Figures \ref{fig:gap1}, \ref{fig:gap2}, and \ref{fig:gap3}. These are larger 16 part plate meshes with 876 faces, 1273 faces, and 1885 faces respectively.  
 
-\begin{figure} [!hp]
+\begin{figure} [!hb]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{results_before.png}
-\caption{\label{fig:plate} \textnormal{16 part plate mesh with 634 faces before Gap is run. Small sides exist between parts thirteen and fourteen, nine and fifteen, etc. Several single vertex junction exist like the one between parts zero, one, two, and three}}
+\caption{\label{fig:plate} \textnormal{16 part plate mesh with 634 faces before Gap is run. Small boundaries exist between parts thirteen and fourteen, nine and fifteen, etc. Several single vertex junction exist like the one between parts zero, one, two, and three}}
 \end{figure}
 
-\begin{figure} [!hp]
+\begin{figure} [!ht]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.6\textwidth]{results_after.png}
@@ -501,7 +555,7 @@ altered to even out the lengths to at least three. Several larger cases of gap a
 \end{figure}
 
 
-\begin{figure} [!h]
+\begin{figure} [!hp]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.4\textwidth]{before_876.png}
@@ -509,7 +563,7 @@ altered to even out the lengths to at least three. Several larger cases of gap a
 \caption{\label{fig:gap1} \textnormal{16 part plate mesh with 876 faces before gap (left) and after gap (right)}}
 \end{figure}
 
-\begin{figure} [!h]
+\begin{figure} [!hp]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.4\textwidth]{before_1273.png}
@@ -517,7 +571,7 @@ altered to even out the lengths to at least three. Several larger cases of gap a
 \caption{\label{fig:gap2} \textnormal{16 part plate mesh with 1273 faces before gap (left) and after gap (right)}}
 \end{figure}
 
-\begin{figure} [!h]
+\begin{figure} [!hp]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.4\textwidth]{before_1885.png}
@@ -527,9 +581,6 @@ altered to even out the lengths to at least three. Several larger cases of gap a
 
 
 \chapter{Limitations and Future Work} 
-
-%Testing (if not sufficient) 
-%Make sure to move the first sentence of the next paragraph if added
 
 %Geometric centroids to topological centroids
 Gap is a work in progress and as such has several extensions required to make 
@@ -553,20 +604,23 @@ better topological choices.
 Due to the nature of Gap's targeting, there are some regions that cannot be 
 fixed by Gap. Namely these are areas where there are no sender parts around 
 the boundary between two parts. Currently if one of these regions is the 
-smallest side between the two parts, the parts will continuously try to fix 
-those small sides rather than target ones that have sender parts incident on 
-the small side. We would like to have Gap ignore these un-fixable boundaries 
-in order to target small sides that can be fixed by the algorithm. In Figure 
-\ref{fig:ocean} there are several small red isolated components of the red 
-part that cause a small side with the orange part. These sides cannot be 
+smallest boundary between the two parts, the parts will continuously try to fix 
+those small partition model faces rather than target ones that have sender 
+parts incident on the small partition model face. We would like to have Gap 
+ignore these un-fixable boundaries in order to target small partition model 
+faces that can be fixed by the algorithm. In Figure \ref{fig:ocean} there are 
+several small isolated components that have been highlighted that cause a 
+small boundary to be detected with the main part. These sides cannot be 
 increased because there are no parts next to the boundary to migrate elements 
-to the red or orange parts.
+to the red or orange parts. Thus Gap stagnates in this portion of the mesh 
+for any small partition model faces that are bigger than the sum of the 
+isolated components boundaries 
 
 \begin{figure} [!ht]
 \centering
 \captionsetup{justification=centering,margin=1cm}
 \includegraphics[width=.65\textwidth]{Ocean_Isolated.png}
-\caption{\label{fig:ocean} \textnormal{Several isolated components that cause the two parts to have small sides that cannot be fixed by Gap since there are no parts next to the boundary.}}
+\caption{\label{fig:ocean} \textnormal{Several isolated components that cause the two parts to have small boundaries that cannot be fixed by Gap since there are no parts next to the boundary.}}
 \end{figure}
 
 
@@ -580,7 +634,7 @@ centroids to increase the length sides. The key to our method is improving
 shape at the cost of small imbalance increases which can be quickly recovered 
 with ParMA diffusive improvement procedures without losing the shape 
 improvements. Our initial testing shows for a simple two dimensional mesh that 
-Gap successfully lengthens the small edges and removes single vertex junctions. 
+Gap successfully lengthens the small boundaries and removes single vertex junctions. 
 Since the plate mesh is 
 simplistic there were several extra considerations that must be implemented 
 to create a method that works in general cases of both two dimensional and 
@@ -588,8 +642,6 @@ three dimensional meshes.
 
 \endgroup
 
-% The following produces a numbered bibliography where the numbers
-% correspond to the \cite commands in the text.
 \specialhead{LITERATURE CITED}
 
 %\newpage
