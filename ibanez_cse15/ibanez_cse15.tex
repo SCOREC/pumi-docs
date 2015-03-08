@@ -322,7 +322,7 @@ per element
 
 \frame{\frametitle{Memory Measurement}
 This array structure is implemented as a sub-component
-of the PUMI tools, storing a full representation:
+of the PUMI tools, storing a full representation
 
 \vspace{10pt}
 \includegraphics[width=\textwidth]{memuse.png}
@@ -335,6 +335,57 @@ and GRUMMP from UBC.
 Note that MOAB is not representing edges or faces
 and is not designed to add/remove entities individually.
 
+}
+
+\frame{\frametitle{Integration}
+\begin{itemize}
+\item
+RPI's PUMI libraries now use this array representation by default
+\item
+To represent parallel meshes, we link an existing object-based
+remote copy system into the array structure
+\item
+Future work includes converting the remote copy storage into
+a useful array form.
+\item
+Other future work includes implementing a reduced representation
+\end{itemize}
+}
+
+\frame{\frametitle{Application}
+\begin{columns}[T]
+\begin{column}{0.6\textwidth}
+\begin{itemize}
+\item
+Albany uses this structure through PUMI for adaptive deformation mechanics
+\item
+PHASTA uses it through Chef to refine and partition meshes
+up to several billion elements and 256K parts
+\end{itemize}
+\end{column}
+\begin{column}{0.4\textwidth}
+\includegraphics[width=\textwidth]{albany.png}
+
+\includegraphics[width=\textwidth]{phasta.png}
+\end{column}
+\end{columns}
+}
+
+\frame{\frametitle{Acknowledgements}
+This material is based upon work supported by the
+U.S. Department of Energy, Office of Science,
+Office of Fusion Energy Sciences and
+Office of Advanced Scientific Computing Research under
+Award Number DE-SC0006617
+(Frameworks, Algorithms, and Scalable Technologies for Mathematics).
+
+\vspace{40pt}
+
+\begin{center}
+{\it Thank You... Questions ?}
+\end{center}
+
+\vspace{40pt}
 }
 
 \end{document}
