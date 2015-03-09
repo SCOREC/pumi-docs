@@ -72,8 +72,8 @@ can be placed in one array.
 Note that it is exactly the same size as the downward
 array.
 
-That is because {\emph each entry represents an adjacency
-graph edge}, in both arrays.
+That is because each entry represents an adjacency
+graph edge, in both arrays.
 
 \begin{center}
 \includegraphics[width=0.6\textwidth]{ibanez_cse15-5.png}
@@ -337,18 +337,19 @@ and is not designed to add/remove entities individually.
 
 }
 
-\frame{\frametitle{Integration}
+\frame{\frametitle{Integration into PUMI}
 \begin{itemize}
 \item
-RPI's PUMI libraries now use this array representation by default
+RPI's Parallel Unstructured Mesh Infrastructure (PUMI) now uses this array representation by default.
 \item
 To represent parallel meshes, we link an existing object-based
-remote copy system into the array structure
+remote copy system into the array structure.
 \item
 Future work includes converting the remote copy storage into
 a useful array form.
 \item
 Other future work includes implementing a reduced representation
+and mesh adaptation algorithms which can operate on it.
 \end{itemize}
 }
 
