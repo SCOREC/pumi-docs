@@ -113,8 +113,10 @@ Such an architecture lends itself to a hybrid MPI-thread programming
 model.
 We first present an implementation of inter-thread message passing
 based on the MPI and pthread libraries.
-In addition, an efficient implementation of termination detection
-for communication rounds is presented called phased message passing.
+In addition, we present an efficient implementation of termination
+detection for communication rounds.
+We use the term phased message passing to denote the communication
+interface based on this termination detection.
 This interface is then used to implement parallel operations
 for adaptive unstructured meshes, and the performance of resulting
 applications is compared to pure MPI operation.
@@ -173,10 +175,13 @@ Of course, performance optimization may dictate that certain
 ratios of processes to nodes and thread to cores is are more optimal,
 but the general idea remains the same.
 
-Since, for our purposes, a process is a special
-case of a thread, we use the term ``thread" throughout
-to mean either a process with no threads or a thread
-within a process, and specify the distinction where necessary.
+All operating system processes start with at least one thread,
+sometimes called the master thread.
+Extra threads may be created within a process.
+Unless otherwise specified, the term ``thread" for the remainder of
+this paper denotes an execution instance that can communicate
+with others, even in the case when it is just the master
+thread of a normal process with no extra threads.
 
 We present here a refinement of the above approach with additional
 motivations from a software engineering standpoint.
@@ -241,9 +246,10 @@ There are two dominant thread management interfaces, pthreads and OpenMP.
 The pthreads library is more general, standard, and can directly create
 and destroy single threads.
 OpenMP focuses on HPC-style thread parallelism and ease of use,
-with the model of an unaltered thread pool which supports user tasks
+allowing users to execute tasks in a batched fork-join style,
+which may be implemented underneath using a thread pool
 \cite{dagum1998openmp}.
-In our work, we adopt the same thread pool model as OpenMP but
+In our work, we adopt a similar model to OpenMP but
 maintain control of the threads through pthreads.
 This should allow us to integrate with OpenMP-based codes
 in the future, by using OpenMP's C function interface.
