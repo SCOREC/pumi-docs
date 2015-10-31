@@ -1,4 +1,7 @@
 \documentclass[final,1p,times]{elsarticle}
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL old.tex   Sat Oct 31 16:31:55 2015
+%DIF ADD new.tex   Sat Oct 31 16:31:43 2015
 
 %% Use the option review to obtain double line spacing
 %% \documentclass[preprint,review,12pt]{elsarticle}
@@ -27,7 +30,9 @@
 %% algorithms
 \usepackage{algpseudocode}
 \usepackage{algorithm}
-\usepackage{url}
+%DIF 30a30
+\usepackage{url} %DIF > 
+%DIF -------
 
 %% The lineno packages adds line numbers. Start line numbering with
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
@@ -57,6 +62,26 @@
 
 
 \journal{Parallel Computing}
+
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{{\protect\color{red}\sout{#1}}}                      %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
 
 \begin{document}
 
@@ -114,10 +139,10 @@ Such an architecture lends itself to a hybrid MPI-thread programming
 model.
 We first present an implementation of inter-thread message passing
 based on the MPI and pthread libraries.
-In addition, we present an efficient implementation of termination
-detection for communication rounds.
-We use the term phased message passing to denote the communication
-interface based on this termination detection.
+In addition, \DIFaddbegin \DIFadd{we present }\DIFaddend an efficient implementation of termination
+detection for communication rounds\DIFdelbegin \DIFdel{is presented called }\DIFdelend \DIFaddbegin \DIFadd{.
+We use the term }\DIFaddend phased message passing \DIFaddbegin \DIFadd{to denote the communication
+interface based on this termination detection}\DIFaddend .
 This interface is then used to implement parallel operations
 for adaptive unstructured meshes, and the performance of resulting
 applications is compared to pure MPI operation.
@@ -176,13 +201,17 @@ Of course, performance optimization may dictate that certain
 ratios of processes to nodes and thread to cores is are more optimal,
 but the general idea remains the same.
 
-All operating system processes start with at least one thread,
+\DIFdelbegin \DIFdel{Since,
+for our purposes, a processis a special
+case of a thread, we use }\DIFdelend \DIFaddbegin \DIFadd{All operating system processes start with at least one thread,
 sometimes called the master thread.
 Extra threads may be created within a process.
-Unless otherwise specified, the term ``thread" for the remainder of
+Unless otherwise specified, }\DIFaddend the term ``thread" \DIFdelbegin \DIFdel{throughout
+to mean either a }\DIFdelend \DIFaddbegin \DIFadd{for the remainder of
 this paper denotes an execution instance that can communicate
 with others, even in the case when it is just the master
-thread of a normal process with no extra threads.
+thread of a normal }\DIFaddend process with no \DIFdelbegin \DIFdel{threads or a thread
+within a process, and specify the distinction where necessary}\DIFdelend \DIFaddbegin \DIFadd{extra threads}\DIFaddend .
 
 We present here a refinement of the above approach with additional
 motivations from a software engineering standpoint.
@@ -221,9 +250,9 @@ The phased algorithm for termination detection is derived in Section
 regardless of threading model.
 
 These combined capabilities
-are packaged into a C library called the Parallel Control Utility.
+are packaged into a C library called the Parallel Control Utility\DIFdelbegin \DIFdel{, or PCU }\DIFdelend \DIFaddbegin \DIFadd{.
 PCU is available under the BSD 3-clause license for researchers interested
-in its source code: \url{https://github.com/SCOREC/core/tree/master/pcu}.
+in its source code: }\url{https://github.com/SCOREC/core/tree/master/pcu}\DIFaddend .
 This library is used to implement a variety of adaptive unstructured
 mesh operations, which enables them to execute in a hybrid environment.
 Two specific operations serve as illustrative examples:
@@ -249,10 +278,12 @@ There are two dominant thread management interfaces, pthreads and OpenMP.
 The pthreads library is more general, standard, and can directly create
 and destroy single threads.
 OpenMP focuses on HPC-style thread parallelism and ease of use,
-allowing users to execute tasks in a batched fork-join style,
+\DIFdelbegin \DIFdel{with the model of an unaltered thread pool
+which supports user tasks
+}\DIFdelend \DIFaddbegin \DIFadd{allowing users to execute tasks in a batched fork-join style,
 which may be implemented underneath using a thread pool
-\cite{dagum1998openmp}.
-In our work, we adopt a similar model to OpenMP but
+}\DIFaddend \cite{dagum1998openmp}.
+In our work, we adopt \DIFdelbegin \DIFdel{the same thread pool model as }\DIFdelend \DIFaddbegin \DIFadd{a similar model to }\DIFaddend OpenMP but
 maintain control of the threads through pthreads.
 This should allow us to integrate with OpenMP-based codes
 in the future, by using OpenMP's C function interface.
