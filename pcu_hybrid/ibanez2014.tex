@@ -27,6 +27,7 @@
 %% algorithms
 \usepackage{algpseudocode}
 \usepackage{algorithm}
+\usepackage{url}
 
 %% The lineno packages adds line numbers. Start line numbering with
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
@@ -220,7 +221,9 @@ The phased algorithm for termination detection is derived in Section
 regardless of threading model.
 
 These combined capabilities
-are packaged into a C library called the Parallel Control Utility, or PCU.
+are packaged into a C library called the Parallel Control Utility.
+PCU is available under the BSD 3-clause license for researchers interested
+in its source code: \url{https://github.com/SCOREC/core/tree/master/pcu}.
 This library is used to implement a variety of adaptive unstructured
 mesh operations, which enables them to execute in a hybrid environment.
 Two specific operations serve as illustrative examples:
