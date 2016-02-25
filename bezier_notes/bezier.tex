@@ -1114,7 +1114,54 @@ It is not uncommon to have $\min N_i < 0$ but $\min \mathcal{J}(\mathbf{u}) > 0$
 This requires an adaptive algorithm, subdividing $\mathcal{J}$ to refine the bounds, until sufficiently tight bounds are achieved. \spa
 A fourth-order tet has 35 control points, and $\mathcal{J}$ has 220 control points - even before adaptive refinement is used, this gets very expensive! \spa
 \textit{Measuring quality is computationally expensive!} \spa
-Within our measure, if the element formed by the vertices (the linear element) is invalid, the entire element is invalid, even though there are cases where curving can get around this. In these cases
+Within our measure, if the element formed by the vertices (the linear element) is invalid, the entire element is invalid, even though there are cases where curving can get around this.
+\end{frame}
+\begin{frame}{Measuring Quality}{A Curved Example}
+Consider a quadratic triangle, labelled as the one below, with a control net of points and the triangle entirely within the control net.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.55\textwidth]{bezier_images/q1.png} 
+\end{figure}
+\end{frame}
+
+\begin{frame}{Measuring Quality}{A Curved Example}
+The question is, {\bf if the linear triangle formed by the vertices has negative area, do I want to try and form a valid triangle}. \spa
+I can think of this as taking a good triangle, and opening it up around a vertex until I have an invalid triangle from the vertices.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.95\textwidth]{bezier_images/q6.png} 
+\end{figure}
+We also have that for a triangle to have a negative linear area and be valid, that at least two edges must be curved.
+\end{frame}
+
+\begin{frame}{Measuring Quality}{A Curved Example}
+Consider a simple three examples, with one edge linear between $(0,0)$ and $(1,0)$, and the other two allowed to curve, as in the canonical diagram shown earlier. \spa
+Choose the remaining free vertex to be below the $x$-axis such that the vertices form a triangle with negative area. There are two free control points. \spa
+These seem like a representative sample of triangles I could get if I allowed a negative linear area. I think they are all bad triangles. I could do a similar experiment for 3D, starting with one face linear, and allowing the others to curve...
+\end{frame}
+\begin{frame}{Measuring Quality}{A Curved Example}
+Vertices are almost co-linear, but form a triangle with very small negative area.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.60\textwidth]{bezier_images/curved1.png} 
+\end{figure}
+\[Q_l = -3\times 10^{-13}, Q_c = 0.013513, Q = -3\times10^{-15}\]
+\end{frame}
+\begin{frame}{Measuring Quality}{A Curved Example}
+Control points chosen to maximize $Q_c$ but still maintain negative area, in this case, $Q_c \approx 1.$, but the element is very high aspect ratio.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.60\textwidth]{bezier_images/curved2.png} 
+\end{figure}
+\[Q_l = -1.76\times10^{-6}, Q_c = 0.996, Q = -1.74\times10^{-6}\]
+\end{frame}
+\begin{frame}{Measuring Quality}{A Curved Example}
+Control points chosen to maximize $Q$, both $Q_l$ and $Q_c$ are not horrible.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.60\textwidth]{bezier_images/curved3.png} 
+\end{figure}
+\[Q_l = -0.97 Q_c = 0.31, Q = -0.30\]
 \end{frame}
 \section{Determining Validity}
 \begin{frame}{Determining Validity}
@@ -1192,6 +1239,26 @@ To determine when to this check is complete, either the maximum elevation order 
 \max_i |B_{i}-B_{i-1}| < \epsilon
 \]
 which is used to avoid early termination if simply $\max_i(|\min B_i^n - \min B_i^{n-1}|) < \epsilon$  as is used as in subdivision.
+\end{frame}
+\begin{frame}{Computing Jacobian Det Control Points}
+There are two ways to compute $N_{IJK(L)}$, for example, in 3D, 
+we could use the mathematical formulation of PL George (2014), which for computing each control point, is very expensive
+{
+  \footnotesize
+\begin{eqnarray*}
+N_{IJKL} = P^3 \displaystyle\sum_{|i|=I,|j|=J,|k|=K,|l|=L} \frac{{P-1 \choose i_1,j_1,k_1}{P-1 \choose i_2,j_2,k_2}{P-1 \choose i_3,j_3,k_3}}{ {3(P-1) \choose I,J,K}} \\  \times|\mathbf{C}_{i_1+1,j_1,k_1,l_1}-\mathbf{C}_{i_1,j_1+1,k_1,l_1},\\\mathbf{C}_{i_2+1,j_2,k_2,l_2}-\mathbf{C}_{i_2,j_2,k_2+1,l_2},\\
+\mathbf{C}_{i_3+1,j_3,k_3,l_3}-\mathbf{C}_{i_3,j_3,k_3,l_3+1}|
+\end{eqnarray*}
+}
+
+\end{frame}
+\begin{frame}{Computing Jacobian Det Control Points}
+Or we could use the approach of Remacle, and compute
+\[
+N = \mathbf{B}^{-1}\mathcal{J}
+\]
+where $\mathbf{B}^{-1}$ is the transformation matrix of order $3(P-1)$ and $\mathcal{J}$ is an vector containing the Jacobian determinants evaluated at the $\xi$ for the order $3(P-1)$ Bezier Shape. While computing the inverse of the matrix is expensive, when evaluating quality on a number of elements in a row, we can simply store this. I Believe this is faster for evaluating quality repeatedly, and worth investigating (both methods are implemented). 
+
 \end{frame}
 \section{Refinement}
 \begin{frame}{Refinement - Example}
