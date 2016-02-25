@@ -1257,7 +1257,9 @@ Or we could use the approach of Remacle, and compute
 \[
 N = \mathbf{B}^{-1}\mathcal{J}
 \]
-where $\mathbf{B}^{-1}$ is the transformation matrix of order $3(P-1)$ and $\mathcal{J}$ is an vector containing the Jacobian determinants evaluated at the $\xi$ for the order $3(P-1)$ Bezier Shape. While computing the inverse of the matrix is expensive, when evaluating quality on a number of elements in a row, we can simply store this. I Believe this is faster for evaluating quality repeatedly, and worth investigating (both methods are implemented). 
+where $\mathbf{B}^{-1}$ is the transformation matrix of order $3(P-1)$ and $\mathcal{J}$ is an vector containing the Jacobian determinants evaluated at the $\xi$ for the order $3(P-1)$ Bezier Shape. While computing the inverse of the matrix is expensive, when evaluating quality on a number of elements in a row, we can simply store this. I Believe this is faster for evaluating quality repeatedly, and worth investigating (both methods are implemented). \spa
+
+This approach also works for all shapes, such as the blended shapes that are implemented.
 
 \end{frame}
 \section{Refinement}
@@ -1269,8 +1271,12 @@ where $\mathbf{B}_{edge}^{-1}$ is $4 \times 4$ and $\mathbf{B}_{triangle}(\xi_s)
 This approach does not require apriori knowledge of the template used, only the parametric locations of the end points of the new entities. \\
 During refinement, boundary entities are snapped to the geometry, so invalid elements can be introduced here.
 \end{frame}
-\begin{frame}{Refinement for shape correction}
+\begin{frame}{Refinement for Shape Correction}
 As in the previous work, boundary edges are split if they form a 180$^\circ$ angle or more due to the geometry. This results in bad elements on the boundary. To overcome this, that edge should be split. If subdivision is used to perform the split, the invalidity is preserved. \spa To overcome this, new edges that connect to split edges are connected with linearly spaced points, and blending is used to place control points in triangles and tetrahedra created by the split.
+
+\end{frame}
+\begin{frame}{Refinement for Blended Shapes}
+For blended shapes, a similar approach to mesh curving is used. The parametric locations of the new points on the parent are obtained, and interpolation points are then converted to control points to be used. 
 
 \end{frame}
 \section{Cavity Operations (Coarsening and Swapping)}
@@ -1432,6 +1438,10 @@ With four triangles to choose from, we have a choice to make. We could blend the
   \centering
   \includegraphics[width=0.65\textwidth]{bezier_images/edgeSwap.png} 
 \end{figure}
+\end{frame}
+\begin{frame}{Coarsening and Swapping for Blended Shapes}
+For blended shapes, as only edge placement matters, this is easy.
+
 \end{frame}
 \section{Curved Adaptation and Shape Correction}
 
