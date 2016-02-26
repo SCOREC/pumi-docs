@@ -789,7 +789,7 @@ The goal would be to find a $g(x)$ such that
 \[\mathbf{x} = (u\mathbf{v}_0+v\mathbf{v}_1+w\mathbf{v}_2)(u+v+w)^{k-1} \]
 which reduces to the linear mapping. If we consider the coefficient of the first vertex $\mathbf{v}_0$, we get
 \[\left(g(u+v)^k\left(1-\frac{v}{u+v}\right)+g(w+u)^k\frac{u}{w+u}-u^k\right)\]
-Observing that $ (u+v+w)^{k-1} = (vw^{k-2}+\ldots+v^{k-2}w) + \ldots$, we note that there is no way for the coefficient of $\mathbf{v}_0$ to contain a $vw$ term, and therefore this formulation makes it impossible to preserve the linear triangle.
+Observing that $ (u+v+w)^{k-1} = (vw^{k-2}+\ldots+v^{k-2}w) + \ldots$, we note that there is no way for the coefficient of $\mathbf{v}_0$ to contain a $vw$ term, and therefore this formulation makes it impossible to preserve the linear triangle for all $k$, specifically $k > 2$.
 \end{frame}
 \begin{frame}{Blended Tetrahedra}
 For blended tetrahedra, we have
@@ -1263,13 +1263,30 @@ This approach also works for all shapes, such as the blended shapes that are imp
 
 \end{frame}
 \section{Refinement}
-\begin{frame}{Refinement - Example}
-Refinement is done within the template-based framework using subdivision to compute the new control point locations, for example, to determine the control points on the edge between $a = (0,1/2,1/2)$ and $b = (1/2,1/2,0)$, we have \[\xi_s = (0,1/2,1/2), (1/2,1/2,0), (1/6,1/2,1/3), (1/3,1/2,1/6) \]
+\begin{frame}{Refinement}
+Refinement is done using the subdivision principle of B{\'e}zier shapes. Consider the subdivision of a curve, creating a new curve from $\xi = a$ to $\xi = b$, $0 < a < b < 1$. Define $\xi_s = a+(b-a)\xi$, we can write the control points of the new curve, $\mathbf{C}_s$, in terms of the old curve as
+\[
+\mathbf{B}(\xi_s)\mathbf{C} = \mathbf{B}(\xi)\mathbf{C}_s
+\]
+The control points are then 
+\[ 
+\mathbf{C}_s = \mathbf{B}^{-1}\mathbf{B}_s \mathbf{C}
+\]
+With $\mathbf{B}_s = \mathbf{B}(\xi_s)$ and $\mathbf{B}^{-1}\mathbf{B}_s$ is the subdivision matrix for that particular subdivision.
+\end{frame}
+\begin{frame}{Refinement}
+Using a subdivision matrix, we can determine control points for any new entity created from a split. Consider the 2-edge split of a cubic triangle. We want to determine the new control points for one of the edges, shown in red. In parametric space, it looks like this.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.55\textwidth]{bezier_images/refine1.png} 
+\end{figure}
+\end{frame}
+\begin{frame}{Refinement}
+To determine the control points on the edge between $a = (0,1/2,1/2)$ and $b = (1/2,1/2,0)$, we have \[\xi_s = (0,1/2,1/2), (1/2,1/2,0), (1/6,1/2,1/3), (1/3,1/2,1/6) \]
 and the new control points as
 \[ \mathbf{C}_s = \mathbf{B}^{-1}_{edge}\mathbf{B}_{triangle}(\xi_s) \mathbf{C} \]
-where $\mathbf{B}_{edge}^{-1}$ is $4 \times 4$ and $\mathbf{B}_{triangle}(\xi_s)$ is $4 \times 9$ and $\mathbf{C}$ are the control points of the parent triangle. \spa
-This approach does not require apriori knowledge of the template used, only the parametric locations of the end points of the new entities. \\
-During refinement, boundary entities are snapped to the geometry, so invalid elements can be introduced here.
+where $\mathbf{B}_{edge}^{-1}$ is $4 \times 4$ and $\mathbf{B}_{triangle}(\xi_s)$ is $4 \times 9$ and $\mathbf{C}$ are the control points of the parent triangle. In practice, I don't solve for the endpoints, only the two control points on the edge. \spa
+This approach can be used on every new entity created from the split and does not require apriori knowledge of the template used, only the parametric locations of the end points of the new entities.
 \end{frame}
 \begin{frame}{Refinement for Shape Correction}
 As in the previous work, boundary edges are split if they form a 180$^\circ$ angle or more due to the geometry. This results in bad elements on the boundary. To overcome this, that edge should be split. If subdivision is used to perform the split, the invalidity is preserved. \spa To overcome this, new edges that connect to split edges are connected with linearly spaced points, and blending is used to place control points in triangles and tetrahedra created by the split.
@@ -1440,7 +1457,7 @@ With four triangles to choose from, we have a choice to make. We could blend the
 \end{figure}
 \end{frame}
 \begin{frame}{Coarsening and Swapping for Blended Shapes}
-For blended shapes, as only edge placement matters, this is easy.
+For blended shapes, as only edge placement matters, this is fairly trivial. Whether the blending is valid is a different story, but nonetheless, once edge node placement is decided, we are done.
 
 \end{frame}
 \section{Curved Adaptation and Shape Correction}
@@ -1456,22 +1473,28 @@ While the number of invalid elements is decreasing:
 \end{enumerate}
 \end{frame}
 \begin{frame}{Curved Adaptation and Shape Correction}
+
 In each case, the operation is only performed if it makes elements valid. Going from bad quality (invalid, < 0), to better quality but still invalid is not done. In practice, this may actually help gradually improve things, but right now, this is not the implementation. \spa
-To determine which edges to mark, the validity of an element is used. \spa
-If an element is invalid at a vertex, the connecting edges are marked. \spa
-If an element is invalid at an edge, that edge is marked. \spa
-If an element is invalid on a face, that faces edges are marked. \spa
-If an element is invalid on its interior, all its edges are marked. \spa
+To determine which edges to mark, the validity of an element is used.
+\end{frame}
+\begin{frame}{Curved Adaptation and Shape Correction}
+
+If an element is invalid at a vertex, the connecting edges are marked.\\
+If an element is invalid at an edge, that edge is marked. \\
+If an element is invalid on a face, that faces edges are marked.\\
+If an element is invalid on its interior, all its edges are marked.\\
 In each case, only the first invalidity is marked. If an element is invalid in multiple places, only one of them will be flagged.
 \end{frame}
 \begin{frame}{Mid-edge Node Repositioning}
 This is exactly as in the work in XJ Luo's thesis. This is implemented in \texttt{crvReposition.cc}. Given a tetrahedron and an edge marked as invalid, one of the edges' two vertices are used for repositioning. In this implementation, the edge with the worse jacobian determininant is chosen (one of them must be negative, choose the more negative one). \spa
-Denote the vector connecting the invalid edge's midpoint node to the vertex as $\mathbf{a}$, and the other two vectors connected edges to the chosen vertex as $\mathbf{b}$ and $\mathbf{c}$. For the invalidity, we have that $\mathbf{a}\cdot (\mathbf{b}\times\mathbf{c}) < 0$. To correct it, we need to choose $\mathbf{a}$ such that this is positive. \spa
+Denote the vector connecting the invalid edge's midpoint node to the vertex as $\mathbf{a}$, and the other two vectors connected edges to the chosen vertex as $\mathbf{b}$ and $\mathbf{c}$. For the invalidity, we have that $\mathbf{a}\cdot (\mathbf{b}\times\mathbf{c}) < 0$. To correct it, we need to choose $\mathbf{a}$ such that this is positive.
+\end{frame}
+\begin{frame}{Mid-edge Node Repositioning} 
 Denote the new vector as $\mathbf{a}'$ 
 \[
 \mathbf{a}' = \frac{\mathbf{n}}{||\mathbf{n}||}(-\frac{\mathbf{a}\cdot \mathbf{n}}{||\mathbf{n}||} + ||\mathbf{a}||\sin(\theta)
 \]
-where $\mathbf{n} = \mathbf{b}\times\mathbf{c} $ and $\theta$ is the angle between $\mathbf{a}'$ and the plane defined by $\mathbf{n}$ and the chosen vertex. This places the new point on the other side of this plane, hopefully creating a valid element.
+where $\mathbf{n} = \mathbf{b}\times\mathbf{c} $ and $\theta$ is the angle between $\mathbf{a}'$ and the plane defined by $\mathbf{n}$ and the chosen vertex. This places the new point on the other side of this plane, hopefully creating a valid element. If all the elements adjacent to the modified edge are valid, the operation is accepted and the invalid element has been fixed.
 \end{frame}
 \section{$G^1$ Continuous Patches}
 \begin{frame}{$G^1$ Continuous Patches}
