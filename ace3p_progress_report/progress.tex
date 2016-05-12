@@ -32,7 +32,7 @@ weights of elements plus the sum of the weights of the ghost elements.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.3\textwidth]{ghostingExample.eps} 
+\includegraphics[width=0.4\textwidth]{ghostingExample.eps} 
 \caption{\label{fig:ghost3} Three layers of elements ghosted from the remote part to the local part.  The first layer is colored green, the second blue, and the third yellow.}
 \end{figure}
 
@@ -54,6 +54,7 @@ that are ghost-aware so that ParMA is given a better initial partitioning such t
 can find a better partitioning faster.
 
 \section{Status}
+In its current state our implementation includes loading the mesh into PUMI/APF, partitioning/load balancing of the PUMI/APF mesh and transfer from PUMI/APF to Omega3P's mesh data structure. The conversion process works for both straight-sided elements and second order curved geometry.
 
 \section{Results}
 
