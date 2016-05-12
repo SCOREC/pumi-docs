@@ -32,11 +32,12 @@ weights of elements plus the sum of the weights of the ghost elements.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.4\textwidth]{ghostingExample.eps} 
+\includegraphics[width=0.3\textwidth]{ghostingExample.eps} 
 \caption{\label{fig:ghost3} Three layers of elements ghosted from the remote part to the local part.  The first layer is colored green, the second blue, and the third yellow.}
 \end{figure}
 
-\noindent Our strategy for partitioning and load balancing is started with a uniformly-weighted 
+\noindent Our strategy for partitioning and load balancing is started with a 
+uniformly-weighted 
 partition of the mesh from 1 part to $N$ parts followed by ghost-aware diffusive load 
 balancing using ParMA~\cite{SmithParma2015} to get a final mesh that is well balanced 
 in terms of on-part elements and ghosted elements along the part's boundary. We 
@@ -46,8 +47,11 @@ extended 'weight' tracking mechanism.  The weight tracking extension relies on t
 exact knowledge of the change to the ghosted elements as elements on a heavy part 
 are selected for migration to a light part. The current implementation of these 
 procedures assumes vertex-based ghosting while Omega3P ghosting is element-based. 
-To accurately accomodate for Omega3P's ghosting we will be extending ParMA's 
-ghosting to be able to balance based on element-based ghosting.
+To accurately accommodate for Omega3P's ghosting we will be extending ParMA's 
+ghosting to be able to balance based on element-based ghosting. To further improve 
+the efficiency of the load balancing we may explore better partitionings 
+that are ghost-aware so that ParMA is given a better initial partitioning such that it 
+can find a better partitioning faster.
 
 \section{Status}
 
