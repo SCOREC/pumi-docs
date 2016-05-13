@@ -180,20 +180,22 @@ Omega3P we also scripted execution of regression tests.
 
 We compared the runtime and memory usage of Omega3P versus Omega3P+PUMI on up to
 128 cores of the NERSC Cori Phase I system.
-Peak memory usage data gathered from runs is listed in Table~\ref{tbl:memusage}.
+The runtime of Omega3P+PUMI is within a few percent of Omega3P's.
+Analysis of timing results is ongoing to determine where we are saving and
+losing time.
+Peak memory usage across all processors is shown in
+Figure~\ref{fig:memusage}.
+As expected, the Omega3P+PUMI memory usage is higher than Omega3P.
+At 64 cores there is a 2\% increase and at 128 cores there is an 8\% increase.
+We suspect that larger ghost entity imbalances may account for the increase with
+core count, but a more detailed comparison of imbalance and memory usage is
+required.
 
-\begin{table}[h]
+\begin{figure}[ht]
 \centering
-  \caption{Runtime of Omega3P verus Omega3P+PUMI.}
-\label{tbl:time}
-  \begin{tabular}{l|ccc}
-    cores & omega (MB) & omega\_pumi (MB) & omega\_pumi/omega*100 \\
-    \hline
-    32    & 1531       & 1513             & 99                    \\
-    64    & 1267       & 1038             & 82                    \\
-    128   & 662        & 729              & 110
-\end{tabular}
-\end{table}
+  \includegraphics[width=\textwidth]{peak-memory-usage.eps}
+  \caption{\label{fig:memusage} Peak memory usage.}
+\end{figure}
 
 \newpage
 \bibliographystyle{plain}
