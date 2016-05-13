@@ -123,7 +123,8 @@ The Omega3P solving step relies on both on part mesh entities as well as a layer
 ghosted elements along each part boundary. Figure \ref{fig:ghost3} shows an 
 example of a mesh with three layers of ghosting. In order to reach maximum efficiency
 for ghost-based codes partitioning must target minimizing the sum of the 
-weights of ghosted and non-ghosted elements. 
+weights of ghosted and non-ghosted elements as well as the mesh entities holding
+degrees-of-freedom.
 
 \begin{figure}[ht]
 \centering
@@ -131,21 +132,27 @@ weights of ghosted and non-ghosted elements.
 \caption{\label{fig:ghost3} Three layers of elements ghosted from the remote part to the local part.  The first layer is colored green, the second blue, and the third yellow.}
 \end{figure}
 
-Our strategy for partitioning and load balancing is started with a
-uniformly-weighted partition of the mesh from one part to $N$ parts followed by
-ghost-aware diffusive load balancing using ParMA~\cite{SmithParma2015} to get a
-final mesh that is well balanced in terms of on-part elements and ghosted
-elements along the part's boundary.
-We currently utilize ParMA's partition improvement procedures that account for
+Given a
+uniformly-weighted mesh we first partition it one part to $N$ parts using
+Zoltan's interface to ParMETIS's multi-level graph-based method.
+Once distributed we then run ghost-aware diffusive load balancing using
+ParMA~\cite{SmithParma2015} to get a final mesh that is well balanced for
+analysis procedures.
+ParMA's partition improvement procedures account for
 the ghosted layers using a combination of existing element selection criteria
 and an extended `weight' tracking mechanism.
 The weight tracking extension relies on the exact knowledge of the change to the
 ghosted elements as elements on a heavy part are selected for migration to a
 light part.
-The current implementation reuses a vertex-based ghosting balancer we had
-on-hand; Omega3P ghosting is element-based.
 To accurately accommodate for Omega3P's ghosting we will be extending ParMA's
-ghosting to be able to balance based on element-based ghosts.
+ghosting to be able to balance element-based ghosts; our current
+workflow reuses an existing ParMA vertex-based ghost balancer.
+In addition to balancing ghosts, ParMA also needs to account for the
+degree-of-freedom holders defined by the use of hierarchical Nedelec basis
+functions~\cite{ingelstrom2006new}.
+For first order elements this requires balancing edges.
+Second order elements requires edges and faces, and above that edges, faces, and
+regions need to be balanced.
 
 \section{Status}
 Omega3P now supports reading a curved mesh from a NetCDF formatted file into a
@@ -160,7 +167,7 @@ the owned and ghosted mesh entities
 the partition with ParMA's ghost balancer, converting from PUMI-APF to DistMesh,
 and running the analysis.
 
-PUMI integration within Omega3p required undestanding the Omega3P build process
+PUMI integration within Omega3p required understanding the Omega3P build process
 and software dependencies so we could build and test on the SCOREC workstations
 and the NERSC Cray systems (Cori Phase I and Edison).
 The dependencies and the build process is now documented and Boost-Build
@@ -213,7 +220,7 @@ tests and work with SLAC developers to merge our changes into
 the ACE3P central repository and make our documentation accessible.
 
 \newpage \bibliographystyle{plain}
-\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr}
+\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr,scorec-refs/fem}
 
 \end{document}
 
