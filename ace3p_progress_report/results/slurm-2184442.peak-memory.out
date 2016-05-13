@@ -1,0 +1,1614 @@
+32 1
+*************************************************************
+			 Omega3P
+
+ACE3P git repo hash: d7798978f280eb606b875ff68830d1efa3f14f3d
+ACE3P Codes Source Branch: master
+Compile date:Compilation Date:          2016-03-24
+
+*************************************************************
+
+         Copyright 2016, Stanford University 
+
+Authors make no representations or warranties, expressed or 
+implied. By way of example, but not limitation, authors make 
+no representatinos or warranties of merchantibility or 
+fitness for any particular purpose or that the use of the 
+software componentns of documentation will not infringe any
+patents, copyrights, trademarks or other rights.
+
+The Authors shall not be held liable for any liability 
+nor for any direct, indirect or consequential damages with 
+respect to any claim by users or any third party on account 
+of or arising from the use of this software.
+
+*************************************************************
+
+Advanced Computations Department
+SLAC National Accelerator Laboratory
+https://slacportal.slac.stanford.edu/sites/ard_public/acd/Pages/Default.aspx
+Contact: ace3p@slac.stanford.edu
+
+Thank you for citing ACE3P when publishing related results.
+
+*************************************************************
+
+Starting master process on nid00163
+Number of MPI processes: 32
+Number of compute nodes: 4
+Number of processes per node: 8
+Data precision: 64 bits
+Compiler: 5.2.0 20150716 (Cray Inc.)
+Boundary conditions:
+0 = INTERIOR
+3 = ELECTRIC
+4 = ELECTRIC
+6 = EXTERIOR
+7 = ELECTRIC
+8 = ELECTRIC
+9 = ELECTRIC
+68 = ELECTRIC
+
+Boundary 6 has surface conductivity of 58000000 S/m
+Read Mesh: /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf
+Time for reading the model: 0.5165901184082031
+
+Using curved quadratic tetrahedrons
+Setting global vector finite element basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+Partitioning Method: parmetis
+      Setup: Max:   0.003, Sum:   0.081, Balance:   1.003
+   Matching: Max:   0.004, Sum:   0.121, Balance:   1.002
+Contraction: Max:   0.003, Sum:   0.081, Balance:   1.004
+   InitPart: Max:   0.006, Sum:   0.196, Balance:   1.000
+    Project: Max:   0.000, Sum:   0.003, Balance:   1.351
+ Initialize: Max:   0.001, Sum:   0.032, Balance:   1.039
+      K-way: Max:   0.007, Sum:   0.237, Balance:   1.002
+      Remap: Max:   0.000, Sum:   0.002, Balance:   1.005
+      Total: Max:   0.024, Sum:   0.760, Balance:   1.000
+
+***********************************************************
+*	Total Number of Elements read: 	318118
+*	Total Number of Elements used: 	318118
+*	Total Number of DOFs: 	1928824
+***********************************************************
+
+Time for setting up finite element framework: 0.4740819931030273
+/********************************/
+/* input parameters, KVC syntax */
+/********************************/
+
+
+        Mesh : { 
+            ReplicatedElementDistribution : { 
+                min : 663 
+                total : 98204 
+                stddev : 1118.2991333328 
+                max : 5087 
+                average : 3068.875 
+            }
+            File : /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf 
+            MeshCoords : 61467 
+            ElementDistribution : { 
+                min : 9245 
+                total : 318118 
+                stddev : 259.66994404187 
+                max : 10426 
+                average : 9941.1875 
+            }
+        }
+/********************************/
+
+
+
+
+
+Checking Mesh Quality:
+
+TETRAHEDRAL ELEMENTS:
+  number   = 318118
+
+INVERTED SECOND-ORDER ELEMENTS:
+  number   = 0 <- GOOD!
+
+ASPECT RATIO:
+  min      = 1.024623027831843
+  max      = 4.472390133933878 <- GREAT
+  average  = 1.592208457637729
+  std dev  = 0.2113001289824954
+
+SHAPE MEASURE:
+  min      = 0.0263681120761744
+  max      = 2.032085651041011
+  average  = 0.8065095520818657
+  std dev  = 0.1171146939121726
+
+ELEMENT VOLUME:
+  min      = 4.098152253574043e-10
+  max      = 5.095737283740085e-07
+  average  = 1.028761733653779e-07
+  std dev  = 7.731434302547826e-08
+
+BOUNDING BOX:
+  min      = (-0.1405064217552899, -0.1405071695106699, -0.3875000000000001)
+  max      = (0.1405064684945338, 0.395, 0.39)
+
+EDGE LENGTH:
+  min      = 0.000842470129368026
+  max      = 0.02394476734490312
+  average  = 0.009452087621816763
+  std dev  = 0.003464598912577525
+
+Time for checking the mesh quality: 0.1700479984283447
+Time for save/load ComputationalMesh: 0.01012086868286133
+Total Volume of the structure is : 0.0327267625186473
+Calling real solver
+No.      	 Sum 	 Average	 Max 	 Min 	 Std_dev
+Diagonal:	77158776	 2.41e+06	 2561504	 2052096	 1.22e+05
+Offdiagonal:	2987112	 9.33e+04	 150944	 20292	 3.42e+04
+Nonlocal v:	341684	 1.07e+04	 17078	 2222	 3.97e+03
+
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].SolverMode' undefined, using default value automatic
+Number of Grad DOFs: 345312
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].Tolerance' undefined, using default value 1e-12
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].MaxIterations' undefined, using default value 500
+
+**********************************************************
+ ARPACK Loop: 
+Shift = 6.681093427536301e+01
+**********************************************************
+factorizing the matrix using MUMPS ...
+Using ParMETIS for ordering...
+Use 32 processors to do parallel reordering (ParMetis)
+Partition of Processors: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 
+Processor 0: 0, 63174
+Processor 1: 63174, 124232
+Processor 2: 124232, 184864
+Processor 3: 184864, 242732
+Processor 4: 242732, 298808
+Processor 5: 298808, 357726
+Processor 6: 357726, 419768
+Processor 7: 419768, 478610
+Processor 8: 478610, 537676
+Processor 9: 537676, 598576
+Processor 10: 598576, 658618
+Processor 11: 658618, 719452
+Processor 12: 719452, 776814
+Processor 13: 776814, 838538
+Processor 14: 838538, 900928
+Processor 15: 900928, 961660
+Processor 16: 961660, 1019604
+Processor 17: 1019604, 1082182
+Processor 18: 1082182, 1143222
+Processor 19: 1143222, 1205382
+Processor 20: 1205382, 1266852
+Processor 21: 1266852, 1330024
+Processor 22: 1330024, 1391084
+Processor 23: 1391084, 1445870
+Processor 24: 1445870, 1507774
+Processor 25: 1507774, 1567932
+Processor 26: 1567932, 1629486
+Processor 27: 1629486, 1690106
+Processor 28: 1690106, 1752350
+Processor 29: 1752350, 1813142
+Processor 30: 1813142, 1873848
+Processor 31: 1873848, 1928824
+total: 1928824 32
+Generate ordering using parmetis...
+Finished generating ordering using parmetis 
+
+
+Analysis step: 3.3021 seconds
+
+	Maximal per-core estimated memory 	 1573 MB
+	Aggregated estimated memory 	 34670 MB
+	Maximal per-core estimated memory if OOC 	 1073MB
+	Aggregated estimated memory if OOC 	 23712MB
+
+
+Factorization step: 21.4768 seconds
+
+Memory usage:
+used mem per MPI process: min: 7.8734e+02 MB, max: 1.5664e+03 MB, avg: 1.0821e+03 MB, stddev: 1.6436e+02 MB, total: 3.4628e+04 MB
+used mem per node in GB : min: 1.2088e+01 GB, max: 1.3879e+01 GB, avg: 1.2598e+01 GB, stddev: 7.5331e-01 GB, total: 5.0392e+01 GB
+used mem per node in %  : min: 9.5907e+00  %, max: 1.1011e+01  %, avg: 9.9950e+00  %, stddev: 5.9766e-01  %
+
+	 ncv=6	 nev=1
+Linear Solver Preparation Time: 2.8245e+01
+Solver Time: 3.8205e+00
+Number of converged eigenpairs = 1
+
+Eigenvalue: 7.0507730948952073e+01
+	Frequency: 4.0064451725272906e+08
+	Residual: 5.0302940831107251e-12
+
+**********************************************************
+Total number of OP*x operations: 13
+Total number of B*x operations if BMAT='G': 36
+Total number of steps of re-orthogonalization: 9
+**********************************************************
+COMMIT MODE: 0 FREQ = 4.0064451725272906e+08	 k= 8.3968881705636687e+00	norm(v[0]) = 1.9178457841853511e+01
+Number of TriSolve: 13. Average time for one TriSolv: 0.294235
+      Setup: Max:   0.003, Sum:   0.081, Balance:   1.002
+   Matching: Max:   0.004, Sum:   0.114, Balance:   1.001
+Contraction: Max:   0.003, Sum:   0.099, Balance:   1.001
+   InitPart: Max:   0.006, Sum:   0.208, Balance:   1.000
+    Project: Max:   0.000, Sum:   0.004, Balance:   1.492
+ Initialize: Max:   0.001, Sum:   0.034, Balance:   1.039
+      K-way: Max:   0.007, Sum:   0.237, Balance:   1.001
+      Remap: Max:   0.000, Sum:   0.011, Balance:   1.002
+      Total: Max:   0.025, Sum:   0.793, Balance:   1.000
+Omega3p ran in 46.733600 seconds.
+Omega3p peak memory usage (MB) 3587.09
+64 1
+*************************************************************
+			 Omega3P
+
+ACE3P git repo hash: d7798978f280eb606b875ff68830d1efa3f14f3d
+ACE3P Codes Source Branch: master
+Compile date:Compilation Date:          2016-03-24
+
+*************************************************************
+
+         Copyright 2016, Stanford University 
+
+Authors make no representations or warranties, expressed or 
+implied. By way of example, but not limitation, authors make 
+no representatinos or warranties of merchantibility or 
+fitness for any particular purpose or that the use of the 
+software componentns of documentation will not infringe any
+patents, copyrights, trademarks or other rights.
+
+The Authors shall not be held liable for any liability 
+nor for any direct, indirect or consequential damages with 
+respect to any claim by users or any third party on account 
+of or arising from the use of this software.
+
+*************************************************************
+
+Advanced Computations Department
+SLAC National Accelerator Laboratory
+https://slacportal.slac.stanford.edu/sites/ard_public/acd/Pages/Default.aspx
+Contact: ace3p@slac.stanford.edu
+
+Thank you for citing ACE3P when publishing related results.
+
+*************************************************************
+
+Starting master process on nid00163
+Number of MPI processes: 64
+Number of compute nodes: 4
+Number of processes per node: 16
+Data precision: 64 bits
+Compiler: 5.2.0 20150716 (Cray Inc.)
+Boundary conditions:
+0 = INTERIOR
+3 = ELECTRIC
+4 = ELECTRIC
+6 = EXTERIOR
+7 = ELECTRIC
+8 = ELECTRIC
+9 = ELECTRIC
+68 = ELECTRIC
+
+Boundary 6 has surface conductivity of 58000000 S/m
+Read Mesh: /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf
+Time for reading the model: 0.6207070350646973
+
+Using curved quadratic tetrahedrons
+Setting global vector finite element basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+Partitioning Method: parmetis
+      Setup: Max:   0.002, Sum:   0.148, Balance:   1.016
+   Matching: Max:   0.004, Sum:   0.256, Balance:   1.004
+Contraction: Max:   0.002, Sum:   0.141, Balance:   1.007
+   InitPart: Max:   0.008, Sum:   0.528, Balance:   1.001
+    Project: Max:   0.000, Sum:   0.007, Balance:   1.323
+ Initialize: Max:   0.001, Sum:   0.052, Balance:   1.065
+      K-way: Max:   0.007, Sum:   0.448, Balance:   1.004
+      Remap: Max:   0.000, Sum:   0.006, Balance:   1.007
+      Total: Max:   0.025, Sum:   1.611, Balance:   1.000
+
+***********************************************************
+*	Total Number of Elements read: 	318118
+*	Total Number of Elements used: 	318118
+*	Total Number of DOFs: 	1928824
+***********************************************************
+
+Time for setting up finite element framework: 0.4495668411254883
+/********************************/
+/* input parameters, KVC syntax */
+/********************************/
+
+
+        Mesh : { 
+            ReplicatedElementDistribution : { 
+                min : 589 
+                total : 149001 
+                stddev : 776.68146045971 
+                max : 3928 
+                average : 2328.140625 
+            }
+            File : /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf 
+            MeshCoords : 61467 
+            ElementDistribution : { 
+                min : 4583 
+                total : 318118 
+                stddev : 124.63912590495 
+                max : 5186 
+                average : 4970.59375 
+            }
+        }
+/********************************/
+
+
+
+
+
+Checking Mesh Quality:
+
+TETRAHEDRAL ELEMENTS:
+  number   = 318118
+
+INVERTED SECOND-ORDER ELEMENTS:
+  number   = 0 <- GOOD!
+
+ASPECT RATIO:
+  min      = 1.024623027831843
+  max      = 4.472390133933878 <- GREAT
+  average  = 1.592208457637729
+  std dev  = 0.2113001289824953
+
+SHAPE MEASURE:
+  min      = 0.0263681120761744
+  max      = 2.032085651041011
+  average  = 0.8065095520818663
+  std dev  = 0.1171146939121726
+
+ELEMENT VOLUME:
+  min      = 4.098152253574043e-10
+  max      = 5.095737283740085e-07
+  average  = 1.028761733653779e-07
+  std dev  = 7.731434302547824e-08
+
+BOUNDING BOX:
+  min      = (-0.1405064217552899, -0.1405071695106699, -0.3875000000000001)
+  max      = (0.1405064684945338, 0.395, 0.39)
+
+EDGE LENGTH:
+  min      = 0.000842470129368026
+  max      = 0.02394476734490312
+  average  = 0.009452087621816754
+  std dev  = 0.003464598912577527
+
+Time for checking the mesh quality: 0.1168708801269531
+Time for save/load ComputationalMesh: 0.001821994781494141
+Total Volume of the structure is : 0.03272676251864728
+Calling real solver
+No.      	 Sum 	 Average	 Max 	 Min 	 Std_dev
+Diagonal:	75769768	 1.18e+06	 1267024	 927320	 6.98e+04
+Offdiagonal:	4376120	 6.84e+04	 116088	 14480	 2.33e+04
+Nonlocal v:	508842	 7.95e+03	 14128	 1556	 2.75e+03
+
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].SolverMode' undefined, using default value automatic
+Number of Grad DOFs: 345312
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].Tolerance' undefined, using default value 1e-12
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].MaxIterations' undefined, using default value 500
+
+**********************************************************
+ ARPACK Loop: 
+Shift = 6.681093427536301e+01
+**********************************************************
+factorizing the matrix using MUMPS ...
+Using ParMETIS for ordering...
+Use 32 processors to do parallel reordering (ParMetis)
+Partition of Processors: 0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64 
+Processor 0: 0, 60958
+Processor 1: 60958, 123140
+Processor 2: 123140, 184924
+Processor 3: 184924, 244610
+Processor 4: 244610, 305280
+Processor 5: 305280, 362284
+Processor 6: 362284, 423440
+Processor 7: 423440, 484156
+Processor 8: 484156, 545712
+Processor 9: 545712, 605824
+Processor 10: 605824, 665140
+Processor 11: 665140, 725844
+Processor 12: 725844, 787284
+Processor 13: 787284, 847906
+Processor 14: 847906, 905454
+Processor 15: 905454, 968330
+Processor 16: 968330, 1029924
+Processor 17: 1029924, 1092366
+Processor 18: 1092366, 1154692
+Processor 19: 1154692, 1215864
+Processor 20: 1215864, 1273214
+Processor 21: 1273214, 1335570
+Processor 22: 1335570, 1397046
+Processor 23: 1397046, 1457400
+Processor 24: 1457400, 1517852
+Processor 25: 1517852, 1572880
+Processor 26: 1572880, 1632236
+Processor 27: 1632236, 1692482
+Processor 28: 1692482, 1754026
+Processor 29: 1754026, 1815598
+Processor 30: 1815598, 1873616
+Processor 31: 1873616, 1928824
+total: 1928824 32
+Generate ordering using parmetis...
+Finished generating ordering using parmetis 
+
+
+Analysis step: 3.73977 seconds
+
+	Maximal per-core estimated memory 	 1459 MB
+	Aggregated estimated memory 	 47198 MB
+	Maximal per-core estimated memory if OOC 	 835MB
+	Aggregated estimated memory if OOC 	 37818MB
+
+
+Factorization step: 19.6307 seconds
+
+Memory usage:
+used mem per MPI process: min: 4.4001e+02 MB, max: 1.2684e+03 MB, avg: 6.4271e+02 MB, stddev: 1.4241e+02 MB, total: 4.1134e+04 MB
+used mem per node in GB : min: 1.3375e+01 GB, max: 1.6494e+01 GB, avg: 1.4853e+01 GB, stddev: 1.1332e+00 GB, total: 5.9411e+01 GB
+used mem per node in %  : min: 1.0612e+01  %, max: 1.3086e+01  %, avg: 1.1784e+01  %, stddev: 8.9908e-01  %
+
+	 ncv=6	 nev=1
+Linear Solver Preparation Time: 2.7244e+01
+Solver Time: 3.8196e+00
+Number of converged eigenpairs = 1
+
+Eigenvalue: 7.0507730948951988e+01
+	Frequency: 4.0064451725272882e+08
+	Residual: 5.0187250639413513e-12
+
+**********************************************************
+Total number of OP*x operations: 13
+Total number of B*x operations if BMAT='G': 36
+Total number of steps of re-orthogonalization: 9
+**********************************************************
+COMMIT MODE: 0 FREQ = 4.0064451725272882e+08	 k= 8.3968881705636633e+00	norm(v[0]) = 1.9178457841853579e+01
+Number of TriSolve: 13. Average time for one TriSolv: 0.294399
+      Setup: Max:   0.002, Sum:   0.141, Balance:   1.005
+   Matching: Max:   0.003, Sum:   0.202, Balance:   1.001
+Contraction: Max:   0.002, Sum:   0.112, Balance:   1.015
+   InitPart: Max:   0.008, Sum:   0.509, Balance:   1.000
+    Project: Max:   0.000, Sum:   0.006, Balance:   1.280
+ Initialize: Max:   0.001, Sum:   0.051, Balance:   1.048
+      K-way: Max:   0.007, Sum:   0.424, Balance:   1.001
+      Remap: Max:   0.000, Sum:   0.005, Balance:   1.012
+      Total: Max:   0.023, Sum:   1.463, Balance:   1.000
+Omega3p ran in 38.840443 seconds.
+Omega3p peak memory usage (MB) 3282.48
+128 1
+*************************************************************
+			 Omega3P
+
+ACE3P git repo hash: d7798978f280eb606b875ff68830d1efa3f14f3d
+ACE3P Codes Source Branch: master
+Compile date:Compilation Date:          2016-03-24
+
+*************************************************************
+
+         Copyright 2016, Stanford University 
+
+Authors make no representations or warranties, expressed or 
+implied. By way of example, but not limitation, authors make 
+no representatinos or warranties of merchantibility or 
+fitness for any particular purpose or that the use of the 
+software componentns of documentation will not infringe any
+patents, copyrights, trademarks or other rights.
+
+The Authors shall not be held liable for any liability 
+nor for any direct, indirect or consequential damages with 
+respect to any claim by users or any third party on account 
+of or arising from the use of this software.
+
+*************************************************************
+
+Advanced Computations Department
+SLAC National Accelerator Laboratory
+https://slacportal.slac.stanford.edu/sites/ard_public/acd/Pages/Default.aspx
+Contact: ace3p@slac.stanford.edu
+
+Thank you for citing ACE3P when publishing related results.
+
+*************************************************************
+
+Starting master process on nid00163
+Number of MPI processes: 128
+Number of compute nodes: 4
+Number of processes per node: 32
+Data precision: 64 bits
+Compiler: 5.2.0 20150716 (Cray Inc.)
+Boundary conditions:
+0 = INTERIOR
+3 = ELECTRIC
+4 = ELECTRIC
+6 = EXTERIOR
+7 = ELECTRIC
+8 = ELECTRIC
+9 = ELECTRIC
+68 = ELECTRIC
+
+Boundary 6 has surface conductivity of 58000000 S/m
+Read Mesh: /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf
+Time for reading the model: 0.8183989524841309
+
+Using curved quadratic tetrahedrons
+Setting global vector finite element basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+Partitioning Method: parmetis
+      Setup: Max:   0.002, Sum:   0.247, Balance:   1.019
+   Matching: Max:   0.003, Sum:   0.441, Balance:   1.001
+Contraction: Max:   0.002, Sum:   0.213, Balance:   1.003
+   InitPart: Max:   0.013, Sum:   1.645, Balance:   1.000
+    Project: Max:   0.000, Sum:   0.018, Balance:   1.309
+ Initialize: Max:   0.001, Sum:   0.104, Balance:   1.123
+      K-way: Max:   0.008, Sum:   0.978, Balance:   1.011
+      Remap: Max:   0.000, Sum:   0.028, Balance:   1.003
+      Total: Max:   0.029, Sum:   3.753, Balance:   1.000
+
+***********************************************************
+*	Total Number of Elements read: 	318118
+*	Total Number of Elements used: 	318118
+*	Total Number of DOFs: 	1928824
+***********************************************************
+
+Time for setting up finite element framework: 0.5902631282806396
+/********************************/
+/* input parameters, KVC syntax */
+/********************************/
+
+
+        Mesh : { 
+            ReplicatedElementDistribution : { 
+                min : 503 
+                total : 222080 
+                stddev : 492.70319761991 
+                max : 3107 
+                average : 1735 
+            }
+            File : /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf 
+            MeshCoords : 61467 
+            ElementDistribution : { 
+                min : 2120 
+                total : 318118 
+                stddev : 69.001010990539 
+                max : 2574 
+                average : 2485.296875 
+            }
+        }
+/********************************/
+
+
+
+
+
+Checking Mesh Quality:
+
+TETRAHEDRAL ELEMENTS:
+  number   = 318118
+
+INVERTED SECOND-ORDER ELEMENTS:
+  number   = 0 <- GOOD!
+
+ASPECT RATIO:
+  min      = 1.024623027831843
+  max      = 4.472390133933878 <- GREAT
+  average  = 1.592208457637729
+  std dev  = 0.2113001289824953
+
+SHAPE MEASURE:
+  min      = 0.0263681120761744
+  max      = 2.032085651041011
+  average  = 0.806509552081866
+  std dev  = 0.1171146939121726
+
+ELEMENT VOLUME:
+  min      = 4.098152253574043e-10
+  max      = 5.095737283740085e-07
+  average  = 1.028761733653779e-07
+  std dev  = 7.731434302547825e-08
+
+BOUNDING BOX:
+  min      = (-0.1405064217552899, -0.1405071695106699, -0.3875000000000001)
+  max      = (0.1405064684945338, 0.395, 0.39)
+
+EDGE LENGTH:
+  min      = 0.000842470129368026
+  max      = 0.02394476734490312
+  average  = 0.009452087621816752
+  std dev  = 0.003464598912577527
+
+Time for checking the mesh quality: 0.07781887054443359
+Time for save/load ComputationalMesh: 0.001648902893066406
+Total Volume of the structure is : 0.03272676251864728
+Calling real solver
+No.      	 Sum 	 Average	 Max 	 Min 	 Std_dev
+Diagonal:	73891808	 5.77e+05	 616576	 438308	 3.39e+04
+Offdiagonal:	6254080	 4.89e+04	 83736	 12812	 1.38e+04
+Nonlocal v:	745366	 5.82e+03	 10266	 1620	 1.68e+03
+
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].SolverMode' undefined, using default value automatic
+Number of Grad DOFs: 345312
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].Tolerance' undefined, using default value 1e-12
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].MaxIterations' undefined, using default value 500
+
+**********************************************************
+ ARPACK Loop: 
+Shift = 6.681093427536301e+01
+**********************************************************
+factorizing the matrix using MUMPS ...
+Using ParMETIS for ordering...
+Use 32 processors to do parallel reordering (ParMetis)
+Partition of Processors: 0 4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80 84 88 92 96 100 104 108 112 116 120 124 128 
+Processor 0: 0, 61812
+Processor 1: 61812, 122128
+Processor 2: 122128, 183538
+Processor 3: 183538, 243672
+Processor 4: 243672, 301512
+Processor 5: 301512, 359328
+Processor 6: 359328, 420540
+Processor 7: 420540, 481404
+Processor 8: 481404, 540514
+Processor 9: 540514, 599338
+Processor 10: 599338, 659556
+Processor 11: 659556, 720736
+Processor 12: 720736, 781650
+Processor 13: 781650, 843890
+Processor 14: 843890, 904798
+Processor 15: 904798, 965560
+Processor 16: 965560, 1025966
+Processor 17: 1025966, 1083592
+Processor 18: 1083592, 1143656
+Processor 19: 1143656, 1203584
+Processor 20: 1203584, 1265506
+Processor 21: 1265506, 1327146
+Processor 22: 1327146, 1388166
+Processor 23: 1388166, 1448554
+Processor 24: 1448554, 1508008
+Processor 25: 1508008, 1568846
+Processor 26: 1568846, 1630444
+Processor 27: 1630444, 1690984
+Processor 28: 1690984, 1750360
+Processor 29: 1750360, 1811610
+Processor 30: 1811610, 1869554
+Processor 31: 1869554, 1928824
+total: 1928824 32
+Generate ordering using parmetis...
+Finished generating ordering using parmetis 
+
+
+Analysis step: 3.73417 seconds
+
+	Maximal per-core estimated memory 	 914 MB
+	Aggregated estimated memory 	 63379 MB
+	Maximal per-core estimated memory if OOC 	 550MB
+	Aggregated estimated memory if OOC 	 57833MB
+
+
+Factorization step: 12.867 seconds
+
+Memory usage:
+used mem per MPI process: min: 2.6106e+02 MB, max: 6.7477e+02 MB, avg: 3.8795e+02 MB, stddev: 6.8134e+01 MB, total: 4.9658e+04 MB
+used mem per node in GB : min: 1.6424e+01 GB, max: 1.9308e+01 GB, avg: 1.8041e+01 GB, stddev: 1.0915e+00 GB, total: 7.2164e+01 GB
+used mem per node in %  : min: 1.3031e+01  %, max: 1.5319e+01  %, avg: 1.4313e+01  %, stddev: 8.6596e-01  %
+
+	 ncv=6	 nev=1
+Linear Solver Preparation Time: 2.0814e+01
+Solver Time: 3.1924e+00
+Number of converged eigenpairs = 1
+
+Eigenvalue: 7.0507730948952016e+01
+	Frequency: 4.0064451725272888e+08
+	Residual: 5.0619815982720956e-12
+
+**********************************************************
+Total number of OP*x operations: 13
+Total number of B*x operations if BMAT='G': 35
+Total number of steps of re-orthogonalization: 8
+**********************************************************
+COMMIT MODE: 0 FREQ = 4.0064451725272888e+08	 k= 8.3968881705636651e+00	norm(v[0]) = 1.9178457841853611e+01
+Number of TriSolve: 13. Average time for one TriSolv: 0.247023
+      Setup: Max:   0.002, Sum:   0.288, Balance:   1.019
+   Matching: Max:   0.004, Sum:   0.460, Balance:   1.014
+Contraction: Max:   0.002, Sum:   0.285, Balance:   1.023
+   InitPart: Max:   0.013, Sum:   1.638, Balance:   1.000
+    Project: Max:   0.000, Sum:   0.017, Balance:   1.303
+ Initialize: Max:   0.001, Sum:   0.098, Balance:   1.087
+      K-way: Max:   0.007, Sum:   0.925, Balance:   1.001
+      Remap: Max:   0.000, Sum:   0.011, Balance:   1.014
+      Total: Max:   0.029, Sum:   3.749, Balance:   1.000
+Omega3p ran in 29.822110 seconds.
+Omega3p peak memory usage (MB) 3169.18
+32 1
+*************************************************************
+			 Omega3P
+
+ACE3P git repo hash: d7798978f280eb606b875ff68830d1efa3f14f3d
+ACE3P Codes Source Branch: master
+Compile date:Compilation Date:          2016-03-24
+
+*************************************************************
+
+         Copyright 2016, Stanford University 
+
+Authors make no representations or warranties, expressed or 
+implied. By way of example, but not limitation, authors make 
+no representatinos or warranties of merchantibility or 
+fitness for any particular purpose or that the use of the 
+software componentns of documentation will not infringe any
+patents, copyrights, trademarks or other rights.
+
+The Authors shall not be held liable for any liability 
+nor for any direct, indirect or consequential damages with 
+respect to any claim by users or any third party on account 
+of or arising from the use of this software.
+
+*************************************************************
+
+Advanced Computations Department
+SLAC National Accelerator Laboratory
+https://slacportal.slac.stanford.edu/sites/ard_public/acd/Pages/Default.aspx
+Contact: ace3p@slac.stanford.edu
+
+Thank you for citing ACE3P when publishing related results.
+
+*************************************************************
+
+Starting master process on nid00163
+Number of MPI processes: 32
+Number of compute nodes: 4
+Number of processes per node: 8
+Data precision: 64 bits
+Compiler: 5.2.0 20150716 (Cray Inc.)
+Boundary conditions:
+0 = INTERIOR
+3 = ELECTRIC
+4 = ELECTRIC
+6 = EXTERIOR
+7 = ELECTRIC
+8 = ELECTRIC
+9 = ELECTRIC
+68 = ELECTRIC
+
+Boundary 6 has surface conductivity of 58000000 S/m
+Read Mesh: /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf
+ZOLTAN Load balancing method = 9 (GRAPH)
+Build configuration:
+
+  ZOLTAN_ID_TYPE: unsigned int (4 bytes)
+  ZOLTAN_GNO_TYPE: ssize_t, (8 bytes)
+  MPI_Datatype for ZOLTAN_ID_TYPE: MPI_UNSIGNED
+  MPI_Datatype for ZOLTAN_GNO_TYPE: MPI_LONG
+  Third party library: ParMetis version 4.0.3
+
+ZOLTAN Parameter IMBALANCE_TOL[0] = 1.100000
+ZOLTAN Parameter AUTO_MIGRATE = FALSE
+ZOLTAN Parameter MIGRATE_ONLY_PROC_CHANGES = 1
+ZOLTAN Parameter OBJ_WEIGHT_DIM = 1
+ZOLTAN Parameter EDGE_WEIGHT_DIM = 0
+ZOLTAN Parameter DEBUG_LEVEL = 1
+ZOLTAN Parameter DEBUG_PROCESSOR = 0
+ZOLTAN Parameter DETERMINISTIC = TRUE
+ZOLTAN Parameter TIMER = 1 (wall)
+ZOLTAN Parameter NUM_GID_ENTRIES = 1
+ZOLTAN Parameter NUM_LID_ENTRIES = 1
+ZOLTAN Parameter RETURN_LISTS = EXPORT
+ZOLTAN Parameter NUM_GLOBAL_PARTS = 32
+ZOLTAN Parameter NUM_LOCAL_PARTS = 1
+ZOLTAN Parameter REMAP = 1
+ZOLTAN Parameter SEED = 123456789 (123456789)
+ZOLTAN Parameter LB_APPROACH = PARTITION
+ZOLTAN Parameter GRAPH_PACKAGE = PARMETIS
+ZOLTAN Parameter PARMETIS_METHOD = PARTKWAY
+ZOLTAN Parameter PARMETIS_OUTPUT_LEVEL = 1
+ZOLTAN Parameter PARMETIS_SEED = 15
+ZOLTAN Parameter PARMETIS_ITR = 0.000000
+ZOLTAN Parameter PARMETIS_COARSE_ALG = 2
+ZOLTAN Parameter PARMETIS_FOLD = 0
+Third party library index type is 4-byte integer
+Third party library weight type is 4-byte integer
+ZOLTAN Parameter CHECK_GRAPH = 0
+ZOLTAN Parameter SCATTER_GRAPH = 1
+ZOLTAN Parameter FINAL_OUTPUT = 0
+ZOLTAN Parameter USE_TIMERS = 0
+ZOLTAN Parameter ADD_OBJ_WEIGHT = NONE
+ZOLTAN Parameter GRAPH_SYMMETRIZE = NONE
+ZOLTAN Parameter GRAPH_SYM_WEIGHT = ADD
+ZOLTAN Parameter GRAPH_BIPARTITE_TYPE = OBJ
+ZOLTAN Parameter GRAPH_BUILD_TYPE = FAST_NO_DUP
+ZOLTAN Parameter GRAPH_FAST_BUILD_BASE = 0
+      Setup: Max:   0.013, Sum:   0.405, Balance:   1.000
+   Matching: Max:   0.013, Sum:   0.410, Balance:   1.001
+Contraction: Max:   0.009, Sum:   0.302, Balance:   1.002
+   InitPart: Max:   0.006, Sum:   0.187, Balance:   1.000
+    Project: Max:   0.001, Sum:   0.016, Balance:   1.135
+ Initialize: Max:   0.002, Sum:   0.062, Balance:   1.028
+      K-way: Max:   0.014, Sum:   0.458, Balance:   1.001
+      Remap: Max:   0.000, Sum:   0.002, Balance:   1.006
+      Total: Max:   0.058, Sum:   1.854, Balance:   1.000
+planned Zoltan balance to target imbalance 1.100000 in 0.102899 seconds
+Zoltan balanced to 1.100000 in 0.976715 seconds
+PARMA_STATUS ghosts balanced in 122 steps to 1.010000 in 4.695197 seconds
+Parma time to read: 1.504879
+Parma time to convert shape: 0.071496
+Parma time to balance w/ zoltan: 0.978815
+Parma time to balance w/ ghosting: 4.697034
+Parma time to convert to DM: 0.036967
+Time for reading the model: 7.303853988647461
+
+Using curved quadratic tetrahedrons
+Setting global vector finite element basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+
+***********************************************************
+*	Total Number of Elements read: 	318118
+*	Total Number of Elements used: 	318118
+*	Total Number of DOFs: 	1928824
+***********************************************************
+
+Time for setting up finite element framework: 0.3655769824981689
+/********************************/
+/* input parameters, KVC syntax */
+/********************************/
+
+
+        Mesh : { 
+            ReplicatedElementDistribution : { 
+                min : 2097 
+                total : 106899 
+                stddev : 515.89257817664 
+                max : 4301 
+                average : 3340.59375 
+            }
+            File : /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf 
+            MeshCoords : 61467 
+            ElementDistribution : { 
+                min : 6430 
+                total : 318118 
+                stddev : 1467.5653623406 
+                max : 14142 
+                average : 9941.1875 
+            }
+        }
+/********************************/
+
+
+
+
+
+Checking Mesh Quality:
+
+TETRAHEDRAL ELEMENTS:
+  number   = 318118
+
+INVERTED SECOND-ORDER ELEMENTS:
+  number   = 0 <- GOOD!
+
+ASPECT RATIO:
+  min      = 1.024623027831843
+  max      = 4.472390133933878 <- GREAT
+  average  = 1.592208457637728
+  std dev  = 0.2113001289824953
+
+SHAPE MEASURE:
+  min      = 0.02636811207617439
+  max      = 2.032085651041011
+  average  = 0.8065095520818661
+  std dev  = 0.1171146939121726
+
+ELEMENT VOLUME:
+  min      = 4.098152253574042e-10
+  max      = 5.095737283740086e-07
+  average  = 1.028761733653779e-07
+  std dev  = 7.731434302547829e-08
+
+BOUNDING BOX:
+  min      = (-0.1405064217552899, -0.1405071695106699, -0.3875000000000001)
+  max      = (0.1405064684945338, 0.395, 0.39)
+
+EDGE LENGTH:
+  min      = 0.000842470129368026
+  max      = 0.02394476734490312
+  average  = 0.009452087621816759
+  std dev  = 0.003464598912577529
+
+Time for checking the mesh quality: 0.2947709560394287
+Time for save/load ComputationalMesh: 0.002301931381225586
+Total Volume of the structure is : 0.03272676251864728
+Calling real solver
+No.      	 Sum 	 Average	 Max 	 Min 	 Std_dev
+Diagonal:	76944832	 2.40e+06	 3314804	 1593952	 3.35e+05
+Offdiagonal:	3201056	 1.00e+05	 134140	 56676	 1.77e+04
+Nonlocal v:	380650	 1.19e+04	 16052	 6776	 2.08e+03
+
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].SolverMode' undefined, using default value automatic
+Number of Grad DOFs: 345312
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].Tolerance' undefined, using default value 1e-12
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].MaxIterations' undefined, using default value 500
+
+**********************************************************
+ ARPACK Loop: 
+Shift = 6.681093427536301e+01
+**********************************************************
+factorizing the matrix using MUMPS ...
+Using ParMETIS for ordering...
+Use 32 processors to do parallel reordering (ParMetis)
+Partition of Processors: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 
+Processor 0: 0, 71274
+Processor 1: 71274, 125152
+Processor 2: 125152, 183522
+Processor 3: 183522, 231002
+Processor 4: 231002, 270814
+Processor 5: 270814, 331956
+Processor 6: 331956, 402668
+Processor 7: 402668, 458672
+Processor 8: 458672, 512352
+Processor 9: 512352, 575430
+Processor 10: 575430, 629438
+Processor 11: 629438, 681088
+Processor 12: 681088, 751526
+Processor 13: 751526, 809626
+Processor 14: 809626, 861100
+Processor 15: 861100, 922862
+Processor 16: 922862, 985782
+Processor 17: 985782, 1043086
+Processor 18: 1043086, 1104038
+Processor 19: 1104038, 1163656
+Processor 20: 1163656, 1212558
+Processor 21: 1212558, 1296300
+Processor 22: 1296300, 1359778
+Processor 23: 1359778, 1428770
+Processor 24: 1428770, 1490256
+Processor 25: 1490256, 1546636
+Processor 26: 1546636, 1608958
+Processor 27: 1608958, 1677644
+Processor 28: 1677644, 1737002
+Processor 29: 1737002, 1804376
+Processor 30: 1804376, 1866206
+Processor 31: 1866206, 1928824
+total: 1928824 32
+Generate ordering using parmetis...
+Finished generating ordering using parmetis 
+
+
+Analysis step: 3.1514 seconds
+
+	Maximal per-core estimated memory 	 1757 MB
+	Aggregated estimated memory 	 34977 MB
+	Maximal per-core estimated memory if OOC 	 930MB
+	Aggregated estimated memory if OOC 	 23802MB
+
+
+Factorization step: 22.0534 seconds
+
+Memory usage:
+used mem per MPI process: min: 8.1809e+02 MB, max: 1.4996e+03 MB, avg: 1.1158e+03 MB, stddev: 1.6138e+02 MB, total: 3.5707e+04 MB
+used mem per node in GB : min: 1.2410e+01 GB, max: 1.2842e+01 GB, avg: 1.2679e+01 GB, stddev: 1.7589e-01 GB, total: 5.0715e+01 GB
+used mem per node in %  : min: 9.8460e+00  %, max: 1.0189e+01  %, avg: 1.0059e+01  %, stddev: 1.3955e-01  %
+
+	 ncv=6	 nev=1
+Linear Solver Preparation Time: 2.8586e+01
+Solver Time: 3.6187e+00
+Number of converged eigenpairs = 1
+
+Eigenvalue: 7.0507730948951775e+01
+	Frequency: 4.0064451725272822e+08
+	Residual: 2.1032315696760956e-10
+
+**********************************************************
+Total number of OP*x operations: 10
+Total number of B*x operations if BMAT='G': 26
+Total number of steps of re-orthogonalization: 6
+**********************************************************
+COMMIT MODE: 0 FREQ = 4.0064451725272822e+08	 k= 8.3968881705636509e+00	norm(v[0]) = 1.9178457522652703e+01
+Number of TriSolve: 10. Average time for one TriSolv: 0.362038
+      Setup: Max:   0.003, Sum:   0.106, Balance:   1.006
+   Matching: Max:   0.006, Sum:   0.180, Balance:   1.001
+Contraction: Max:   0.003, Sum:   0.103, Balance:   1.001
+   InitPart: Max:   0.007, Sum:   0.212, Balance:   1.000
+    Project: Max:   0.000, Sum:   0.004, Balance:   1.372
+ Initialize: Max:   0.001, Sum:   0.030, Balance:   1.034
+      K-way: Max:   0.007, Sum:   0.229, Balance:   1.000
+      Remap: Max:   0.000, Sum:   0.002, Balance:   1.022
+      Total: Max:   0.027, Sum:   0.875, Balance:   1.000
+Omega3p ran in 48.518514 seconds.
+Omega3p peak memory usage (MB) 3531.51
+64 1
+*************************************************************
+			 Omega3P
+
+ACE3P git repo hash: d7798978f280eb606b875ff68830d1efa3f14f3d
+ACE3P Codes Source Branch: master
+Compile date:Compilation Date:          2016-03-24
+
+*************************************************************
+
+         Copyright 2016, Stanford University 
+
+Authors make no representations or warranties, expressed or 
+implied. By way of example, but not limitation, authors make 
+no representatinos or warranties of merchantibility or 
+fitness for any particular purpose or that the use of the 
+software componentns of documentation will not infringe any
+patents, copyrights, trademarks or other rights.
+
+The Authors shall not be held liable for any liability 
+nor for any direct, indirect or consequential damages with 
+respect to any claim by users or any third party on account 
+of or arising from the use of this software.
+
+*************************************************************
+
+Advanced Computations Department
+SLAC National Accelerator Laboratory
+https://slacportal.slac.stanford.edu/sites/ard_public/acd/Pages/Default.aspx
+Contact: ace3p@slac.stanford.edu
+
+Thank you for citing ACE3P when publishing related results.
+
+*************************************************************
+
+Starting master process on nid00163
+Number of MPI processes: 64
+Number of compute nodes: 4
+Number of processes per node: 16
+Data precision: 64 bits
+Compiler: 5.2.0 20150716 (Cray Inc.)
+Boundary conditions:
+0 = INTERIOR
+3 = ELECTRIC
+4 = ELECTRIC
+6 = EXTERIOR
+7 = ELECTRIC
+8 = ELECTRIC
+9 = ELECTRIC
+68 = ELECTRIC
+
+Boundary 6 has surface conductivity of 58000000 S/m
+Read Mesh: /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf
+ZOLTAN Load balancing method = 9 (GRAPH)
+Build configuration:
+
+  ZOLTAN_ID_TYPE: unsigned int (4 bytes)
+  ZOLTAN_GNO_TYPE: ssize_t, (8 bytes)
+  MPI_Datatype for ZOLTAN_ID_TYPE: MPI_UNSIGNED
+  MPI_Datatype for ZOLTAN_GNO_TYPE: MPI_LONG
+  Third party library: ParMetis version 4.0.3
+
+ZOLTAN Parameter IMBALANCE_TOL[0] = 1.100000
+ZOLTAN Parameter AUTO_MIGRATE = FALSE
+ZOLTAN Parameter MIGRATE_ONLY_PROC_CHANGES = 1
+ZOLTAN Parameter OBJ_WEIGHT_DIM = 1
+ZOLTAN Parameter EDGE_WEIGHT_DIM = 0
+ZOLTAN Parameter DEBUG_LEVEL = 1
+ZOLTAN Parameter DEBUG_PROCESSOR = 0
+ZOLTAN Parameter DETERMINISTIC = TRUE
+ZOLTAN Parameter TIMER = 1 (wall)
+ZOLTAN Parameter NUM_GID_ENTRIES = 1
+ZOLTAN Parameter NUM_LID_ENTRIES = 1
+ZOLTAN Parameter RETURN_LISTS = EXPORT
+ZOLTAN Parameter NUM_GLOBAL_PARTS = 64
+ZOLTAN Parameter NUM_LOCAL_PARTS = 1
+ZOLTAN Parameter REMAP = 1
+ZOLTAN Parameter SEED = 123456789 (123456789)
+ZOLTAN Parameter LB_APPROACH = PARTITION
+ZOLTAN Parameter GRAPH_PACKAGE = PARMETIS
+ZOLTAN Parameter PARMETIS_METHOD = PARTKWAY
+ZOLTAN Parameter PARMETIS_OUTPUT_LEVEL = 1
+ZOLTAN Parameter PARMETIS_SEED = 15
+ZOLTAN Parameter PARMETIS_ITR = 0.000000
+ZOLTAN Parameter PARMETIS_COARSE_ALG = 2
+ZOLTAN Parameter PARMETIS_FOLD = 0
+Third party library index type is 4-byte integer
+Third party library weight type is 4-byte integer
+ZOLTAN Parameter CHECK_GRAPH = 0
+ZOLTAN Parameter SCATTER_GRAPH = 1
+ZOLTAN Parameter FINAL_OUTPUT = 0
+ZOLTAN Parameter USE_TIMERS = 0
+ZOLTAN Parameter ADD_OBJ_WEIGHT = NONE
+ZOLTAN Parameter GRAPH_SYMMETRIZE = NONE
+ZOLTAN Parameter GRAPH_SYM_WEIGHT = ADD
+ZOLTAN Parameter GRAPH_BIPARTITE_TYPE = OBJ
+ZOLTAN Parameter GRAPH_BUILD_TYPE = FAST_NO_DUP
+ZOLTAN Parameter GRAPH_FAST_BUILD_BASE = 0
+      Setup: Max:   0.009, Sum:   0.571, Balance:   1.001
+   Matching: Max:   0.016, Sum:   1.034, Balance:   1.001
+Contraction: Max:   0.008, Sum:   0.497, Balance:   1.002
+   InitPart: Max:   0.008, Sum:   0.539, Balance:   1.000
+    Project: Max:   0.001, Sum:   0.045, Balance:   1.134
+ Initialize: Max:   0.002, Sum:   0.133, Balance:   1.076
+      K-way: Max:   0.020, Sum:   1.259, Balance:   1.002
+      Remap: Max:   0.001, Sum:   0.036, Balance:   1.002
+      Total: Max:   0.065, Sum:   4.144, Balance:   1.000
+planned Zoltan balance to target imbalance 1.100000 in 0.096287 seconds
+Zoltan balanced to 1.100000 in 0.771011 seconds
+PARMA_STATUS ghosts balanced in 55 steps to 1.010000 in 1.839953 seconds
+Parma time to read: 1.354111
+Parma time to convert shape: 0.206562
+Parma time to balance w/ zoltan: 0.772280
+Parma time to balance w/ ghosting: 1.841053
+Parma time to convert to DM: 0.027256
+Time for reading the model: 4.209572076797485
+
+Using curved quadratic tetrahedrons
+Setting global vector finite element basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+
+***********************************************************
+*	Total Number of Elements read: 	318118
+*	Total Number of Elements used: 	318118
+*	Total Number of DOFs: 	1928824
+***********************************************************
+
+Time for setting up finite element framework: 0.2830491065979004
+/********************************/
+/* input parameters, KVC syntax */
+/********************************/
+
+
+        Mesh : { 
+            ReplicatedElementDistribution : { 
+                min : 1067 
+                total : 157272 
+                stddev : 525.47802877966 
+                max : 3563 
+                average : 2457.375 
+            }
+            File : /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf 
+            MeshCoords : 61467 
+            ElementDistribution : { 
+                min : 2739 
+                total : 318118 
+                stddev : 821.30458976355 
+                max : 6535 
+                average : 4970.59375 
+            }
+        }
+/********************************/
+
+
+
+
+
+Checking Mesh Quality:
+
+TETRAHEDRAL ELEMENTS:
+  number   = 318118
+
+INVERTED SECOND-ORDER ELEMENTS:
+  number   = 0 <- GOOD!
+
+ASPECT RATIO:
+  min      = 1.024623027831843
+  max      = 4.472390133933878 <- GREAT
+  average  = 1.592208457637729
+  std dev  = 0.2113001289824954
+
+SHAPE MEASURE:
+  min      = 0.02636811207617439
+  max      = 2.032085651041011
+  average  = 0.8065095520818659
+  std dev  = 0.1171146939121726
+
+ELEMENT VOLUME:
+  min      = 4.098152253574042e-10
+  max      = 5.095737283740086e-07
+  average  = 1.028761733653779e-07
+  std dev  = 7.731434302547825e-08
+
+BOUNDING BOX:
+  min      = (-0.1405064217552899, -0.1405071695106699, -0.3875000000000001)
+  max      = (0.1405064684945338, 0.395, 0.39)
+
+EDGE LENGTH:
+  min      = 0.000842470129368026
+  max      = 0.02394476734490312
+  average  = 0.009452087621816759
+  std dev  = 0.003464598912577527
+
+Time for checking the mesh quality: 0.1655809879302979
+Time for save/load ComputationalMesh: 0.00244593620300293
+Total Volume of the structure is : 0.03272676251864728
+Calling real solver
+No.      	 Sum 	 Average	 Max 	 Min 	 Std_dev
+Diagonal:	75571920	 1.18e+06	 1466508	 671984	 1.79e+05
+Offdiagonal:	4573968	 7.15e+04	 97488	 30328	 1.53e+04
+Nonlocal v:	546986	 8.55e+03	 11506	 3802	 1.83e+03
+
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].SolverMode' undefined, using default value automatic
+Number of Grad DOFs: 345312
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].Tolerance' undefined, using default value 1e-12
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].MaxIterations' undefined, using default value 500
+
+**********************************************************
+ ARPACK Loop: 
+Shift = 6.681093427536301e+01
+**********************************************************
+factorizing the matrix using MUMPS ...
+Using ParMETIS for ordering...
+Use 32 processors to do parallel reordering (ParMetis)
+Partition of Processors: 0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64 
+Processor 0: 0, 58806
+Processor 1: 58806, 112638
+Processor 2: 112638, 155800
+Processor 3: 155800, 224018
+Processor 4: 224018, 290352
+Processor 5: 290352, 351260
+Processor 6: 351260, 414978
+Processor 7: 414978, 465486
+Processor 8: 465486, 518584
+Processor 9: 518584, 586620
+Processor 10: 586620, 641028
+Processor 11: 641028, 693444
+Processor 12: 693444, 748164
+Processor 13: 748164, 810800
+Processor 14: 810800, 870958
+Processor 15: 870958, 927762
+Processor 16: 927762, 988842
+Processor 17: 988842, 1037214
+Processor 18: 1037214, 1101684
+Processor 19: 1101684, 1167960
+Processor 20: 1167960, 1228930
+Processor 21: 1228930, 1294830
+Processor 22: 1294830, 1355954
+Processor 23: 1355954, 1415032
+Processor 24: 1415032, 1482194
+Processor 25: 1482194, 1547258
+Processor 26: 1547258, 1603164
+Processor 27: 1603164, 1676602
+Processor 28: 1676602, 1745610
+Processor 29: 1745610, 1808768
+Processor 30: 1808768, 1871572
+Processor 31: 1871572, 1928824
+total: 1928824 32
+Generate ordering using parmetis...
+Finished generating ordering using parmetis 
+
+
+Analysis step: 3.70173 seconds
+
+	Maximal per-core estimated memory 	 1126 MB
+	Aggregated estimated memory 	 45418 MB
+	Maximal per-core estimated memory if OOC 	 810MB
+	Aggregated estimated memory if OOC 	 35942MB
+
+
+Factorization step: 15.4724 seconds
+
+Memory usage:
+used mem per MPI process: min: 4.6063e+02 MB, max: 1.0414e+03 MB, avg: 6.2781e+02 MB, stddev: 1.3956e+02 MB, total: 4.0180e+04 MB
+used mem per node in GB : min: 1.2850e+01 GB, max: 1.6872e+01 GB, avg: 1.4507e+01 GB, stddev: 1.5609e+00 GB, total: 5.8026e+01 GB
+used mem per node in %  : min: 1.0195e+01  %, max: 1.3386e+01  %, avg: 1.1509e+01  %, stddev: 1.2384e+00  %
+
+	 ncv=6	 nev=1
+Linear Solver Preparation Time: 2.3093e+01
+Solver Time: 3.3128e+00
+Number of converged eigenpairs = 1
+
+Eigenvalue: 7.0507730948951931e+01
+	Frequency: 4.0064451725272864e+08
+	Residual: 5.0391800358240359e-12
+
+**********************************************************
+Total number of OP*x operations: 13
+Total number of B*x operations if BMAT='G': 35
+Total number of steps of re-orthogonalization: 8
+**********************************************************
+COMMIT MODE: 0 FREQ = 4.0064451725272864e+08	 k= 8.3968881705636598e+00	norm(v[0]) = 1.9178458121573996e+01
+Number of TriSolve: 13. Average time for one TriSolv: 0.255394
+      Setup: Max:   0.002, Sum:   0.142, Balance:   1.007
+   Matching: Max:   0.003, Sum:   0.208, Balance:   1.005
+Contraction: Max:   0.002, Sum:   0.114, Balance:   1.021
+   InitPart: Max:   0.008, Sum:   0.537, Balance:   1.000
+    Project: Max:   0.000, Sum:   0.007, Balance:   1.272
+ Initialize: Max:   0.001, Sum:   0.057, Balance:   1.040
+      K-way: Max:   0.007, Sum:   0.432, Balance:   1.001
+      Remap: Max:   0.000, Sum:   0.004, Balance:   1.005
+      Total: Max:   0.024, Sum:   1.516, Balance:   1.000
+Omega3p ran in 36.230647 seconds.
+Omega3p peak memory usage (MB) 3338.94
+128 1
+*************************************************************
+			 Omega3P
+
+ACE3P git repo hash: d7798978f280eb606b875ff68830d1efa3f14f3d
+ACE3P Codes Source Branch: master
+Compile date:Compilation Date:          2016-03-24
+
+*************************************************************
+
+         Copyright 2016, Stanford University 
+
+Authors make no representations or warranties, expressed or 
+implied. By way of example, but not limitation, authors make 
+no representatinos or warranties of merchantibility or 
+fitness for any particular purpose or that the use of the 
+software componentns of documentation will not infringe any
+patents, copyrights, trademarks or other rights.
+
+The Authors shall not be held liable for any liability 
+nor for any direct, indirect or consequential damages with 
+respect to any claim by users or any third party on account 
+of or arising from the use of this software.
+
+*************************************************************
+
+Advanced Computations Department
+SLAC National Accelerator Laboratory
+https://slacportal.slac.stanford.edu/sites/ard_public/acd/Pages/Default.aspx
+Contact: ace3p@slac.stanford.edu
+
+Thank you for citing ACE3P when publishing related results.
+
+*************************************************************
+
+Starting master process on nid00163
+Number of MPI processes: 128
+Number of compute nodes: 4
+Number of processes per node: 32
+Data precision: 64 bits
+Compiler: 5.2.0 20150716 (Cray Inc.)
+Boundary conditions:
+0 = INTERIOR
+3 = ELECTRIC
+4 = ELECTRIC
+6 = EXTERIOR
+7 = ELECTRIC
+8 = ELECTRIC
+9 = ELECTRIC
+68 = ELECTRIC
+
+Boundary 6 has surface conductivity of 58000000 S/m
+Read Mesh: /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf
+ZOLTAN Load balancing method = 9 (GRAPH)
+Build configuration:
+
+  ZOLTAN_ID_TYPE: unsigned int (4 bytes)
+  ZOLTAN_GNO_TYPE: ssize_t, (8 bytes)
+  MPI_Datatype for ZOLTAN_ID_TYPE: MPI_UNSIGNED
+  MPI_Datatype for ZOLTAN_GNO_TYPE: MPI_LONG
+  Third party library: ParMetis version 4.0.3
+
+ZOLTAN Parameter IMBALANCE_TOL[0] = 1.100000
+ZOLTAN Parameter AUTO_MIGRATE = FALSE
+ZOLTAN Parameter MIGRATE_ONLY_PROC_CHANGES = 1
+ZOLTAN Parameter OBJ_WEIGHT_DIM = 1
+ZOLTAN Parameter EDGE_WEIGHT_DIM = 0
+ZOLTAN Parameter DEBUG_LEVEL = 1
+ZOLTAN Parameter DEBUG_PROCESSOR = 0
+ZOLTAN Parameter DETERMINISTIC = TRUE
+ZOLTAN Parameter TIMER = 1 (wall)
+ZOLTAN Parameter NUM_GID_ENTRIES = 1
+ZOLTAN Parameter NUM_LID_ENTRIES = 1
+ZOLTAN Parameter RETURN_LISTS = EXPORT
+ZOLTAN Parameter NUM_GLOBAL_PARTS = 128
+ZOLTAN Parameter NUM_LOCAL_PARTS = 1
+ZOLTAN Parameter REMAP = 1
+ZOLTAN Parameter SEED = 123456789 (123456789)
+ZOLTAN Parameter LB_APPROACH = PARTITION
+ZOLTAN Parameter GRAPH_PACKAGE = PARMETIS
+ZOLTAN Parameter PARMETIS_METHOD = PARTKWAY
+ZOLTAN Parameter PARMETIS_OUTPUT_LEVEL = 1
+ZOLTAN Parameter PARMETIS_SEED = 15
+ZOLTAN Parameter PARMETIS_ITR = 0.000000
+ZOLTAN Parameter PARMETIS_COARSE_ALG = 2
+ZOLTAN Parameter PARMETIS_FOLD = 0
+Third party library index type is 4-byte integer
+Third party library weight type is 4-byte integer
+ZOLTAN Parameter CHECK_GRAPH = 0
+ZOLTAN Parameter SCATTER_GRAPH = 1
+ZOLTAN Parameter FINAL_OUTPUT = 0
+ZOLTAN Parameter USE_TIMERS = 0
+ZOLTAN Parameter ADD_OBJ_WEIGHT = NONE
+ZOLTAN Parameter GRAPH_SYMMETRIZE = NONE
+ZOLTAN Parameter GRAPH_SYM_WEIGHT = ADD
+ZOLTAN Parameter GRAPH_BIPARTITE_TYPE = OBJ
+ZOLTAN Parameter GRAPH_BUILD_TYPE = FAST_NO_DUP
+ZOLTAN Parameter GRAPH_FAST_BUILD_BASE = 0
+      Setup: Max:   0.010, Sum:   1.226, Balance:   1.001
+   Matching: Max:   0.038, Sum:   4.811, Balance:   1.000
+Contraction: Max:   0.013, Sum:   1.622, Balance:   1.000
+   InitPart: Max:   0.012, Sum:   1.500, Balance:   1.000
+    Project: Max:   0.003, Sum:   0.264, Balance:   1.272
+ Initialize: Max:   0.006, Sum:   0.667, Balance:   1.187
+      K-way: Max:   0.052, Sum:   6.701, Balance:   1.002
+      Remap: Max:   0.000, Sum:   0.016, Balance:   1.012
+      Total: Max:   0.132, Sum:  16.918, Balance:   1.000
+planned Zoltan balance to target imbalance 1.100000 in 0.158473 seconds
+Zoltan balanced to 1.100000 in 0.595495 seconds
+PARMA_STATUS ghosts balanced in 65 steps to 1.010000 in 1.677454 seconds
+Parma time to read: 1.360939
+Parma time to convert shape: 0.050587
+Parma time to balance w/ zoltan: 0.596207
+Parma time to balance w/ ghosting: 1.678163
+Parma time to convert to DM: 0.020539
+Time for reading the model: 3.711639881134033
+
+Using curved quadratic tetrahedrons
+Setting global vector finite element basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+Setting 'Material' PRegion basis order to p=2
+
+***********************************************************
+*	Total Number of Elements read: 	318118
+*	Total Number of Elements used: 	318118
+*	Total Number of DOFs: 	1928824
+***********************************************************
+
+Time for setting up finite element framework: 0.2962930202484131
+/********************************/
+/* input parameters, KVC syntax */
+/********************************/
+
+
+        Mesh : { 
+            ReplicatedElementDistribution : { 
+                min : 876 
+                total : 232149 
+                stddev : 340.89380611091 
+                max : 2494 
+                average : 1813.6640625 
+            }
+            File : /global/cscratch1/sd/cwsmith/cws/cav17/cav17f.ncdf 
+            MeshCoords : 61467 
+            ElementDistribution : { 
+                min : 1348 
+                total : 318118 
+                stddev : 479.59361667511 
+                max : 3704 
+                average : 2485.296875 
+            }
+        }
+/********************************/
+
+
+
+
+
+Checking Mesh Quality:
+
+TETRAHEDRAL ELEMENTS:
+  number   = 318118
+
+INVERTED SECOND-ORDER ELEMENTS:
+  number   = 0 <- GOOD!
+
+ASPECT RATIO:
+  min      = 1.024623027831843
+  max      = 4.472390133933878 <- GREAT
+  average  = 1.592208457637729
+  std dev  = 0.2113001289824953
+
+SHAPE MEASURE:
+  min      = 0.02636811207617439
+  max      = 2.032085651041011
+  average  = 0.8065095520818659
+  std dev  = 0.1171146939121726
+
+ELEMENT VOLUME:
+  min      = 4.098152253574042e-10
+  max      = 5.095737283740086e-07
+  average  = 1.028761733653779e-07
+  std dev  = 7.731434302547826e-08
+
+BOUNDING BOX:
+  min      = (-0.1405064217552899, -0.1405071695106699, -0.3875000000000001)
+  max      = (0.1405064684945338, 0.395, 0.39)
+
+EDGE LENGTH:
+  min      = 0.000842470129368026
+  max      = 0.02394476734490312
+  average  = 0.009452087621816754
+  std dev  = 0.003464598912577527
+
+Time for checking the mesh quality: 0.09850597381591797
+Time for save/load ComputationalMesh: 0.002511978149414062
+Total Volume of the structure is : 0.03272676251864728
+Calling real solver
+No.      	 Sum 	 Average	 Max 	 Min 	 Std_dev
+Diagonal:	73752760	 5.76e+05	 828948	 314148	 1.04e+05
+Offdiagonal:	6393128	 4.99e+04	 69776	 24608	 1.00e+04
+Nonlocal v:	778324	 6.08e+03	 8382	 2582	 1.23e+03
+
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].SolverMode' undefined, using default value automatic
+Number of Grad DOFs: 345312
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].Tolerance' undefined, using default value 1e-12
+Warning: Key '<omega3p>.<crab.o3p.in>.EigenSolver[0].MaxIterations' undefined, using default value 500
+
+**********************************************************
+ ARPACK Loop: 
+Shift = 6.681093427536301e+01
+**********************************************************
+factorizing the matrix using MUMPS ...
+Using ParMETIS for ordering...
+Use 32 processors to do parallel reordering (ParMetis)
+Partition of Processors: 0 4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80 84 88 92 96 100 104 108 112 116 120 124 128 
+Processor 0: 0, 52618
+Processor 1: 52618, 107290
+Processor 2: 107290, 159934
+Processor 3: 159934, 224754
+Processor 4: 224754, 276148
+Processor 5: 276148, 334754
+Processor 6: 334754, 398716
+Processor 7: 398716, 454568
+Processor 8: 454568, 521464
+Processor 9: 521464, 584564
+Processor 10: 584564, 648434
+Processor 11: 648434, 704890
+Processor 12: 704890, 757462
+Processor 13: 757462, 816614
+Processor 14: 816614, 876854
+Processor 15: 876854, 925274
+Processor 16: 925274, 979816
+Processor 17: 979816, 1041306
+Processor 18: 1041306, 1101578
+Processor 19: 1101578, 1152656
+Processor 20: 1152656, 1213422
+Processor 21: 1213422, 1279578
+Processor 22: 1279578, 1338114
+Processor 23: 1338114, 1404708
+Processor 24: 1404708, 1470236
+Processor 25: 1470236, 1530560
+Processor 26: 1530560, 1592444
+Processor 27: 1592444, 1658744
+Processor 28: 1658744, 1728522
+Processor 29: 1728522, 1795882
+Processor 30: 1795882, 1866308
+Processor 31: 1866308, 1928824
+total: 1928824 32
+Generate ordering using parmetis...
+Finished generating ordering using parmetis 
+
+
+Analysis step: 3.88087 seconds
+
+	Maximal per-core estimated memory 	 893 MB
+	Aggregated estimated memory 	 60470 MB
+	Maximal per-core estimated memory if OOC 	 520MB
+	Aggregated estimated memory if OOC 	 53183MB
+
+
+Factorization step: 20.573 seconds
+
+Memory usage:
+used mem per MPI process: min: 2.6750e+02 MB, max: 7.2170e+02 MB, avg: 3.7556e+02 MB, stddev: 7.4775e+01 MB, total: 4.8072e+04 MB
+used mem per node in GB : min: 1.6460e+01 GB, max: 1.9804e+01 GB, avg: 1.7442e+01 GB, stddev: 1.3751e+00 GB, total: 6.9770e+01 GB
+used mem per node in %  : min: 1.3059e+01  %, max: 1.5712e+01  %, avg: 1.3839e+01  %, stddev: 1.0910e+00  %
+
+	 ncv=6	 nev=1
+Linear Solver Preparation Time: 2.8687e+01
+Solver Time: 3.6443e+00
+Number of converged eigenpairs = 1
+
+Eigenvalue: 7.0507730948952073e+01
+	Frequency: 4.0064451725272906e+08
+	Residual: 5.0729727080670219e-12
+
+**********************************************************
+Total number of OP*x operations: 13
+Total number of B*x operations if BMAT='G': 36
+Total number of steps of re-orthogonalization: 9
+**********************************************************
+COMMIT MODE: 0 FREQ = 4.0064451725272906e+08	 k= 8.3968881705636687e+00	norm(v[0]) = 1.9178458134364529e+01
+Number of TriSolve: 13. Average time for one TriSolv: 0.281852
+      Setup: Max:   0.002, Sum:   0.221, Balance:   1.020
+   Matching: Max:   0.004, Sum:   0.452, Balance:   1.002
+Contraction: Max:   0.002, Sum:   0.213, Balance:   1.008
+   InitPart: Max:   0.013, Sum:   1.715, Balance:   1.000
+    Project: Max:   0.000, Sum:   0.021, Balance:   1.789
+ Initialize: Max:   0.001, Sum:   0.119, Balance:   1.115
+      K-way: Max:   0.010, Sum:   1.254, Balance:   1.000
+      Remap: Max:   0.000, Sum:   0.012, Balance:   1.011
+      Total: Max:   0.032, Sum:   4.033, Balance:   1.000
+Omega3p ran in 40.379915 seconds.
+Omega3p peak memory usage (MB) 3424.13
