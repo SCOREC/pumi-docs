@@ -9,7 +9,7 @@
 \usepackage{url}
 
 
-\title{Omega3P Integration Progress Report}
+\title{Omega3P+PUMI Progress Report}
 
 \author{Cameron W. Smith, Gerrett Diamond}
 
@@ -117,7 +117,7 @@ We support these integrals by implementing Omega3P geometric queries with PUMI
 APIs that can interrogate parametric model information provided by CAD
 kernels.
 
-\section{Load Balancing}
+\section{Load Balancing}\label{sec:lb}
 
 Omega3P solving step relies on both on part mesh entities as well as a layer of 
 ghosted elements along each part boundary. Figure \ref{fig:ghost3} shows an 
@@ -176,13 +176,15 @@ So, we ported the Omega3P API calls to use the Zoltan (3.81) and
 To ensure these changes and the other build system modifications did not break
 Omega3P we also scripted execution of regression tests.
 
-\section{Results}
+\section{Results and Next Steps}
 
-We compared the runtime and memory usage of Omega3P versus Omega3P+PUMI on up to
-128 cores of the NERSC Cori Phase I system.
-The runtime of Omega3P+PUMI is within a few percent of Omega3P's.
+We ran Omega3P and Omega3P+PUMI on the \textit{cav17} model with a 318118
+element quadratic mesh on up to 128 cores (32 cores per node) of the NERSC Cori
+Phase I system.
+The runtime of Omega3P+PUMI and Omega3P is shown in Figure~\ref{fig:time}.
 Analysis of timing results is ongoing to determine where we are saving and
 losing time.
+IMBALANCE DATA?
 Peak memory usage across all processors is shown in
 Figure~\ref{fig:memusage}.
 As expected, the Omega3P+PUMI memory usage is higher than Omega3P.
@@ -193,14 +195,28 @@ required.
 
 \begin{figure}[ht]
 \centering
+  \includegraphics[width=\textwidth]{total-runtime.eps}
+  \caption{\label{fig:time} Total runtime averaged over three runs at each core
+  count.}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
   \includegraphics[width=\textwidth]{peak-memory-usage.eps}
   \caption{\label{fig:memusage} Peak memory usage.}
 \end{figure}
 
-\newpage
-\bibliographystyle{plain}
-\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr.bib}
+Our next step will be to perform a detailed analysis of the runtime and memory
+usage.
+This analysis is expected to confirm initial indications that the imbalance of
+ghosted elements is not optimal.
+Plans to address the imbalances are described in Section~\ref{sec:lb}.
+After we have shown runtime improvements we plan to automate our regression
+tests and work with SLAC developers to merge our changes into
+the ACE3P central repository and make our documentation accessible.
 
+\newpage \bibliographystyle{plain}
+\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr}
 
 \end{document}
 
