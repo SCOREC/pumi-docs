@@ -187,14 +187,16 @@ Phase I system.
 The runtime of Omega3P+PUMI and Omega3P is shown in Figure~\ref{fig:time}.
 Analysis of timing results is ongoing to determine where we are saving and
 losing time.
-IMBALANCE DATA?
 Peak memory usage across all processors is shown in
 Figure~\ref{fig:memusage}.
 As expected, the Omega3P+PUMI memory usage is higher than Omega3P.
 At 64 cores there is a 2\% increase and at 128 cores there is an 8\% increase.
-We suspect that larger ghost entity imbalances may account for the increase with
-core count, but a more detailed comparison of imbalance and memory usage is
-required.
+Figures~\ref{fig:vtx} and~\ref{fig:elm} respectively show the total count
+(ghost+owned), ghost count, and ghost + owned imbalance of vertices and
+elements.
+We suspect that the increased number of entities will account for some portion
+of the runtime and memory usage increases with core count, but a more detailed
+comparison of the imbalance and memory usage is required.
 
 \begin{figure}[ht]
 \centering
@@ -209,11 +211,26 @@ required.
   \caption{\label{fig:memusage} Peak memory usage.}
 \end{figure}
 
+\begin{figure}[ht]
+\centering
+  \includegraphics[width=\textwidth]{total-vtx.eps} \\
+  \includegraphics[width=\textwidth]{vtx-imb.eps} \\
+  \includegraphics[width=\textwidth]{ghost-vtx.eps}
+  \caption{\label{fig:vtx} Total vertex count, ghost vertex count, and (total) vertex imbalance.}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+  \includegraphics[width=\textwidth]{total-elms.eps} \\
+  \includegraphics[width=\textwidth]{elm-imb.eps} \\
+  \includegraphics[width=\textwidth]{ghost-elms.eps}
+  \caption{\label{fig:elm} Total element count, ghost element count, and (total) element imbalance.}
+\end{figure}
+
 Our next step will be to perform a detailed analysis of the runtime and memory
 usage.
-This analysis is expected to confirm initial indications that the imbalance of
-ghosted elements is not optimal.
-Plans to address the imbalances are described in Section~\ref{sec:lb}.
+Assuming the increased entity count has a is a significant issue, we will then modify
+the ParMA ghost balancer as described in Section~\ref{sec:lb}.
 After we have shown runtime improvements we plan to automate our regression
 tests and work with SLAC developers to merge our changes into
 the ACE3P central repository and make our documentation accessible.
