@@ -155,17 +155,16 @@ Second order elements requires edges and faces, and above that edges, faces, and
 regions need to be balanced.
 
 \section{Status}
-Omega3P now supports reading a curved mesh from a NetCDF formatted file into a
-DistMesh, or reading a PUMI mesh directly.
+Omega3P currently supports reading a curved mesh from a NetCDF formatted file
+into a DistMesh, or reading a PUMI mesh directly.
 If a serial DistMesh was read it is converted to a PUMI-APF mesh and then 
 partitioned using ParMETIS via the Zoltan interface.
 Prior to running the Omega3P analysis the partition is balanced using ParMA
 iterative diffusion methods.
-ParMA iterative diffusion directly operates on the PUMI-APF mesh structure to
-balance both the mesh 
-the owned and ghosted mesh entities 
-the partition with ParMA's ghost balancer, converting from PUMI-APF to DistMesh,
-and running the analysis.
+ParMA diffusion directly modifies the distribution of the PUMI-APF mesh to
+balance the degree of freedom holders and the ghosted mesh entities.
+Lastly, prior to running the analysis, the PUMI-APF mesh is converted to
+DistMesh.
 
 PUMI integration within Omega3p required understanding the Omega3P build process
 and software dependencies so we could build and test on the SCOREC workstations
