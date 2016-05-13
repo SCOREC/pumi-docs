@@ -131,35 +131,55 @@ weights of elements plus the sum of the weights of the ghost elements.
 \caption{\label{fig:ghost3} Three layers of elements ghosted from the remote part to the local part.  The first layer is colored green, the second blue, and the third yellow.}
 \end{figure}
 
-\noindent Our strategy for partitioning and load balancing is started with a 
-uniformly-weighted 
-partition of the mesh from 1 part to $N$ parts followed by ghost-aware diffusive load 
-balancing using ParMA~\cite{SmithParma2015} to get a final mesh that is well balanced 
-in terms of on-part elements and ghosted elements along the part's boundary. We 
-currently utilize ParMA's partition improvement procedures that account for the 
-ghosted layers using a combination of existing element selection criteria and an 
-extended 'weight' tracking mechanism.  The weight tracking extension relies on the 
-exact knowledge of the change to the ghosted elements as elements on a heavy part 
-are selected for migration to a light part. The current implementation of these 
-procedures assumes vertex-based ghosting while Omega3P ghosting is element-based. 
-To accurately accommodate for Omega3P's ghosting we will be extending ParMA's 
-ghosting to be able to balance based on element-based ghosting. To further improve 
-the efficiency of the load balancing we may explore better partitionings 
-that are ghost-aware so that ParMA is given a better initial partitioning such that it 
-can find a better partitioning faster.
+\noindent Our strategy for partitioning and load balancing is started with a
+uniformly-weighted partition of the mesh from 1 part to $N$ parts followed by
+ghost-aware diffusive load balancing using ParMA~\cite{SmithParma2015} to get a
+final mesh that is well balanced in terms of on-part elements and ghosted
+elements along the part's boundary.
+We currently utilize ParMA's partition improvement procedures that account for
+the ghosted layers using a combination of existing element selection criteria
+and an extended 'weight' tracking mechanism.
+The weight tracking extension relies on the exact knowledge of the change to the
+ghosted elements as elements on a heavy part are selected for migration to a
+light part.
+The current implementation of these procedures assumes vertex-based ghosting
+while Omega3P ghosting is element-based.
+To accurately accommodate for Omega3P's ghosting we will be extending ParMA's
+ghosting to be able to balance based on element-based ghosting.
+To further improve the efficiency of the load balancing we may explore better
+partitionings that are ghost-aware so that ParMA is given a better initial
+partitioning such that it can find a better partitioning faster.
 
 \section{Status}
-In its current state our implementation includes loading the mesh into PUMI/APF, partitioning/load balancing of the PUMI/APF mesh and transfer from PUMI/APF to Omega3P's mesh data structure. The conversion process works for both straight-sided elements and second order curved geometry.
+Omega3P now supports reading a curved mesh from a NetCDF formatted file into a
+DistMesh, or reading a PUMI mesh directly.
+If a serial DistMesh was read it is converted to a PUMI-APF mesh and then 
+partitioned using ParMETIS via the Zoltan interface.
+Prior to running the Omega3P analysis the partition is balanced using ParMA
+iterative diffusion methods.
+ParMA iterative diffusion directly operates on the PUMI-APF mesh structure to
+balance both the mesh 
+the owned and ghosted mesh entities 
+the partition with ParMA's ghost balancer, converting from PUMI-APF to DistMesh,
+and running the analysis.
 
-We modified ace3p to support the latest version of ParMETIS and Zoltan.
-
-The ace3p build system has been cleaned up and documented for installation on
-gnu/linux workstations and the NERSC Cori Phase I and Edison machines.
+PUMI integration within Omega3p required undestanding the Omega3P build process
+and software dependencies so we could build and test on the SCOREC workstations
+and the NERSC Cray systems (Cori Phase I and Edison).
+The dependencies and the build process is now documented and Boost-Build
+configuration files updated to use the latest system compilers.
+The only dependency conflict we encountered stemmed from Omega3P's use of old
+Zoltan and ParMETIS versions; PUMI requires the latest versions which have
+slightly different APIs.
+So, we ported the Omega3P API calls to use the Zoltan (3.81) and
+(Par)METIS (4.0.3) APIs and modified the build system accordingly.
+To ensure these changes and the other build system modifications did not break
+Omega3P we also scripted execution of regression tests.
 
 \section{Results}
 
-We compared the runtime and memory usage of Omega3P versus Omega3P+PUMI on
-up to 128 cores of the NERSC Cori Phase I system.
+We compared the runtime and memory usage of Omega3P versus Omega3P+PUMI on up to
+128 cores of the NERSC Cori Phase I system.
 Peak memory usage data gathered from runs is listed in Table~\ref{tbl:memusage}.
 
 \begin{table}[h]
