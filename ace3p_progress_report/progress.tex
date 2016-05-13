@@ -151,6 +151,11 @@ can find a better partitioning faster.
 \section{Status}
 In its current state our implementation includes loading the mesh into PUMI/APF, partitioning/load balancing of the PUMI/APF mesh and transfer from PUMI/APF to Omega3P's mesh data structure. The conversion process works for both straight-sided elements and second order curved geometry.
 
+We modified ace3p to support the latest version of ParMETIS and Zoltan.
+
+The ace3p build system has been cleaned up and documented for installation on
+gnu/linux workstations and the NERSC Cori Phase I and Edison machines.
+
 \section{Results}
 
 We compared the runtime and memory usage of Omega3P versus Omega3P+PUMI on
