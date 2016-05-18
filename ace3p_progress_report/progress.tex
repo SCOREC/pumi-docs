@@ -106,11 +106,23 @@ via the Python-based Software Integration Framework~\cite{sankaran2010applicatio
 Our implementation of in-memory integration for PUMI and Omega3p uses
 mesh query and construction APIs for mesh and field conversion combined with
 fine-level APIs for querying higher-order geometric data for element
-integrals.
+integrals. 
+%technical details
+Our conversion begins with a version of Omega3P's netcdf file reader that is altered 
+to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
+the PUMI mesh we are able to perform partitioning and load balancing as well as adaptation 
+while only storing the PUMI mesh. After we have a finalized PUMI mesh a second 
+overloaded version of Omega3P's file reader is used to convert the PUMI mesh to 
+Omega3P's DistMesh. This is done by using the data from the in-memory PUMI mesh as the 
+input instead of the netcdf file. After the conversion to DistMesh, we store both the 
+PUMI Mesh and the Omega3P DistMesh for the duration of the finite element setup and 
+computations. Figure \ref{fig:convert_time} shows the time to read into the PUMI mesh 
+and convert to DistMesh compared to the original reading straight into DistMesh.
+%Blah blah about what the figure shows and tradeoffs that are found
+Figure \ref{fig:convert_mem} shows the memory usage after reading for our approach and 
+the original Omega3P run. 
+%blah blah about what the memory figure shows
 The mesh conversion approach trades code simplicity for increased peak memory usage.
-During PUMI adaptation and load balancing only the PUMI mesh is stored.
-After conversion though, we store both the PUMI mesh and the Omega3P
-DistMesh.
 Mesh conversion alone is not sufficient to integrate over elements near the
 geometric boundary.
 We support these integrals by implementing Omega3P geometric queries with PUMI
