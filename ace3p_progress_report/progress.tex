@@ -204,7 +204,7 @@ Figure~\ref{fig:memusage}.
 As expected, the Omega3P+PUMI memory usage is higher than Omega3P.
 At 64 cores there is a 2\% increase and at 128 cores there is an 8\% increase.
 Figures~\ref{fig:vtx} and~\ref{fig:elm} respectively show the total count
-(ghost+owned), ghost count, and ghost + owned imbalance of vertices and
+(ghost+owned) and ghost + owned imbalance of vertices and
 elements.
 We suspect that the increased number of entities will account for some portion
 of the runtime and memory usage increases with core count, but a more detailed
@@ -227,16 +227,14 @@ comparison of the imbalance and memory usage is required.
 \centering
   \includegraphics[width=\textwidth]{total-vtx.eps} \\
   \includegraphics[width=\textwidth]{vtx-imb.eps} \\
-  \includegraphics[width=\textwidth]{ghost-vtx.eps}
-  \caption{\label{fig:vtx} Total vertex count, ghost vertex count, and (total) vertex imbalance.}
+  \caption{\label{fig:vtx} Total vertex count and (total) vertex imbalance.}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
   \includegraphics[width=\textwidth]{total-elms.eps} \\
   \includegraphics[width=\textwidth]{elm-imb.eps} \\
-  \includegraphics[width=\textwidth]{ghost-elms.eps}
-  \caption{\label{fig:elm} Total element count, ghost element count, and (total) element imbalance.}
+  \caption{\label{fig:elm} Total element count and (total) element imbalance.}
 \end{figure}
 
 Our next step will be to perform a detailed analysis of the runtime and memory
