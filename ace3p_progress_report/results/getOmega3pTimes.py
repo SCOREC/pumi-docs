@@ -14,11 +14,12 @@ keys={ \
 'Linear Solver Preparation Time:':-1, \
 'Solver Time:': -1, \
 'Omega3p ran in': -2 ,\
+'Omega3p peak memory usage': -1 ,\
 'planned Zoltan balance to target imbalance': -2 ,\
 'Zoltan balanced to': -2 ,\
-'PARMA_STATUS ghosts balanced in \d* steps': 4 ,\
-'PARMA_STATUS ghosts balanced in \d* steps to': 7 ,\
-'PARMA_STATUS ghosts balanced in \d* steps to \d*.\d* in': -2 ,\
+'PARMA_STATUS ghostEdges balanced in \d* steps': 4 ,\
+'PARMA_STATUS ghostEdges balanced in \d* steps to': 7 ,\
+'PARMA_STATUS ghostEdges balanced in \d* steps to \d*.\d* in': -2 ,\
 'Parma time to read': -1 ,\
 'Parma time to convert shape': -1 ,\
 'Parma time to convert to DM': -1 ,\
@@ -27,8 +28,6 @@ keys={ \
 'Time for save/load ComputationalMesh': -1 \
 }
 
-#'Parma time to balance w/ zoltan': -1 ,\
-#'Parma time to balance w/ ghosting': -1 ,\
 
 
 def printlog(log):
@@ -47,7 +46,6 @@ for line in f:
     for k,v in keys.items():
         m = re.search(k, line)
         if m:
-            #print(line,end='')
             log[k] = line.split()[v]
     if line.startswith('ACE3P git repo hash'):
         printlog(log)
