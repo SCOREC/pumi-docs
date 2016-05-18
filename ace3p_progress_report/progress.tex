@@ -132,11 +132,11 @@ kernels.
 \section{Load Balancing}\label{sec:lb}
 
 The Omega3P solving step relies on both on part mesh entities as well as a layer of 
-ghosted elements along each part boundary. Figure \ref{fig:ghost3} shows an 
-example of a mesh with three layers of ghosting. In order to reach maximum efficiency
-for ghost-based codes partitioning must target minimizing the sum of the 
-weights of ghosted and non-ghosted elements as well as the mesh entities holding
-degrees-of-freedom.
+ghosted elements along each part boundary. Omega3P's ghosting uses vertex adjacency such
+that every element that shares a vertex with a part boundary will be ghosted to each part that shares that boundary. This can be seen in Figure \ref{fig:ghost3} that shows an 
+example of a mesh with a layer of ghosting. In order to reach maximum efficiency
+for Omega3P, partitioning must target minimizing the sum of the 
+ghosted and on-part elements as well as the mesh entities holding degrees-of-freedom.
 
 \begin{figure}[ht]
 \centering
