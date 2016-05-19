@@ -116,13 +116,19 @@ overloaded version of Omega3P's file reader is used to convert the PUMI mesh to
 Omega3P's DistMesh. This is done by using the data from the in-memory PUMI mesh as the 
 input instead of the netcdf file. After the conversion to DistMesh, we store both the 
 PUMI Mesh and the Omega3P DistMesh for the duration of the finite element setup and 
-computations. Figure \ref{fig:convert_time} shows the time to read into the PUMI mesh 
-and convert to DistMesh compared to the original reading straight into DistMesh.
-%Blah blah about what the figure shows and tradeoffs that are found
-Figure \ref{fig:convert_mem} shows the memory usage after reading for our approach and 
-the original Omega3P run. 
-%blah blah about what the memory figure shows
-The mesh conversion approach trades code simplicity for increased peak memory usage.
+computations. The reading and converting of the mesh data together take less than 15\% 
+of the total runtime and have a similar cost to the netcdf read since the conversion 
+from PUMI to Distmesh is much faster than both the original file reading to Distmesh 
+and the new file reading to PUMI. 
+%Memory discussion (needs revisions?)
+The dual mesh approach offers code simplicity and 
+ease of access for both structures at the cost of increased peak memory usage. 
+Figure \ref{fig:memusage} shows the peak memory usage over the entire program for both
+the original Omega3P code and with the PUMI mesh. The increase in peak memory when 
+storing the PUMI mesh is 2\% at 64 cores and 8\% at 128 cores. At 32 cores the 
+peak memory usage is less for the run with the PUMI mesh likely due to a better 
+partition of the mesh. 
+%Could probably use some smoothing to the next point
 Mesh conversion alone is not sufficient to integrate over elements near the
 geometric boundary.
 We support these integrals by implementing Omega3P geometric queries with PUMI
