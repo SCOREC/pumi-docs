@@ -100,6 +100,17 @@ steps.
 
 \section{In-memory Integration}\label{sec:inmem}
 
+We define a software component as a set of interfaces to query and modify
+encapsulated state information.
+The components in adaptive simulations that provide geometric model, mesh, and
+field information~\cite{BeaWal,ibanez2015pumi,Ollivier10} are essential to error
+estimation, adaptation, and load balancing~\cite{SmithParma2015} services.
+Because of this strong dependency we package these components and services
+together within the open-source PUMI~\cite{ibanez2015pumi} software.
+Despite what the packaging may imply, the build system and interface design
+minimizes the required set of dependencies for components that simply need to
+query information, the use case for a typical finite element PDE solver.
+
 Approaches for high performing and scalable component interactions avoid
 file-based I/O through in-memory data streams and component functional
 interfaces.
