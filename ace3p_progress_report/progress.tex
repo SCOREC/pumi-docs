@@ -78,13 +78,22 @@ during as many operations as possible to maximize performance.
 \end{tabular}
 \end{table}
 
-CWS - INTRODUCE SECTIONS - INMEM, LOAD BALANCING, SOFTWARE IMPROVEMENT
+We begin the report by discussing techniques for in-memory software interactions
+that avoid file I/O.
+Section~\ref{sec:inmem} concludes with a discussion of the Omega3P-PUMI
+in-memory integration.
+Next, Section~\ref{sec:parma} discusses the integration of the PUMI tools
+for static and dynamic load balancing for Omega3P.
+Section~\ref{sec:software} briefly lists ACE3P software improvements.
+Section~\ref{sec:results} concludes the report with closing remarks and next
+steps.
 
-\section{In-memory Integration}
+\section{In-memory Integration}\label{sec:inmem}
 
 Approaches for high performing and scalable component interactions avoid
 file-based I/O through in-memory data streams and component functional
 interfaces.
+
 The ADIOS tools provide an alternative mechanism for the in-memory coupling of
 executables~\cite{bennett2012combining,zhang2012enabling}; our work here focuses
 on the interaction of libraries operating within the same process.
@@ -150,7 +159,7 @@ APIs that can interrogate parametric model information provided by CAD
 kernels.
 CWS - SAY MORE!!!!
 
-\section{Load Balancing}\label{sec:lb}
+\section{Load Balancing}\label{sec:parma}
 
 The Omega3P solving step relies on both on part mesh entities as well as a layer of 
 ghosted elements along each part boundary. Omega3P's ghosting uses vertex adjacency such
@@ -185,7 +194,7 @@ Second order elements requires edges and faces, and above that edges, faces, and
 regions need to be balanced.
 We have implemented ParMA ghost-aware edge balancing.
 
-\section{Status}
+\section{Status}\label{sec:software}
 Omega3P currently supports reading a curved mesh from a NetCDF formatted file
 into a DistMesh, or reading a PUMI mesh directly.
 If a serial DistMesh was read it is converted to a PUMI-APF mesh and then 
@@ -220,7 +229,7 @@ So, we ported the Omega3P API calls to use the Zoltan (3.81) and
 To ensure these changes and the other build system modifications did not break
 Omega3P we also scripted execution of regression tests.
 
-\section{Results and Next Steps}
+\section{Results and Next Steps}\label{sec:results}
 
 CWS - REVISE
 We ran Omega3P and Omega3P+PUMI on the \textit{cav17} model with a 318118
@@ -263,7 +272,7 @@ comparison of the imbalance and memory usage is required.
 Our next step will be to perform a detailed analysis of the runtime and memory
 usage.
 Assuming the increased entity count has a is a significant issue, we will then modify
-the ParMA ghost balancer as described in Section~\ref{sec:lb}.
+the ParMA ghost balancer as described in Section~\ref{sec:parma}.
 After we have shown runtime improvements we plan to automate our regression
 tests and work with SLAC developers to merge our changes into
 the ACE3P central repository and make our documentation accessible.
