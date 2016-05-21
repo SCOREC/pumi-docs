@@ -80,7 +80,7 @@ during as many operations as possible to maximize performance.
 
 We begin the report by discussing techniques for in-memory software interactions
 that avoid file I/O.
-Section~\ref{sec:inmem} concludes with a discussion of the Omega3P-PUMI
+Section~\ref{sec:omega-pumi} then discusses our approach to Omega3P-PUMI
 in-memory integration.
 Next, Section~\ref{sec:parma} discusses the integration of the PUMI tools
 for static and dynamic load balancing for Omega3P.
@@ -93,7 +93,6 @@ steps.
 Approaches for high performing and scalable component interactions avoid
 file-based I/O through in-memory data streams and component functional
 interfaces.
-
 The ADIOS tools provide an alternative mechanism for the in-memory coupling of
 executables~\cite{bennett2012combining,zhang2012enabling}; our work here focuses
 on the interaction of libraries operating within the same process.
@@ -126,10 +125,12 @@ For example, in the rotorcraft aerodynamics community the HELIOS platform
 provides a set of analysis, meshing, adaptation, and load balancing components
 via the Python-based Software Integration Framework~\cite{sankaran2010application}.
 
+\section{Omega3P+PUMI In-memory Integration}\label{sec:omega-pumi}
+
 Our implementation of in-memory integration for PUMI and Omega3p uses
 mesh query and construction APIs for mesh and field conversion combined with
 fine-level APIs for querying higher-order geometric data for element
-integrals. 
+integrals.
 %technical details
 Our conversion begins with a version of Omega3P's netcdf file reader that is altered 
 to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
@@ -151,13 +152,15 @@ the original Omega3P code and with the PUMI mesh. The increase in peak memory wh
 storing the PUMI mesh is 2\% at 64 cores and 8\% at 128 cores. At 32 cores the 
 peak memory usage is less for the run with the PUMI mesh likely due to a better 
 partition of the mesh. 
-%Could probably use some smoothing to the next point
-Mesh conversion alone is not sufficient to integrate over elements near the
-geometric boundary.
-We support these integrals by implementing Omega3P geometric queries with PUMI
-APIs that can interrogate parametric model information provided by CAD
-kernels.
-CWS - SAY MORE!!!!
+
+Computing accurate integrals near the geometric model boundary requires
+access to parametric shape information.
+Parametric shape information is currently only available from CAD kernels such
+as Parasolid, ACIS, and Granite~\ref{}CAD REFERENCES.
+PUMI will provide this information to the Omega3P finite element integration
+procedures through its use of the Simmetrix GeomSim APIs. 
+During near-boundary curved mesh element integration procedures Omega3P will
+query PUMI to provide accurate Jacobian information.
 
 \section{Load Balancing}\label{sec:parma}
 
