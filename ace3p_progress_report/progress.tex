@@ -128,9 +128,7 @@ via the Python-based Software Integration Framework~\cite{sankaran2010applicatio
 \section{Omega3P+PUMI In-memory Integration}\label{sec:omega-pumi}
 
 Our implementation of in-memory integration for PUMI and Omega3p uses
-mesh query and construction APIs for mesh and field conversion combined with
-fine-level APIs for querying higher-order geometric data for element
-integrals.
+mesh query and construction APIs for mesh and field conversion.
 %technical details
 Our conversion begins with a version of Omega3P's netcdf file reader that is altered 
 to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
@@ -152,15 +150,6 @@ the original Omega3P code and with the PUMI mesh. The increase in peak memory wh
 storing the PUMI mesh is 2\% at 64 cores and 8\% at 128 cores. At 32 cores the 
 peak memory usage is less for the run with the PUMI mesh likely due to a better 
 partition of the mesh. 
-
-Computing accurate integrals near the geometric model boundary requires
-access to parametric shape information.
-Parametric shape information is currently only available from CAD kernels such
-as Parasolid, ACIS, and Granite~\ref{}CAD REFERENCES.
-PUMI will provide this information to the Omega3P finite element integration
-procedures through its use of the Simmetrix GeomSim APIs. 
-During near-boundary curved mesh element integration procedures Omega3P will
-query PUMI to provide accurate Jacobian information.
 
 \section{Load Balancing}\label{sec:parma}
 
