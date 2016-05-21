@@ -34,11 +34,11 @@ The Parallel Unstructured Mesh Infrastructure, PUMI
 {\small (github.com/SCOREC/\\core)}~\cite{ibanez2015pumi},
 supports mesh-based parallel simulations with mesh-adaptation, load balancing,
 and tensor-field services.
-Critical to the implementation of these servies is the {\textit complete}
+Critical to the implementation of these services is the {\textit complete}
 array-based~\cite{ibanezArray16} mesh representation.
-This representation and its interface, APF, uses only a small amount of memory,
-approximetly 500B/element using 64 bit indices, and provides $O(1)$ mesh adjacency
-queries.
+This representation and its interface, APF, uses only a small amount of memory
+(approximetly 500B/element using 64 bit indices) and provides $O(1)$ mesh
+adjacency queries.
 
 Parallel simulations on massively parallel systems are most effective when data
 movement is minimized.
