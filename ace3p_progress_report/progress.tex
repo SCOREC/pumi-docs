@@ -188,14 +188,39 @@ additional mesh conversion tools for converting a curved parallel PUMI mesh to a
 parallel DistMesh and vice versa.
 
 \section{Load Balancing}\label{sec:parma}
+ParMA, partitioning using mesh adjacencies, is a PUMI component that provides
+multi-entity dynamic load balancing~\cite{SmithParma2015}.
+ParMA's multi-entity balancing traverses an
+application-specified priority list of entity orders (vertex, edge, face,
+region) to balance in descending order.
+For each entity order iterative diffusion is executed until balance is reached
+or no further improvement is possible.
+A diffusive iteration first determines which parts are imbalanced and which
+neighboring parts, targets, can accept entities (weight) from them.
+Next, a part-level graph distance heuristic is computed that measures how far each
+boundary mesh element is from the parts topological center.
+ParMA then iterates over the part boundary in descending order of distance to
+select small sets of elements for migration.
+The sets of boundary elements are selected if they are on the boundary with a
+neighboring part that can accept weight, and if the migration would reduce the
+weight of the sending part without increasing the number of entities on the
+boundary (higher surface area).
+Note, when a entity order of lower priority is being balanced ParMA will not disrupt
+the balance of higher priority orders by accounting for the relative weight
+difference during the selection of targets and boundary element
+sets~\cite{SmithParma2015}.
 
-The Omega3P solving step relies on both on part mesh entities as well as a layer
+ParMA's support for multi-entity balancing was extended for Omega3P's needs.
+The Omega3P solving step relies on both on-part mesh entities as well as a layer
 of ghosted elements along each part boundary.
-Omega3P's ghosting uses vertex adjacency such
-that every element that shares a vertex with a part boundary will be ghosted to each part that shares that boundary. This can be seen in Figure \ref{fig:ghost3} that shows an 
-example of a mesh with a layer of ghosting. In order to reach maximum efficiency
-for Omega3P, partitioning must target minimizing the sum of the 
-ghosted and on-part elements as well as the mesh entities holding degrees-of-freedom.
+Omega3P's ghosting uses vertex adjacency such that every element that shares a
+vertex with a part boundary will be ghosted to each part that shares that
+boundary.
+This can be seen in Figure \ref{fig:ghost3} that shows an example of a mesh with
+a layer of ghosting.
+In order to improve Omega3P's performance and scalability, ParMA targets
+minimizing the sum of the ghosted and on-part elements as well as the mesh
+entities holding degrees-of-freedom.
 
 \begin{figure}[ht]
 \centering
@@ -203,28 +228,19 @@ ghosted and on-part elements as well as the mesh entities holding degrees-of-fre
 \caption{\label{fig:ghost3} A layer of ghosted elements from part A to part B. The darker elements represent all the elements on part A that part B will copy to create its remote mesh.}
 \end{figure}
 
-Given a
-uniformly-weighted mesh we first partition it one part to $N$ parts using
-Zoltan's interface to ParMETIS's multi-level graph-based method.
-Once distributed we then run ghost-aware diffusive load balancing using
-ParMA~\cite{SmithParma2015} to get a final mesh that is well balanced for
-analysis procedures.
-ParMA's partition improvement procedures account for
-the ghosted layers using a combination of existing element selection criteria
-and an extended `weight' tracking mechanism.
-The weight tracking extension relies on the exact knowledge of the change to the
-ghosted elements as elements on a heavy part are selected for migration to a
-light part.
-ParMA also balances degree-of-freedom holders defined by 
-hierarchical Nedelec basis functions CITE 2009 OMEGA3P PAPER ~\cite{ingelstrom2006new}.
-CWS - DESCRIBE THE PHASES OF PARMA
+ParMA balances the degree-of-freedom holders defined by 
+hierarchical Nedelec basis functions~\cite{ko2010advances,ingelstrom2006new} by
+reusing existing multi-entity target and boundary-element selection
+procedures.
 For first order elements this requires balancing edges.
 Second order elements requires edges and faces, and above that edges, faces, and
 regions need to be balanced.
-We have implemented ParMA ghost-aware edge balancing.
+Each of these entity balancing procedures accounts for the ghosted weight
+contribution by performing an additional neighborhood
+exchange~\cite{ibanez2014hybrid} of the exact weight of ghosted layer entities.
 
-\section{Status}\label{sec:software}
-Omega3P currently supports reading a curved mesh from a NetCDF formatted file
+\section{Software Status}\label{sec:software}
+Our workflow currently supports reading a curved mesh from a NetCDF formatted file
 into a DistMesh, or reading a PUMI mesh directly.
 If a serial DistMesh was read it is converted to a PUMI-APF mesh and then 
 partitioned using ParMETIS via the Zoltan interface.
@@ -235,28 +251,28 @@ balance the degree of freedom holders and the ghosted mesh entities.
 Lastly, prior to running the analysis, the PUMI-APF mesh is converted to
 DistMesh.
 
-CWS - SAY WHAT THE PROBLEMS WERE AND WHAT WE DID TO FIX THEM
+During the development process the following software ACE3P software issues were
+encountered:
 \begin{itemize}
-  \item repo contained large input and output data files - split data files into separate tarball
-  \item configuration file on cori and edison used combination of preinstalled
-    libraries and specific !modified! versions of libraries - we documented the
-    exact changes needed and avoided use of system installs when possible
-  \item did not support latest version of parmetis and zoltan - APIs updated 
-  \item we built on the scorec workstations - demonstrated portability improvements
+  \item The ACE3P Git repo contained a large collection of test data which
+    results in a large download for developers.  Those files were moved to a
+    privately shared directory prior to the creation of the private repo we have 
+    been working in.
+  \item The ACE3P Git repo contained the source code of
+    external libraries it depends on.  In some cases the source code was modified.  
+    We removed the external library source code from our private repo and documented 
+    the versions needed and the exact changes required.
+  \item The Boost-Build configuration on Cori and Edison used a combination 
+    of preinstalled libraries and the libraries built from the ACE3P repo. We
+    modified the boost-build configuration files to minimize the use of system
+    libraries. Currently our build only depends on the system install of PetSC,
+    netcdf, and the GNU Science Library (gsl).
+  \item Calls to ParMETIS and Zoltan APIs were updated to support the latest
+    versions, 4.0.3 and 3.81, respectively.
+  \item We built ACE3P on the SCOREC Debian Jessie workstations.  This demonstrated 
+    and exercised portability improvements and made the development process
+    easier.
 \end{itemize}
-
-PUMI integration within Omega3p required understanding the Omega3P build process
-and software dependencies so we could build and test on the SCOREC workstations
-and the NERSC Cray systems (Cori Phase I and Edison).
-The dependencies and the build process is now documented and Boost-Build
-configuration files updated to use the latest system compilers.
-The only dependency conflict we encountered stemmed from Omega3P's use of old
-Zoltan and ParMETIS versions; PUMI requires the latest versions which have
-slightly different APIs.
-So, we ported the Omega3P API calls to use the Zoltan (3.81) and
-(Par)METIS (4.0.3) APIs and modified the build system accordingly.
-To ensure these changes and the other build system modifications did not break
-Omega3P we also scripted execution of regression tests.
 
 \section{Results and Next Steps}\label{sec:results}
 
