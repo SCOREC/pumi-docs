@@ -30,16 +30,6 @@ elements than a more uniform mesh for the same level of accuracy, there are many
 complex simulations where the meshes required are so large that they can only be
 solved on massively parallel systems.
 
-The Parallel Unstructured Mesh Infrastructure, PUMI
-{\small (github.com/SCOREC/\\core)}~\cite{ibanez2015pumi},
-supports mesh-based parallel simulations with mesh-adaptation, load balancing,
-and tensor-field services.
-Critical to the implementation of these services is the {\textit complete}
-array-based~\cite{ibanezArray16} mesh representation.
-This representation and its interface, APF, uses only a small amount of memory
-(approximetly 500B/element using 64 bit indices) and provides $O(1)$ mesh
-adjacency queries.
-
 Parallel simulations on massively parallel systems are most effective when data
 movement is minimized.
 Data movement costs increase with the depth of the memory hierarchy; a design
@@ -88,12 +78,22 @@ during as many operations as possible to maximize performance.
 \end{tabular}
 \end{table}
 
+The Parallel Unstructured Mesh Infrastructure, PUMI
+{\small (github.com/SCOREC/\\core)}~\cite{ibanez2015pumi},
+provides in-memory mesh-based parallel simulations with mesh-adaptation, load
+balancing, and tensor-field services.
+Critical to the implementation of these services is the {\textit complete}
+array-based~\cite{ibanezArray16} mesh representation.
+This representation and its interface, APF, uses only a small amount of memory
+(approximetly 500B/element using 64 bit indices) and provides $O(1)$ mesh
+adjacency queries.
+
 The report begins by discussing techniques for in-memory software interactions
 that avoid file I/O.
-Section~\ref{sec:omega-pumi} then discusses our approach to Omega3P-PUMI
+Section~\ref{sec:omega-pumi} then discusses our approach to Omega3P and PUMI
 in-memory integration.
-Next, Section~\ref{sec:parma} discusses the integration of the PUMI tools
-for static and dynamic load balancing for Omega3P.
+Next, Section~\ref{sec:parma} discusses the integration of the PUMI services
+for static and dynamic load balancing in Omega3P.
 Section~\ref{sec:software} briefly lists ACE3P software improvements.
 Section~\ref{sec:results} concludes the report with closing remarks and next
 steps.
