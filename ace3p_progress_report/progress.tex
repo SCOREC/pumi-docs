@@ -148,10 +148,29 @@ via the Python-based Software Integration Framework~\cite{sankaran2010applicatio
 
 \section{Omega3P+PUMI In-memory Integration}\label{sec:omega-pumi}
 
-Our implementation of in-memory integration for PUMI and Omega3p uses
-mesh query and construction APIs for mesh and field conversion.
-%technical details
-Our conversion begins with a version of Omega3P's netcdf file reader that is altered 
+Omega3P is a C++ component within ACE3P for frequency analysis of linear
+accelerator cavities.
+It is built upon multiple components that include distributed mesh
+functionality, tensor-field data management, vector and matrix math, and many
+linear solvers.
+Our in-memory integration of PUMI with Omega3P leverages these component interfaces to
+execute mesh and tensor-field transformations (layout changes, data types, etc...) and 
+transfers (copies).
+
+The key advantage of this approach is the small amount of relatively simple code
+required; we simply needed to read and write the Omega3P mesh and field structures.
+However, an increase in peak memory usage will occur during the transfer when
+there are two copies of the mesh and/or field data stored in memory.
+Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
+execution for both the original Omega3P code and with the PUMI mesh.
+The increase in peak memory when storing the PUMI mesh is 2\% at 64 cores and
+8\% at 128 cores.
+At 32 cores the peak memory usage is less for the run with the PUMI mesh likely
+due to a better partition of the mesh.
+
+The first workflow we targetted supporting begins with an existing serial NetCDF
+formatted mesh and ASCII formatted problem definition.
+Our conversion begins with a version of Omega3P's NetCDF file reader that is altered 
 to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
 the PUMI mesh we are able to perform partitioning and load balancing as well as adaptation 
 while only storing the PUMI mesh. After we have a finalized PUMI mesh a second 
@@ -164,19 +183,15 @@ of the total runtime and have a similar cost to the netcdf read since the conver
 from PUMI to Distmesh is much faster than both the original file reading to Distmesh 
 and the new file reading to PUMI. 
 
-%Memory discussion (needs revisions?)
-The dual mesh approach offers code simplicity and 
-ease of access for both structures at the cost of increased peak memory usage. 
-Figure \ref{fig:memusage} shows the peak memory usage over the entire program for both
-the original Omega3P code and with the PUMI mesh. The increase in peak memory when 
-storing the PUMI mesh is 2\% at 64 cores and 8\% at 128 cores. At 32 cores the 
-peak memory usage is less for the run with the PUMI mesh likely due to a better 
-partition of the mesh. 
+To support more efficient parallel workflows we have developed in-memory
+additional mesh conversion tools for converting a curved parallel PUMI mesh to a
+parallel DistMesh and vice versa.
 
 \section{Load Balancing}\label{sec:parma}
 
-The Omega3P solving step relies on both on part mesh entities as well as a layer of 
-ghosted elements along each part boundary. Omega3P's ghosting uses vertex adjacency such
+The Omega3P solving step relies on both on part mesh entities as well as a layer
+of ghosted elements along each part boundary.
+Omega3P's ghosting uses vertex adjacency such
 that every element that shares a vertex with a part boundary will be ghosted to each part that shares that boundary. This can be seen in Figure \ref{fig:ghost3} that shows an 
 example of a mesh with a layer of ghosting. In order to reach maximum efficiency
 for Omega3P, partitioning must target minimizing the sum of the 
