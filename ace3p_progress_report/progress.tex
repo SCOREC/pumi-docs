@@ -165,8 +165,13 @@ Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
 execution for both the original Omega3P code and with the PUMI mesh.
 The increase in peak memory when storing the PUMI mesh is 2\% at 64 cores and
 8\% at 128 cores.
-At 32 cores the peak memory usage is less for the run with the PUMI mesh likely
-due to a better partition of the mesh.
+The lower usage at 32 cores is still being investigated.
+
+\begin{figure}[ht]
+\centering
+  \includegraphics[width=\textwidth]{peak-memory-usage.eps}
+  \caption{\label{fig:memusage} Peak memory usage.}
+\end{figure}
 
 The first workflow we targetted supporting begins with an existing serial NetCDF
 formatted mesh and ASCII formatted problem definition.
@@ -276,30 +281,19 @@ encountered:
 
 \section{Results and Next Steps}\label{sec:results}
 
-CWS - REVISE
-We ran Omega3P and Omega3P+PUMI on the \textit{cav17} model with a 318118
+We ran Omega3P and Omega3P+PUMI on the \texttt{cav17} model with a 318,118
 element quadratic mesh on up to 128 cores (32 cores per node) of the NERSC Cori
 Phase I system.
 The runtime of Omega3P+PUMI and Omega3P is shown in Figure~\ref{fig:time}.
 Analysis of timing results is ongoing to determine where we are saving and
 losing time.
-Peak memory usage across all processors is shown in
-Figure~\ref{fig:memusage}.
-As expected, the Omega3P+PUMI memory usage is higher than Omega3P.
-At 64 cores there is a 2\% increase and at 128 cores there is an 8\% increase.
+Peak memory usage across all processors is shown in Figure~\ref{fig:memusage}.
 Figures~\ref{fig:vtx} and~\ref{fig:elm} respectively show the total count
 (ghost+owned) and ghost + owned imbalance of vertices and
 elements.
 We suspect that the increased number of entities will account for some portion
 of the runtime and memory usage increases with core count, but a more detailed
 comparison of the imbalance and memory usage is required.
-
-\begin{figure}[ht]
-\centering
-  \includegraphics[width=\textwidth]{peak-memory-usage.eps}
-  \caption{\label{fig:memusage} Peak memory usage.}
-\end{figure}
-
 \begin{figure}[ht]
 \centering
   \includegraphics[width=\textwidth]{total-vtx.eps} \\
@@ -314,16 +308,14 @@ comparison of the imbalance and memory usage is required.
   \caption{\label{fig:elm} Total (ghost+owned) element count and element imbalance.}
 \end{figure}
 
-Our next step will be to perform a detailed analysis of the runtime and memory
+Our next step is to perform a detailed analysis of the runtime and memory
 usage.
-Assuming the increased entity count has a is a significant issue, we will then modify
-the ParMA ghost balancer as described in Section~\ref{sec:parma}.
 After we have shown runtime improvements we plan to automate our regression
 tests and work with SLAC developers to merge our changes into
 the ACE3P central repository and make our documentation accessible.
 
 \newpage \bibliographystyle{plain}
-\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr,scorec-refs/fem}
+\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr,scorec-refs/fem,scorec-refs/meshgen}
 
 \end{document}
 
