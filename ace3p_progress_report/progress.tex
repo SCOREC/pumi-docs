@@ -162,10 +162,12 @@ required; we simply needed to read and write the Omega3P mesh and field structur
 However, an increase in peak memory usage will occur during the transfer when
 there are two copies of the mesh and/or field data stored in memory.
 Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
-execution for both the original Omega3P code and with the PUMI mesh.
-The increase in peak memory when storing the PUMI mesh is 2\% at 64 cores and
-8\% at 128 cores.
-The lower usage at 32 cores is still being investigated.
+execution for both the original Omega3P code and with the PUMI mesh
+(Omega3P+PUMI).
+The increase in peak memory when storing the PUMI mesh is 2\% at 32 cores and
+6\% at 128 cores.
+At 32 cores there is a slight reduction in memory usage; we are still
+investigating this.
 
 \begin{figure}[ht]
 \centering
@@ -174,24 +176,22 @@ The lower usage at 32 cores is still being investigated.
   list the percent increase versus Omega3P.}
 \end{figure}
 
-The first workflow we targetted supporting begins with an existing serial NetCDF
-formatted mesh and ASCII formatted problem definition.
-Our conversion begins with a version of Omega3P's NetCDF file reader that is altered 
+Mesh conversion begins with a version of Omega3P's NetCDF file reader that is altered
 to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
 the PUMI mesh we are able to perform partitioning and load balancing as well as adaptation 
 while only storing the PUMI mesh. After we have a finalized PUMI mesh a second 
 overloaded version of Omega3P's file reader is used to convert the PUMI mesh to 
 Omega3P's DistMesh. This is done by using the data from the in-memory PUMI mesh as the 
-input instead of the netcdf file. After the conversion to DistMesh, we store both the 
+input instead of the NetCDF file. After the conversion to DistMesh, we store both the
 PUMI Mesh and the Omega3P DistMesh for the duration of the finite element setup and 
 computations. The reading and converting of the mesh data together take less than 15\% 
-of the total runtime and have a similar cost to the netcdf read since the conversion 
+of the total runtime and have a similar cost to the NetCDF read since the conversion
 from PUMI to Distmesh is much faster than both the original file reading to Distmesh 
 and the new file reading to PUMI. 
 
-To support more efficient parallel workflows we have developed in-memory
-additional mesh conversion tools for converting a curved parallel PUMI mesh to a
-parallel DistMesh and vice versa.
+To support more efficient parallel workflows we have developed methods for
+direct conversion of a curved parallel PUMI mesh to a curved parallel DistMesh and vice
+versa.
 
 \section{Load Balancing}\label{sec:parma}
 ParMA, partitioning using mesh adjacencies, is a PUMI component that provides
