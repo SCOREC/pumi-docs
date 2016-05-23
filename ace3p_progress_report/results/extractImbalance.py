@@ -32,6 +32,9 @@ def getStats(line):
 runs = []
 log = {}
 for line in f:
+    if line.startswith('omega3p ') or line.startswith('omega3p_pumi '):
+        log['exe'] = line.split()[0]
+        log['cores'] = line.split()[1]
     for k in keys:
         m = re.search(k, line)
         if m:
@@ -47,11 +50,15 @@ def name(prefix,key):
 print('runs,',len(runs))
 #initialize the output log - dictionary of lists
 log = {}
+log['exe'] = []
+log['cores'] = []
 for k in sorted(keys):
     for i,v in runs[0][k].items():
         log[name(k,i)] = []
 #populate the output log
 for run in runs:
+    log['exe'].append(run['exe'])
+    log['cores'].append(run['cores'])
     for k in sorted(keys):
         for i,v in run[k].items():
             log[name(k,i)].append(v)
