@@ -170,7 +170,8 @@ The lower usage at 32 cores is still being investigated.
 \begin{figure}[ht]
 \centering
   \includegraphics[width=\textwidth]{peak-memory-usage.eps}
-  \caption{\label{fig:memusage} Peak memory usage.}
+  \caption{\label{fig:memusage} Peak memory usage. The labels above the Omega3P+PUMI bars
+  list the percent increase versus Omega3P.}
 \end{figure}
 
 The first workflow we targetted supporting begins with an existing serial NetCDF
@@ -284,28 +285,27 @@ encountered:
 We ran Omega3P and Omega3P+PUMI on the \texttt{cav17} model with a 318,118
 element quadratic mesh on up to 128 cores (32 cores per node) of the NERSC Cori
 Phase I system.
-The runtime of Omega3P+PUMI and Omega3P is shown in Figure~\ref{fig:time}.
-Analysis of timing results is ongoing to determine where we are saving and
-losing time.
-Peak memory usage across all processors is shown in Figure~\ref{fig:memusage}.
-Figures~\ref{fig:vtx} and~\ref{fig:elm} respectively show the total count
-(ghost+owned) and ghost + owned imbalance of vertices and
-elements.
-We suspect that the increased number of entities will account for some portion
-of the runtime and memory usage increases with core count, but a more detailed
-comparison of the imbalance and memory usage is required.
+The Omega3P+PUMI average number of ghost + owned vertices and elements per-part
+is less than 1.8\% higher than the Omega3P counts at 32 parts.
+At 64 and 128 parts the average entity counts of Omega3P+PUMI is less than 0.2\%
+higher than Omega3P counts.
+While maintaining nearly identical entity counts ParMA significantly reduces the
+imbalance of ghost + owned elements and vertices. 
+Figures~\ref{fig:vtx} and~\ref{fig:elm} respectively show the imbalance of
+vertices and elements.
+At 128 parts ParMA reduces the vertex imbalance by 24 points and the element
+imbalance by 27 points.
+
 \begin{figure}[ht]
 \centering
-  \includegraphics[width=\textwidth]{total-vtx.eps} \\
   \includegraphics[width=\textwidth]{vtx-imb.eps} \\
-  \caption{\label{fig:vtx} Total (ghost+owned) vertex count and vertex imbalance.}
+  \caption{\label{fig:vtx} Vertex imbalance.}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-  \includegraphics[width=\textwidth]{total-elms.eps} \\
   \includegraphics[width=\textwidth]{elm-imb.eps} \\
-  \caption{\label{fig:elm} Total (ghost+owned) element count and element imbalance.}
+  \caption{\label{fig:elm} Element imbalance.}
 \end{figure}
 
 Our next step is to perform a detailed analysis of the runtime and memory
@@ -314,9 +314,17 @@ After we have shown runtime improvements we plan to automate our regression
 tests and work with SLAC developers to merge our changes into
 the ACE3P central repository and make our documentation accessible.
 
+To complete the adaptive loop we will begin work on solution-field transfer to
+support mesh adaptation.
+Critical to this work is determining where we will execute element level
+integrals of the solution field.
+We can either use Omega3P element integration routines, or implement the Nedelec
+basis functions in our tensor-field component.
+Reusing the Omega3P routines has the potential to reduce memory usage and code,
+but may face difficulties near geometric model boundaries if parametric shape
+information is not available.
+
 \newpage \bibliographystyle{plain}
 \bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr,scorec-refs/fem,scorec-refs/meshgen}
 
 \end{document}
-
-
