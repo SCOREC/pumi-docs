@@ -45,12 +45,13 @@ until the simulation is complete.
 Typically, a solve-adapt cycle will include pre-processing (preparing data
 structures for the linear system construction), system assembly and solve,
 error-estimation, adaptation.
-Between each of these steps there is the need to dynamically rebalance load as
-needed for scalability of the next step in the workflow.
+Between each of these steps dynamic load balancing is needed for
+scalability of the next step in the workflow.
 These dynamic rebalances must be efficient, which requires (i) eliminating
 unneeded data movement (avoiding file I/O being paramount), and (ii) fast
 parallel methods to determine a load balanced distribution of operations and
 data.
+
 For example, predictive load balancing can be performed prior to mesh adaptation
 to reduce post adaptation imbalances and avoid memory exhaustion on parts with
 heavy refinement.
