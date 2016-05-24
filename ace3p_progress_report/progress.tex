@@ -11,7 +11,7 @@
 
 \title{Omega3P+PUMI Progress Report}
 
-\author{Cameron W. Smith, Gerrett Diamond}
+\author{Cameron W. Smith, Gerrett Diamond, Mark S. Shephard}
 
 \date{\today}
 
@@ -45,8 +45,12 @@ until the simulation is complete.
 Typically, a solve-adapt cycle will include pre-processing (preparing data
 structures for the linear system construction), system assembly and solve,
 error-estimation, adaptation.
-Between each of these steps are opportunities to tune the distribution of the
-data structures for higher performance.
+Between each of these steps there is the need to dynamically rebalance load as
+neede for scalability of the next step in the workflow.
+These dynamic rebalances must be efficient, which requires (i) eliminating
+un-needed data movement (avoiding file I/O being paramount), and (ii) fast
+parallel methods to determine a load balanced distribution of operations and
+data.
 For example, predictive load balancing can be performed prior to mesh adaptation
 to reduce post adaptation imbalances and avoid memory exhaustion on parts with
 heavy refinement.
@@ -56,7 +60,7 @@ degrees-of-freedom~\cite{SmithParma2015,zhou2012unstructured}.
 
 The Parallel Unstructured Mesh Infrastructure, PUMI
 {\small (github.com/SCOREC/\\core)}~\cite{ibanez2015pumi},
-provides in-memory mesh-based parallel simulations with mesh-adaptation, load
+provides in-memory mesh-based parallel simulations with mesh adaptation, load
 balancing, and tensor-field services.
 Critical to the implementation of these services is the {\textit complete}
 array-based~\cite{ibanezArray16} mesh representation.
@@ -69,7 +73,7 @@ that avoid file I/O.
 Section~\ref{sec:omega-pumi} then discusses our approach to Omega3P and PUMI
 in-memory integration for adaptive simulations.
 Next, Section~\ref{sec:parma} discusses the integration of the PUMI services
-for static and dynamic load balancing in Omega3P.
+for partitioning and fast dynamic load balancing in Omega3P.
 Section~\ref{sec:software} briefly lists ACE3P software improvements.
 Section~\ref{sec:results} concludes the report with closing remarks and next
 steps.
