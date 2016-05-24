@@ -285,27 +285,27 @@ encountered:
 We ran Omega3P and Omega3P+PUMI on the \texttt{cav17} model with a 318,118
 element quadratic mesh on up to 128 cores (32 cores per node) of the NERSC Cori
 Phase I system.
-The Omega3P+PUMI average number of ghost + owned vertices and elements per-part
-is less than 1.8\% higher than the Omega3P counts at 32 parts.
-At 64 and 128 parts the average entity counts of Omega3P+PUMI is less than 0.2\%
+The Omega3P+PUMI average number of ghost + owned edges and faces per-part
+is less than 1.46\% higher than the Omega3P counts at 32 parts.
+At 64 and 128 parts the average entity counts of Omega3P+PUMI is less than 0.3\%
 higher than Omega3P counts.
 While maintaining nearly identical entity counts ParMA significantly reduces the
 imbalance of ghost + owned elements and vertices. 
 Figures~\ref{fig:vtx} and~\ref{fig:elm} respectively show the imbalance of
 vertices and elements.
-At 128 parts ParMA reduces the vertex imbalance by 24 points and the element
+At 128 parts ParMA reduces the edge imbalance by 30 points and the face
 imbalance by 27 points.
 
 \begin{figure}[ht]
 \centering
-  \includegraphics[width=\textwidth]{vtx-imb.eps} \\
-  \caption{\label{fig:vtx} Vertex imbalance.}
+  \includegraphics[width=\textwidth]{edge-imb.eps} \\
+  \caption{\label{fig:vtx} Edge imbalance.}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-  \includegraphics[width=\textwidth]{elm-imb.eps} \\
-  \caption{\label{fig:elm} Element imbalance.}
+  \includegraphics[width=\textwidth]{face-imb.eps} \\
+  \caption{\label{fig:elm} Face imbalance.}
 \end{figure}
 
 Our next step is to perform a detailed analysis of the runtime and memory
