@@ -141,7 +141,7 @@ structures.
 However, an increase in peak memory usage will occur during the transfer when
 there are two copies of the mesh and/or field data stored in memory.
 Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
-execution on the {\textt cav17} 318,118 element case for both the original
+execution on the {\texttt cav17} 318,118 element case for both the original
 Omega3P code and with the code that executes PUMI mesh conversion and load
 balancing (Omega3P+PUMI).
 The increase in peak memory when storing the PUMI mesh is 2\% at 32 cores and
@@ -307,6 +307,6 @@ but may face difficulties near geometric model boundaries if parametric shape
 information is not available.
 
 \newpage \bibliographystyle{plain}
-\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr,scorec-refs/fem,scorec-refs/meshgen}
+\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr,scorec-refs/fem,scorec-refs/meshgen,scorec-refs/msgpass}
 
 \end{document}
