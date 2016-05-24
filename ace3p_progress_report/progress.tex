@@ -67,7 +67,7 @@ adjacency queries.
 The report begins by discussing techniques for in-memory software interactions
 that avoid file I/O.
 Section~\ref{sec:omega-pumi} then discusses our approach to Omega3P and PUMI
-in-memory integration for an adaptive workflow.
+in-memory integration for adaptive simulations.
 Next, Section~\ref{sec:parma} discusses the integration of the PUMI services
 for static and dynamic load balancing in Omega3P.
 Section~\ref{sec:software} briefly lists ACE3P software improvements.
@@ -133,17 +133,23 @@ Our in-memory integration of PUMI with Omega3P leverages these component interfa
 execute mesh and tensor-field transformations (layout changes, data types, etc...) and 
 transfers (copies).
 
+Towards complete support of the solve-adapt cycle we have implemented in-memory
+procedures to convert from Omega3P meshes to PUMI meshes.
 The key advantage of this approach is the small amount of relatively simple code
-required; we simply needed to read and write the Omega3P mesh and field structures.
+required; we simply needed to read and write the Omega3P mesh and field
+structures.
 However, an increase in peak memory usage will occur during the transfer when
 there are two copies of the mesh and/or field data stored in memory.
 Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
-execution for both the original Omega3P code and with the PUMI mesh
-(Omega3P+PUMI).
+execution on the {\textt cav17} 318,118 element case for both the original
+Omega3P code and with the code that executes PUMI mesh conversion and load
+balancing (Omega3P+PUMI).
 The increase in peak memory when storing the PUMI mesh is 2\% at 32 cores and
 6\% at 128 cores.
-At 32 cores there is a slight reduction in memory usage; we are still
-investigating this.
+At 32 cores there is a slight reduction in memory usage that we are still
+investigating.
+Demonsrating low memory overhead is critical for efficient parallel adaptive
+simulation execution.
 
 \begin{figure}[ht]
 \centering
@@ -160,18 +166,18 @@ overloaded version of Omega3P's file reader is used to convert the PUMI mesh to
 Omega3P's DistMesh. This is done by using the data from the in-memory PUMI mesh as the 
 input instead of the NetCDF file. After the conversion to DistMesh, we store both the
 PUMI Mesh and the Omega3P DistMesh for the duration of the finite element setup and 
-computations. The reading and converting of the mesh data together take less than 15\% 
-of the total runtime and have a similar cost to the NetCDF read since the conversion
-from PUMI to Distmesh is much faster than both the original file reading to Distmesh 
-and the new file reading to PUMI. 
-
-To support more efficient parallel workflows we have developed methods for
-direct conversion of a curved parallel PUMI mesh to a curved parallel DistMesh and vice
-versa.
+computations. The time required to convert from the PUMI parallel mesh to the
+parallel DistMesh at requires less than 0.1\% of the total execution time.
+Adaptive simulations will call the PUMI-to-DistMesh conversion routine every
+solve-adapt cycle after executing PUMI mesh adaptation and load balancing.
+We have demonstrated a low runtime and memory overhead implementation for the
+PUMI-to-DistMesh conversion which ensures that it is not a bottleneck
+in these simulations.
 
 \section{Load Balancing}\label{sec:parma}
 ParMA, partitioning using mesh adjacencies, is a PUMI component that provides
-multi-entity dynamic load balancing~\cite{SmithParma2015}.
+multi-entity dynamic load balancing for scalable parallel
+simulations~\cite{SmithParma2015,zhou2012unstructured,Zhou2010}.
 ParMA's multi-entity balancing traverses an
 application-specified priority list of entity orders (vertex, edge, face,
 region) to balance in descending order.
