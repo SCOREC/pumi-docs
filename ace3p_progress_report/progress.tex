@@ -142,25 +142,10 @@ procedures to convert from Omega3P meshes to PUMI meshes.
 The key advantage of this approach is the small amount of relatively simple code
 required; we simply needed to read and write the Omega3P mesh and field
 structures.
-However, an increase in peak memory usage will occur during the transfer when
-there are two copies of the mesh and/or field data stored in memory.
-Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
-execution on the {\texttt cav17} 318,118 element case for both the original
-Omega3P code and with the code that executes PUMI mesh conversion and load
-balancing (Omega3P+PUMI).
-The increase in peak memory when storing the PUMI mesh is 2\% at 32 cores and
-6\% at 128 cores.
-At 32 cores there is a slight reduction in memory usage that we are still
-investigating.
-Demonsrating low memory overhead is critical for efficient parallel adaptive
-simulation execution.
-
-\begin{figure}[ht]
-\centering
-  \includegraphics[width=\textwidth]{peak-memory-usage.eps}
-  \caption{\label{fig:memusage} Peak memory usage. The labels above the Omega3P+PUMI bars
-  list the percent increase versus Omega3P.}
-\end{figure}
+A similar PUMI in-memory integration with the Albany Multiphysics
+framework~\cite{salinger2013albany,Albany2015} reduced the data transfer time
+required to support an adaptive step on a 22 million element mesh from over 100
+seconds using files to 23 seconds on 1024 cores.
 
 Mesh conversion begins with a version of Omega3P's NetCDF file reader that is altered
 to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
@@ -292,6 +277,27 @@ imbalance by 27 points.
 \centering
   \includegraphics[width=\textwidth]{face-imb.eps} \\
   \caption{\label{fig:elm} Face imbalance.}
+\end{figure}
+
+The cost of our in-memory integration approach is an increase in peak memory
+usage during the data transfer when there are two copies of the mesh and/or
+field data stored in memory.
+Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
+execution on the {\texttt cav17} 318,118 element case for both the original
+Omega3P code and with the code that executes PUMI mesh conversion and load
+balancing (Omega3P+PUMI).
+The increase in peak memory when storing the PUMI mesh is 2\% at 32 cores and
+6\% at 128 cores.
+At 32 cores there is a slight reduction in memory usage that we are still
+investigating.
+Demonsrating low memory overhead is critical for efficient parallel adaptive
+simulation execution.
+
+\begin{figure}[ht]
+\centering
+  \includegraphics[width=\textwidth]{peak-memory-usage.eps}
+  \caption{\label{fig:memusage} Peak memory usage. The labels above the Omega3P+PUMI bars
+  list the percent increase versus Omega3P.}
 \end{figure}
 
 Our next step is to perform a detailed analysis of the runtime and memory
