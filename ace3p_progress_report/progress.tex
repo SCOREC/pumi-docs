@@ -215,6 +215,9 @@ regions need to be balanced.
 Each of these entity balancing procedures accounts for the ghosted weight
 contribution by performing an additional neighborhood
 exchange~\cite{ibanez2014hybrid} of the exact weight of ghosted layer entities.
+Thus ParMA can readily account for balancing the work load, in terms of number
+of equations per-part, for p-version finite elements by setting mesh entity
+weights based on the different entity p-orders.
 
 \section{Software Status}\label{sec:software}
 Our workflow currently supports reading a curved mesh from a NetCDF formatted file
