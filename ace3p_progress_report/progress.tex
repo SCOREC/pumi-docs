@@ -34,49 +34,11 @@ Parallel simulations on massively parallel systems are most effective when data
 movement is minimized.
 Data movement costs increase with the depth of the memory hierarchy; a design
 trade-off for increased capacity.
-For example, the highest level on-node storage in the IBM BlueGene/Q A2
-processor~\cite{haring2012ibm} is the per-core 16KiB L1 cache (excluding
-registers) and has a peak bandwidth of 819 GiB/s.
-The lowest level on-node storage, 16GiB of DDR3 main memory, provides a million
-times more capacity at the cost of 19 times less bandwidth,
-43GiB/s~\cite{lo2014roofline}.
-One level further down the hierarchy is the parallel filesystem
-~\footnote{We assume, for the sake of simplicity, that the main memory of other nodes is not
-available.
-In practice, most applications do not not use all the on-node memory and some
-checkpoint-restart methods take advantage of this for increased performance
-~\cite{rma-fault-tolerance-2014,isaila2014making,compression-cr-2012}.
-}.
-At this level the bandwidth and capacity relationship is less clear as the
-filesystem is a shared resource.
-Table~\ref{tbl:systems} lists the per-node peak main memory and filesystem
-bandwidth across four generations of Argonne National Laboratory leadership
-class systems: BlueGene/L~\cite{yu2006high,adiga2002overview}, Intrepid
-BlueGene/P~\cite{lang2009performance,alam2008early}, Mira
-BlueGene/Q~\cite{haring2012ibm,bui2014scalable}, and 2018's
-Aurora~\cite{aurorafacts}.
-Based on these peak values the bandwidth gap between main memory and the
-filesystem is at least three orders of magnitude.
+On modern processors the cost, in terms of peak bandwidth, of using the
+filesystem instead of main memory is at least three orders of
+magnitude~\cite{haring2012ibm,bui2014scalable}.
 Software must leverage the cache and main memory bandwidth performance advantage
 during as many operations as possible to maximize performance.
-
-\begin{table}[h]
-\centering
-\caption{Per-node main memory and filesystem peak bandwidth over four
-  generations of Argonne National Laboratory systems.
-  The values in parentheses indicate the increase relative to
-  the previous generation system.}
-\label{tbl:systems}
-\begin{tabular}{l|cc}
-        & Memory BW & Filesystem BW \\
-        & (GiB/s)    & (GiB/s)    \\
- \hline
- BG/L   & 5.6       & 0.0039         \\
- BG/P   & 14 (2.4x) & 0.0014 (0.36x)   \\
- BG/Q   & 43 (3.1x) & 0.0049 (3.5x) \\
- Aurora & 600 (14x) & 0.020 (4.1x)
-\end{tabular}
-\end{table}
 
 The Parallel Unstructured Mesh Infrastructure, PUMI
 {\small (github.com/SCOREC/\\core)}~\cite{ibanez2015pumi},
