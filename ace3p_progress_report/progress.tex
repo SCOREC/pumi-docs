@@ -30,6 +30,20 @@ elements than a more uniform mesh for the same level of accuracy, there are many
 complex simulations where the meshes required are so large that they can only be
 solved on massively parallel systems.
 
+Parallel adaptive simulations repeatedly execute adaptive cycles composed of
+steps.
+Typically, the steps include pre-processing (preparing data structures for the
+linear system construction), system assembly and solve, error-estimation,
+adaptation.
+Between each of these steps are opportunities to tune the distribution of the
+data structures for higher performance.
+For example, predictive load balancing can be performed prior to mesh adaptation
+to reduce post adaptation imbalances and avoid memory exhaustion on parts with
+heavy refinement.
+Likewise, the time to completion for large scale system assembly and solve
+procedures can be reduced by balancing the mesh entities holding
+degrees-of-freedom can be balanced~\cite{SmithParma2015}.
+
 Parallel simulations on massively parallel systems are most effective when data
 movement is minimized.
 Data movement costs increase with the depth of the memory hierarchy; a design
