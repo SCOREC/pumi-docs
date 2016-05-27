@@ -271,9 +271,8 @@ is less than 1.46\% higher than the Omega3P counts at 32 parts.
 At 64 and 128 parts the average entity counts of Omega3P+PUMI is less than 0.3\%
 higher than Omega3P counts.
 While maintaining nearly identical entity counts ParMA significantly reduces the
-imbalance of ghost + owned edges and faces. 
-Figures~\ref{fig:vtx} and~\ref{fig:elm} respectively show the imbalance of
-edges and faces.
+imbalance of ghost + owned edges and faces degree-of-freedom holders.
+Figure~\ref{fig:cav17imb} shows the imbalance of edges and faces.
 At 128 parts ParMA reduces the edge imbalance by 30 points and the face
 imbalance by 27 points.
 At 64 parts the edge and face imbalances are reduced by over 15 points each and
@@ -281,33 +280,54 @@ at 32 parts ParMA reduces the imbalances by eight points.
 
 \begin{figure}[ht]
 \centering
-  \includegraphics[width=\textwidth]{edge-imb.eps} \\
-  \caption{\label{fig:vtx} Edge imbalance.}
+  \includegraphics[width=\textwidth]{cav17-edge-imb.eps} \\
+  \includegraphics[width=\textwidth]{cav17-face-imb.eps} \\
+  \caption{\label{fig:cav17imb} Edge and face imbalance in the {\texttt cav17} mesh.}
 \end{figure}
+
+Additional tests of ParMA ghost-aware edge balancing were executed on
+\texttt{pillbox} model with a 2 million element quadratic mesh on up to 1024
+cores (32 cores per node) of the NERSC Cori Phase I system.
+The Omega3P+PUMI average number of ghost + owned edges and faces per-part
+is less than 1.15\% higher than the Omega3P counts at 256, 512, and 1024 parts.
+With this insignificant increase in entity count ParMA reduces the imbalance of 
+ghost + owned edges and faces by over 50 points.
+At 1024 parts Figure~\ref{fig:pillboximb} depicts the ParMA reduction of the
+edge imbalance by 55 points and the face imbalance by 48 points.
+At 512 parts the edge and face imbalances are reduced by over 40 points each and
+at 256 parts ParMA reduces the imbalances by over 25 points.
+These reductions to the degree-of-freedom holding entities have been
+demonstrated to significantly improve the performance and scalability of
+parallel finite element simulations~\cite{zhou2012unstructured,rasquinCise2014}.
 
 \begin{figure}[ht]
 \centering
-  \includegraphics[width=\textwidth]{face-imb.eps} \\
-  \caption{\label{fig:elm} Face imbalance.}
+  \includegraphics[width=\textwidth]{pillbox2M-edge-imb.eps} \\
+  \includegraphics[width=\textwidth]{pillbox2M-face-imb.eps} \\
+  \caption{\label{fig:pillboximb} Edge and face imbalance in the {\texttt
+  pillbox-2M}
+  mesh.}
 \end{figure}
 
 The cost of our in-memory integration approach is an increase in peak memory
 usage during the data transfer when there are two copies of the mesh and/or
 field data stored in memory.
 Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
-execution on the {\texttt cav17} case for both the original Omega3P code and
-with the code that executes PUMI mesh conversion and load balancing
-(Omega3P+PUMI).
-The increase in peak memory when storing the PUMI mesh is 2\% at 32 cores and
-6\% at 128 cores.
-At 32 cores there is a slight reduction in memory usage that we are still
-investigating.
+execution on the {\texttt cav17} and {\texttt pillbox-2M} case for both the
+original Omega3P code and with the code that executes PUMI mesh conversion and
+load balancing (Omega3P+PUMI).
+The increase in peak memory when storing the PUMI mesh is 2\% at 32 cores,
+decreases by less than one percent at 64 cores, and increases by 6\% at 128
+cores of the {\texttt cav17} case.
+At 256, 512, and 1024 cores of the {\texttt pillbox-2M} case memory is reduced by
+0.87\%, 1.1\% and 2.9\%, respectively.
 Demonstrating low memory overhead is critical for efficient parallel adaptive
 simulation execution.
 
 \begin{figure}[ht]
 \centering
-  \includegraphics[width=\textwidth]{peak-memory-usage.eps}
+  \includegraphics[width=\textwidth]{cav17-peak-mem.eps}
+  \includegraphics[width=\textwidth]{pillbox2M-peak-mem.eps}
   \caption{\label{fig:memusage} Peak memory usage. The labels above the Omega3P+PUMI bars
   list the percent increase versus Omega3P.}
 \end{figure}
