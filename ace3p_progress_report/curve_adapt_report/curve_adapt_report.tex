@@ -79,7 +79,7 @@
 
 \author[]{Morteza H. Siboni \\
 Gerrett Diamond \\
-Cameron Smith}
+Cameron W. Smith}
 %\ead{email address}
 
 %\author[inst1]{Corresponding Author \corref{cor1}}
@@ -93,7 +93,7 @@ Cameron Smith}
 
 
 \begin{abstract}
-  TODO: A Short Executive Summary Of The Report Goes Here
+  In this document we provide and update on the current status of the Omega3P project. In particular, the following issues will be addresses. (a) In Memory Integration and Load Balancing, (b) the fully parallel adaptive loop, and (c) the implementation details for replacing the geometry calls in Omega3P  with the corresponding PUMI calls.
 \end{abstract}
 
 % \begin{keyword}
@@ -116,27 +116,27 @@ TODO: Ask Cameron/Gerrett To Fill This Out
 \section{Adaptive Loop}
 At this stage, we have the adaptation loop in place which consists of the following steps:
 
-\setstretch{1.0}
+\setstretch{0.75}
 \begin{itemize}
   \item[] while not converged \{
-   \begin{itemize}
-	  \item run SPR to get the size field 
-	  \item \textit{convert 2nd order Lagrange to 2nd order Bezier}
-	  \item \textit{run the curve adapt}
-	  \item \textit{convert 2nd order Bezier back to 2nd order Lagrange}
-	  \item convert the pumi-mesh to slac-mesh for the next solve
-	  \item do a slac solve
-	  \item get the pumi-mesh with new field values
-	  \item check for convergence
-   \end{itemize}
+   % \begin{itemize}
+	  % \item run SPR to get the size field 
+	  % \item \textit{convert 2nd order Lagrange to 2nd order Bezier}
+	  % \item \textit{run the curve adapt}
+	  % \item \textit{convert 2nd order Bezier back to 2nd order Lagrange}
+	  % \item convert the PUMI-mesh to SLAC-mesh for the next solve
+	  % \item do a Omega3P solve
+	  % \item get the PUMI-mesh with new field values
+	  % \item check for convergence
+   % \end{itemize}
    %more traditional explanation of the adaptive loop
    \begin{itemize}
           \item partition the mesh with a focus of owned and ghost elements
-          \item convert pumi-mesh to slac-mesh
-	  \item do a slac solve %could use better wording
-	  \item transfer electric field values to the pumi-mesh
+          \item convert PUMI-mesh to SLAC-mesh
+	  \item do a Omega3P solve %could use better wording
+	  \item transfer electric field values to the PUMI-mesh
           \item check for convergence
-          \item run superconvergent patch recovery (SPR) for error estimation to get the size field 
+          \item run Super-convergent Patch Recovery (SPR) for error estimation to get the size field
 	  \item \textit{convert 2nd order Lagrange to 2nd order Bezier} %not sure if this is really important to them
 	  \item \textit{run the curve adapt}
 	  \item \textit{convert 2nd order Bezier back to 2nd order Lagrange} %also not sure if important
@@ -177,11 +177,11 @@ In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We
 
 
 \section{Moving Towards Higher-Order Geometries}
-As a first step towards using higher-order geometric elements, we have been able to replace the slac calls to compute determinant of the Jacobian with the corresponding pumi calls. This is done by storing and additional pointer in each slac-element that points to the corresponding  pumi-element (see Fig. \ref{imp} for the details of the implementation). 
+As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute determinant of the Jacobian with the corresponding PUMI calls. This is done by storing and additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation). 
 \begin{figure}[ph!]
 \centering
 \includegraphics[width=0.95\textwidth]{hide_ten_point_tet.png}
-\caption{\label{imp} This Figure shows the implementation details for replacing slac calls for determinant calculation with the corresponding pumi calls.}
+\caption{\label{imp} This Figure shows the implementation details for replacing Omega3P calls for determinant calculation with the corresponding PUMI calls.}
 \end{figure}
 This, in theory, should make it possible to raise the (geometric) order of the elements. (Currently, we have support for up to 6th order Bezier elements.)
 
