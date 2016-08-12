@@ -28,7 +28,7 @@
 %%%%%%%%%%%%%%%%%%%%
 %\usepackage{amsfonts}
 %\usepackage{amssymb}
-\usepackage{MnSymbol}
+%\usepackage{MnSymbol}
 \usepackage{graphicx}
 \usepackage{psfrag}
 \usepackage{amsmath}
@@ -68,68 +68,7 @@
 
 %\renewenvironment{equation}[0]{equation}{equation}
 
-%%%%%%%%%%%%%%%%%%%% My Commands
-\newcommand*\diff{\mathop{\mathrm{d}\hspace*{-3pt}}}
-\newcommand{\tone}{{ {(1)}}}				%%upper par (1)
-\newcommand{\ttwo}{{ {(2)}}}				%%upper par (2)
-\newcommand{\ptwo}{{\vphantom{ {(2)}}}}    %%V-Phantom upper par (2)
-\newcommand{\ti}[1]{{ {(#1)}}}				%%upper par (i)
-\newcommand{\si}[1]{{ {[#1]}}}				%%upper par [i]
-\newcommand{\VB}[1]{{ {\text{#1}\color{red}\veebar\color{black}}  }}				
-
-
-\newcommand{\sym}{\boldsymbol{\sigma}}		%%Symmetric Polarization
-\newcommand{\asym}{\boldsymbol{\tau}}		%%AntiSymmeteric Polarization
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\bs}[1]{\boldsymbol{#1}}						%%bold sym
-\newcommand{\abs}[1]{\left | {#1} \right |}						%%absolute value
-\newcommand{\pr}[1]{\left( #1 \right)}							%%paranthesis
-\newcommand{\br}[1]{\left[ #1 \right]}							%%bracet
-\newcommand{\cbr}[1]{\left\lbrace #1 \right\rbrace}				%%c bracet
-\newcommand{\avg}[1]{\left \llangle #1 \right \rrangle}				%%average
-\newcommand{\avgn}[1]{\left\langle #1 \right\rangle}				%%average
-\newcommand{\jump}[1]{\left \llbracket #1 \right \rrbracket }	%%jump
-\newcommand{\integral}[3]{\int _{#1}  #2 \;\; d #3}				%%integral
-
-\newcommand{\Pchoose}[2]{\frac{#1!}{#2!}}
-
-\newcommand{\mref}[2]{(#1)$_{\text{#2}}$}						%%equation reference
-
-\newcommand{\mud}{m}		%%superscrip mg
-\newcommand{\mg}{{\textit{\scriptsize mg}}}		%%superscrip mg
-\newcommand{\mxw}{{\textit{\scriptsize M}}}		%%superscrip M
-\newcommand{\ex}{{\textit{\scriptsize ex}}}		%%superscrip ex
-\newcommand{\el}{{\textit{\scriptsize el}}}		%%superscrip el
-\newcommand{\es}{{\textit{\scriptsize es}}}		%%superscrip es
-\newcommand{\me}{{\textit{\scriptsize me}}}		%%superscrip el
-\newcommand{ \elt}{{\textit{\tiny el}}}			%%subscrip   el
-\newcommand{\dist}[1]{\!_{\mathcal{D}_{#1}}}
-\newcommand{\incs}[1]{_{\mathcal{I}_{#1}}}
-
-\newcommand{\FTF}{\boldsymbol{F} ^ \trans \boldsymbol{F}}	%%F transpose F
-\newcommand{\FT}{\boldsymbol{F} ^ \trans}					%%F transpose
-\newcommand{\FTD}{\boldsymbol{F} ^ \trans \mathbf{d}}		%%F transpos d
-\newcommand{\trans}{{\textit{\tiny{T}}}}					%%transpose
-%%%%%%%%%%%%%%%%%%%%
-\newcommand{\FBar}{\bar{\boldsymbol{F}}}
-\newcommand{\UBar}{\bar{\boldsymbol{U}}}
-\newcommand{\QBar}{\bar{\boldsymbol{Q}}}
-\newcommand{\LamBar}{\bar{\boldsymbol{\Lambda}}}
-\newcommand{\RBar}{\bar{\boldsymbol{R}}}
-\newcommand{\CBar}{\bar{\boldsymbol{C}}}
-\newcommand{\DBar}{\bar{\mathbf{D}}}
-\newcommand{\EBar}{\bar{\mathbf{E}}}
-\newcommand{\dBar}{\bar{\mathbf{d}}}
-\newcommand{\eBar}{\bar{\mathbf{e}}}
-\newcommand{\JBar}{\bar{J}}
-\newcommand{\epsTilde}{\tilde{\boldsymbol{\varepsilon}}}
-\newcommand{\EpsTilde}{\tilde{\boldsymbol{\mathcal{E}}}}
-\newcommand{\XTilde}{\tilde{\boldsymbol{\mathcal{X}}}}
-\newcommand{\KTilde}{\tilde{\boldsymbol{\mathcal{K}}}}
-\newcommand{\I}{\boldsymbol{I}}
-\newcommand{\TBar}{\bar{\boldsymbol{T}}}
-
+%%%%%%%%%%%%%%%%%%%% Additional Commands
 %%%%%%%%%%%%%%%%%%%%
 %\numberwithin{equation}{section}  	%%Equation Numbering
 %%%%%%%%%%%%%%%%%%%%
@@ -140,7 +79,7 @@
 
 \author[]{Morteza H. Siboni \\
 Gerrett Diamond \\
-Cameron Smith}
+Cameron W. Smith}
 %\ead{email address}
 
 %\author[inst1]{Corresponding Author \corref{cor1}}
@@ -154,7 +93,7 @@ Cameron Smith}
 
 
 \begin{abstract}
-  TODO: A Short Executive Summary Of The Report Goes Here
+  In this document we provide and update on the current status of the Omega3P project. In particular, the following issues will be addresses. (a) In Memory Integration and Load Balancing, (b) the fully parallel adaptive loop, and (c) the implementation details for replacing the geometry calls in Omega3P  with the corresponding PUMI calls.
 \end{abstract}
 
 % \begin{keyword}
@@ -220,27 +159,27 @@ TODO: Ask Cameron/Gerrett To Fill This Out
 \section{Adaptive Loop}
 At this stage, we have the adaptation loop in place which consists of the following steps:
 
-\setstretch{1.0}
+\setstretch{0.75}
 \begin{itemize}
   \item[] while not converged \{
-   \begin{itemize}
-	  \item run SPR to get the size field 
-	  \item \textit{convert 2nd order Lagrange to 2nd order Bezier}
-	  \item \textit{run the curve adapt}
-	  \item \textit{convert 2nd order Bezier back to 2nd order Lagrange}
-	  \item convert the pumi-mesh to slac-mesh for the next solve
-	  \item do a slac solve
-	  \item get the pumi-mesh with new field values
-	  \item check for convergence
-   \end{itemize}
+   % \begin{itemize}
+	  % \item run SPR to get the size field 
+	  % \item \textit{convert 2nd order Lagrange to 2nd order Bezier}
+	  % \item \textit{run the curve adapt}
+	  % \item \textit{convert 2nd order Bezier back to 2nd order Lagrange}
+	  % \item convert the PUMI-mesh to SLAC-mesh for the next solve
+	  % \item do a Omega3P solve
+	  % \item get the PUMI-mesh with new field values
+	  % \item check for convergence
+   % \end{itemize}
    %more traditional explanation of the adaptive loop
    \begin{itemize}
           \item partition the mesh with a focus of owned and ghost elements
-          \item convert pumi-mesh to slac-mesh
-	  \item do a slac solve %could use better wording
-	  \item transfer electric field values to the pumi-mesh
+          \item convert PUMI-mesh to SLAC-mesh
+	  \item do a Omega3P solve %could use better wording
+	  \item transfer electric field values to the PUMI-mesh
           \item check for convergence
-          \item run superconvergent patch recovery (SPR) for error estimation to get the size field 
+          \item run Super-convergent Patch Recovery (SPR) for error estimation to get the size field
 	  \item \textit{convert 2nd order Lagrange to 2nd order Bezier} %not sure if this is really important to them
 	  \item \textit{run the curve adapt}
 	  \item \textit{convert 2nd order Bezier back to 2nd order Lagrange} %also not sure if important
@@ -281,11 +220,11 @@ In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We
 
 
 \section{Moving Towards Higher-Order Geometries}
-As a first step towards using higher-order geometric elements, we have been able to replace the slac calls to compute determinant of the Jacobian with the corresponding pumi calls. This is done by storing and additional pointer in each slac-element that points to the corresponding  pumi-element (see Fig. \ref{imp} for the details of the implementation). 
+As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute determinant of the Jacobian with the corresponding PUMI calls. This is done by storing and additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation). 
 \begin{figure}[ph!]
 \centering
 \includegraphics[width=0.95\textwidth]{hide_ten_point_tet.png}
-\caption{\label{imp} This Figure shows the implementation details for replacing slac calls for determinant calculation with the corresponding pumi calls.}
+\caption{\label{imp} This Figure shows the implementation details for replacing Omega3P calls for determinant calculation with the corresponding PUMI calls.}
 \end{figure}
 This, in theory, should make it possible to raise the (geometric) order of the elements. (Currently, we have support for up to 6th order Bezier elements.)
 
