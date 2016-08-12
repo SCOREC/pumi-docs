@@ -109,7 +109,46 @@ Cameron W. Smith}
 
 
 \section{Introduction}
-In this report, we provide some details on the state of the Omega3P project. In particular, Sec. \ref{load_balance} describes what has been done for partitioning and load balancing. Section \ref{in_memory} provides the details of in-memory mesh integration. In Sec. \ref{adaptive_loop} we discuss the details of the adaptive loop implementation and provide some example results. Finally, Sec. \ref{high_order_geom} provides a quick overview of the steps taken towards moving to higher-order geometric meshes.
+In this report, we provide some details on the state of the Omega3P project.
+In particular, Sec. \ref{in_memory} provides the details of in-memory mesh integration.
+Section \ref{load_balance} describes what has been done for partitioning and load balancing.
+In Sec. \ref{adaptive_loop} we discuss the details of the adaptive loop implementation and provide some example results.
+Finally, Sec. \ref{high_order_geom} provides a quick overview of the steps taken towards moving to higher-order geometric meshes.
+
+
+%need to add results on the load balancing from old report
+
+\section{\label{in_memory}Fully Parallel In-Memory Mesh Integration}
+In order to achieve high performing and scalable component interactions between
+Omega3P and PUMI we avoid
+file-based I/O through in-memory data streams and component functional
+interfaces. Towards complete support of the solve-adapt cycle we have implemented in-memory
+procedures to convert Omega3P meshes and fields to and from  PUMI data structures.
+The key advantage of this approach is the small amount of relatively simple code
+required; we simply needed to read and write the Omega3P mesh and field
+structures.
+A similar PUMI in-memory integration with the Albany Multiphysics
+framework~\cite{salinger2013albany,Albany2015} reduced the data transfer time
+required to support an adaptive step on a 22 million element mesh from over 100
+seconds using files to 23 seconds on 1024 cores.
+
+Mesh conversion begins with a version of Omega3P's NetCDF file reader that is altered
+to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
+the PUMI mesh we are able to perform partitioning and load balancing as well as adaptation 
+while only storing the PUMI mesh. After we have a finalized PUMI mesh a second 
+overloaded version of Omega3P's file reader is used to convert the PUMI mesh to 
+Omega3P's DistMesh. This is done by using the data from the in-memory PUMI mesh as the 
+input instead of the NetCDF file. After the conversion to DistMesh, we store both the
+PUMI Mesh and the Omega3P DistMesh for the duration of the finite element setup and 
+computations. The time required to convert from the PUMI parallel mesh to the
+parallel DistMesh requires less than 0.1\% of the total execution time.
+Adaptive simulations will call the PUMI-to-DistMesh conversion routine every
+solve-adapt cycle after executing PUMI mesh adaptation and load balancing.
+We have demonstrated a low runtime and memory overhead implementation for the
+PUMI-to-DistMesh conversion which ensures that it is not a bottleneck
+in these simulations.
+
+%Memory images to be added
 
 \section{\label{load_balance}Load Balancing}
 In each iteration of the mesh adaptation loop a new partition is generated on the
@@ -154,39 +193,6 @@ of equations per-part, for p-version finite elements by setting mesh entity
 weights based on the different entity p-orders.
 
 
-%need to add results on the load balancing from old report
-
-\section{\label{in_memory}Fully Parallel In-Memory Mesh Integration}
-In order to achieve high performing and scalable component interactions between
-Omega3P and PUMI we avoid
-file-based I/O through in-memory data streams and component functional
-interfaces. Towards complete support of the solve-adapt cycle we have implemented in-memory
-procedures to convert Omega3P meshes and fields to and from  PUMI data structures.
-The key advantage of this approach is the small amount of relatively simple code
-required; we simply needed to read and write the Omega3P mesh and field
-structures.
-A similar PUMI in-memory integration with the Albany Multiphysics
-framework~\cite{salinger2013albany,Albany2015} reduced the data transfer time
-required to support an adaptive step on a 22 million element mesh from over 100
-seconds using files to 23 seconds on 1024 cores.
-
-Mesh conversion begins with a version of Omega3P's NetCDF file reader that is altered
-to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
-the PUMI mesh we are able to perform partitioning and load balancing as well as adaptation 
-while only storing the PUMI mesh. After we have a finalized PUMI mesh a second 
-overloaded version of Omega3P's file reader is used to convert the PUMI mesh to 
-Omega3P's DistMesh. This is done by using the data from the in-memory PUMI mesh as the 
-input instead of the NetCDF file. After the conversion to DistMesh, we store both the
-PUMI Mesh and the Omega3P DistMesh for the duration of the finite element setup and 
-computations. The time required to convert from the PUMI parallel mesh to the
-parallel DistMesh requires less than 0.1\% of the total execution time.
-Adaptive simulations will call the PUMI-to-DistMesh conversion routine every
-solve-adapt cycle after executing PUMI mesh adaptation and load balancing.
-We have demonstrated a low runtime and memory overhead implementation for the
-PUMI-to-DistMesh conversion which ensures that it is not a bottleneck
-in these simulations.
-
-%Memory images to be added
 
 \clearpage
 \newpage
@@ -214,6 +220,7 @@ At this stage, we have the adaptation loop in place which consists of the follow
 \setstretch{1.5}
 It is important to emphasize that, the current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel. Recall that the previous implementation required repartitioning a serial mesh after parallel adaptation.
 
+Also worth mentioning, is the fact that our current pipeline works with PUMI-meshes as an input without the need for an input ncdf mesh. This enables us to generate our initial meshes using Simmetrix. Note that the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model, requires Simmetrix.
 
 \subsection{Results for the Adaptive Loop}
 Figures \ref{pill} and \ref{cav} show two working examples for the current curve adaptation loop.
