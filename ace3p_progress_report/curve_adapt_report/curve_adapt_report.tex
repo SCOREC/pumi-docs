@@ -111,6 +111,49 @@ Cameron W. Smith}
 \section{Introduction}
 TODO: Explain The State of Things Before And Summarize The New Things That Have Been Done
 
+\section{Load Balancing}
+In each iteration of the mesh adaptation loop a new partition is generated on the
+pumi-mesh before converted over to the slac-mesh. The initial partition is generated
+using Zoltan's graph partitioning. Then SCOREC's ParMA, partitioning using mesh adjacencies,
+is used to perform load balancing by iterative diffusion. ParMA's multi-entity balancing
+traverses an application-specified priority list of entity orders (vertex, edge, face,
+region) to balance in descending order.
+For each entity order iterative diffusion is executed until balance is reached
+or no further improvement is possible.
+
+ParMA's support for multi-entity balancing was extended for Omega3P's needs.
+The Omega3P solving step relies on both on-part mesh entities as well as a layer
+of ghosted elements along each part boundary.
+Omega3P's ghosting uses vertex adjacency such that every element that shares a
+vertex with a part boundary will be ghosted to each part that shares that
+boundary.
+This can be seen in Figure \ref{fig:ghost3} that shows an example of a mesh with
+a layer of ghosting.
+In order to improve Omega3P's performance and scalability, ParMA targets
+minimizing the sum of the ghosted and on-part elements as well as the mesh
+entities holding degrees-of-freedom.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.8\textwidth]{ghost.eps} 
+\caption{\label{fig:ghost3} A layer of ghosted elements from part A to part B. The darker elements represent all the elements on part A that part B will copy to create its remote mesh.}
+\end{figure}
+
+ParMA balances the degree-of-freedom holders defined by 
+hierarchical Nedelec basis functions~\cite{ko2010advances,ingelstrom2006new} by
+reusing existing multi-entity target and boundary-element selection
+procedures.
+For first order elements this requires balancing edges.
+Second order elements requires edges and faces, and above that edges, faces, and
+regions need to be balanced.
+Each of these entity balancing procedures accounts for the ghosted weight
+contribution by performing an additional neighborhood
+exchange~\cite{ibanez2014hybrid} of the exact weight of ghosted layer entities.
+Thus ParMA can readily account for balancing the work load, in terms of number
+of equations per-part, for p-version finite elements by setting mesh entity
+weights based on the different entity p-orders.
+
+
 \section{Fully Parallel In-Memory \dots}
 TODO: Ask Cameron/Gerrett To Fill This Out
 
@@ -180,6 +223,9 @@ This, in theory, should make it possible to raise the (geometric) order of the e
 % \section*{References}
 % \bibliographystyle{elsarticle-harv_noURL}
 % \bibliography{Ref}
+
+\newpage \bibliographystyle{plain}
+\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr,scorec-refs/fem,scorec-refs/meshgen,scorec-refs/msgpass}
 
 
 \end{document}
