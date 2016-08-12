@@ -93,9 +93,9 @@ Cameron W. Smith}
 
 
 
-\begin{abstract}
-  In this document we provide an update on the current status of the Omega3P project. In particular, the following topics will be addresses: (a) In-memory mesh integration and load balancing, (b) the parallel adaptive loop, and (c) the implementation details for replacing the geometry calls in Omega3P  with the corresponding PUMI calls.
-\end{abstract}
+% \begin{abstract}
+%   In this document we provide an update on the current status of the Omega3P project. In particular, the following topics will be addresses: (a) In-memory mesh integration and load balancing, (b) the parallel adaptive loop, and (c) the implementation details for replacing the geometry calls in Omega3P  with the corresponding PUMI calls.
+% \end{abstract}
 
 % \begin{keyword}
 % \end{keyword}
@@ -197,13 +197,13 @@ At this stage, we have the adaptation loop in place which consists of the follow
    \begin{itemize}
      \item \texttt{partition the mesh using ParMA with a focus of owned and ghost elements}
      \item \texttt{convert PUMI-mesh to SLAC-mesh}
-     \item \texttt{do an Omega3P solve} 
+     \item \texttt{run the appropriate Omega3P eigensolver}
      \item \texttt{transfer electric field values to the PUMI-mesh}
      \item \texttt{check for convergence}
      \item \texttt{run Super-convergent Patch Recovery (SPR) -> error estimation -> size field}
-     \item \texttt{convert 2nd order Lagrange to 2nd order Bezier}
+     % \item \texttt{convert 2nd order Lagrange to 2nd order Bezier}
      \item \texttt{run the curve adapt}
-     \item \texttt{convert 2nd order Bezier back to 2nd order Lagrange}
+     % \item \texttt{convert 2nd order Bezier back to 2nd order Lagrange}
    \end{itemize}
 
  \item[] \texttt{  \} }
@@ -244,6 +244,9 @@ In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We
 
 
 \section{\label{high_order_geom}Moving Towards Higher-Order Geometries}
+
+In order to be able to increase the order of the finite element basis functions to exploit the exponential convergence rate of the p-version finite elements, one needs to also increase the geometric order of the elements near the curved boundaries. Otherwise, the error in the geometric representation of such curved elements prevents the exponential growth rate in the p-version finite element \cite{LuoShephard_04, DeyShephard_97, LuoShephard_02}.
+
 As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute determinant of the Jacobian with the corresponding PUMI calls. This is done by storing and additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation).
 \begin{figure}[ph!]
 \centering
@@ -252,13 +255,11 @@ As a first step towards using higher-order geometric elements, we have been able
 \end{figure}
 This, in theory, should make it possible to raise the (geometric) order of the elements to higher that quadratic. (Currently, we have support for up to 6th order Bezier elements in PUMI.)
 
-\clearpage
-\newpage
 
 \section*{References}
 % \bibliographystyle{elsarticle-harv_noURL}
 \bibliographystyle{plain}
-\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr,scorec-refs/fem,scorec-refs/meshgen,scorec-refs/msgpass}
+\bibliography{scorec-refs/partition,scorec-refs/meshdb,scorec-refs/hardware,scorec-refs/io,scorec-refs/frameworks,scorec-refs/cr,scorec-refs/fem,scorec-refs/meshgen,scorec-refs/msgpass,geometry}
 
 
 \end{document}
