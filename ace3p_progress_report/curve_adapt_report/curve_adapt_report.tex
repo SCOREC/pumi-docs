@@ -94,7 +94,7 @@ Cameron W. Smith}
 
 
 \begin{abstract}
-  In this document we provide an update on the current status of the Omega3P project. In particular, the following issues will be addresses: (a) In-memory mesh integration and load balancing, (b) the parallel adaptive loop, and (c) the implementation details for replacing the geometry calls in Omega3P  with the corresponding PUMI calls.
+  In this document we provide an update on the current status of the Omega3P project. In particular, the following topics will be addresses: (a) In-memory mesh integration and load balancing, (b) the parallel adaptive loop, and (c) the implementation details for replacing the geometry calls in Omega3P  with the corresponding PUMI calls.
 \end{abstract}
 
 % \begin{keyword}
@@ -109,7 +109,7 @@ Cameron W. Smith}
 
 
 \section{Introduction}
-In this report, we provide some details on state of the Omega3P project. In particular, Sec. \ref{load_balance} describes what has been done for partitioning and load balancing. Section \ref{in_memory} provides the details of in-memory mesh integration. Section \ref{adaptive_loop} discusses the details of the adaptive loop implementations and provides some example results. Finally, Sec. \ref{high_order_geom} provides a quick overview of the steps taken towards moving to higher-order geometric meshes.
+In this report, we provide some details on the state of the Omega3P project. In particular, Sec. \ref{load_balance} describes what has been done for partitioning and load balancing. Section \ref{in_memory} provides the details of in-memory mesh integration. In Sec. \ref{adaptive_loop} we discuss the details of the adaptive loop implementation and provide some example results. Finally, Sec. \ref{high_order_geom} provides a quick overview of the steps taken towards moving to higher-order geometric meshes.
 
 \section{\label{load_balance}Load Balancing}
 In each iteration of the mesh adaptation loop a new partition is generated on the
@@ -135,7 +135,7 @@ entities holding degrees-of-freedom.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.8\textwidth]{ghost.eps} 
+\includegraphics[width=0.6\textwidth]{ghost.eps} 
 \caption{\label{fig:ghost3} A layer of ghosted elements from part A to part B. The darker elements represent all the elements on part A that part B will copy to create its remote mesh.}
 \end{figure}
 
@@ -185,7 +185,10 @@ in these simulations.
 
 %Memory images to be added
 
-\section{\label{adaptive_loop}Adaptive Loop}
+\clearpage
+\newpage
+
+\section{\label{adaptive_loop}The Adaptive Loop}
 At this stage, we have the adaptation loop in place which consists of the following steps:
 
 \setstretch{0.75}
@@ -206,11 +209,11 @@ At this stage, we have the adaptation loop in place which consists of the follow
  \item[] \texttt{  \} }
 \end{itemize}
 \setstretch{1.5}
-It is important to emphasize that, the current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel, which required repartitioning a serial mesh after parallel adaptation.
+It is important to emphasize that, the current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel. Recall that the previous implementation required repartitioning a serial mesh after parallel adaptation.
 
 
 \subsection{Results for the Adaptive Loop}
-Figures \ref{pill} and \ref{cav} show two working examples for the curve adaptation loop.
+Figures \ref{pill} and \ref{cav} show two working examples for the current curve adaptation loop.
 \begin{landscape}
 \begin{figure}[ph!]
 \centering
@@ -247,7 +250,10 @@ As a first step towards using higher-order geometric elements, we have been able
 \includegraphics[width=0.95\textwidth]{hide_ten_point_tet.png}
 \caption{\label{imp} This Figure shows the implementation details for replacing Omega3P calls for determinant calculation with the corresponding PUMI calls.}
 \end{figure}
-This, in theory, should make it possible to raise the (geometric) order of the elements. (Currently, we have support for up to 6th order Bezier elements in PUMI.)
+This, in theory, should make it possible to raise the (geometric) order of the elements to higher that quadratic. (Currently, we have support for up to 6th order Bezier elements in PUMI.)
+
+\clearpage
+\newpage
 
 \section*{References}
 % \bibliographystyle{elsarticle-harv_noURL}
