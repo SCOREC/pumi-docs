@@ -30,6 +30,7 @@
 %\usepackage{amssymb}
 %\usepackage{MnSymbol}
 \usepackage{graphicx}
+\usepackage{courier}
 \usepackage{psfrag}
 \usepackage{amsmath}
 \usepackage[usenames]{color}
@@ -118,35 +119,26 @@ At this stage, we have the adaptation loop in place which consists of the follow
 
 \setstretch{0.75}
 \begin{itemize}
-  \item[] while not converged \{
-   % \begin{itemize}
-	  % \item run SPR to get the size field 
-	  % \item \textit{convert 2nd order Lagrange to 2nd order Bezier}
-	  % \item \textit{run the curve adapt}
-	  % \item \textit{convert 2nd order Bezier back to 2nd order Lagrange}
-	  % \item convert the PUMI-mesh to SLAC-mesh for the next solve
-	  % \item do a Omega3P solve
-	  % \item get the PUMI-mesh with new field values
-	  % \item check for convergence
-   % \end{itemize}
-   %more traditional explanation of the adaptive loop
+  \item[] \texttt{while not converged \{ }
    \begin{itemize}
-          \item partition the mesh with a focus of owned and ghost elements
-          \item convert PUMI-mesh to SLAC-mesh
-	  \item do a Omega3P solve %could use better wording
-	  \item transfer electric field values to the PUMI-mesh
-          \item check for convergence
-          \item run Super-convergent Patch Recovery (SPR) for error estimation to get the size field
-	  \item \textit{convert 2nd order Lagrange to 2nd order Bezier} %not sure if this is really important to them
-	  \item \textit{run the curve adapt}
-	  \item \textit{convert 2nd order Bezier back to 2nd order Lagrange} %also not sure if important
+     \item \texttt{partition the mesh with a focus of owned and ghost elements}
+     \item \texttt{convert PUMI-mesh to SLAC-mesh}
+     \item \texttt{do an Omega3P solve} %could use better wording
+     \item \texttt{transfer electric field values to the PUMI-mesh}
+     \item \texttt{check for convergence}
+     \item \texttt{run Super-convergent Patch Recovery (SPR) -> error estimation -> size field}
+     \item \texttt{convert 2nd order Lagrange to 2nd order Bezier}
+     \item \texttt{run the curve adapt}
+     \item \texttt{convert 2nd order Bezier back to 2nd order Lagrange}
    \end{itemize}
 
- \item[] \}
+ \item[] \texttt{  \} }
 \end{itemize}
 \setstretch{1.5}
+It is important to emphasize that, the current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel, which required repartitioning a serial mesh after parallel adaptation.
 
-Figures \ref{pill} and \ref{cav} show two working examples for the curve adaptation loop. 
+
+Figures \ref{pill} and \ref{cav} show two working examples for the curve adaptation loop.
 \begin{landscape}
 \begin{figure}[ph!]
 \centering
@@ -173,11 +165,11 @@ Figures \ref{pill} and \ref{cav} show two working examples for the curve adaptat
 \caption{\label{cav} This Figure shows the results for the CAV17 model. (a) shows the initial mesh [$\sim126\text{K}$ elements], (b) shows the initial size-field, (c) shows the adapted mesh after 3 adaptation steps [$\sim380\text{K}$ elements], and (d) shows the electric field for the final adapted mesh.}
 \end{figure}
 \end{landscape}
-In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed and it is shown in Fig. \ref{pill_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) is shown in Fig. \ref{pill_adapt}. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model. 
+In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed and it is shown in Fig. \ref{pill_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) is shown in Fig. \ref{pill_adapt}. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model.
 
 
 \section{Moving Towards Higher-Order Geometries}
-As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute determinant of the Jacobian with the corresponding PUMI calls. This is done by storing and additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation). 
+As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute determinant of the Jacobian with the corresponding PUMI calls. This is done by storing and additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation).
 \begin{figure}[ph!]
 \centering
 \includegraphics[width=0.95\textwidth]{hide_ten_point_tet.png}
@@ -187,7 +179,7 @@ This, in theory, should make it possible to raise the (geometric) order of the e
 
 % \section*{References}
 % \bibliographystyle{elsarticle-harv_noURL}
-% \bibliography{Ref} 
+% \bibliography{Ref}
 
 
 \end{document}
