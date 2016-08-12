@@ -94,7 +94,7 @@ Cameron W. Smith}
 
 
 \begin{abstract}
-  In this document we provide and update on the current status of the Omega3P project. In particular, the following issues will be addresses. (a) In-memory mesh integration and load balancing, (b) the parallel adaptive loop, and (c) the implementation details for replacing the geometry calls in Omega3P  with the corresponding PUMI calls.
+  In this document we provide an update on the current status of the Omega3P project. In particular, the following issues will be addresses: (a) In-memory mesh integration and load balancing, (b) the parallel adaptive loop, and (c) the implementation details for replacing the geometry calls in Omega3P  with the corresponding PUMI calls.
 \end{abstract}
 
 % \begin{keyword}
@@ -109,7 +109,7 @@ Cameron W. Smith}
 
 
 \section{Introduction}
-In this report, we provide some details on state of the Omega3P project. In particular, Sec. \ref{load_balance} describes what has been done for \dots . Section \ref{in_memory} provides the details of in-memory mesh integration. Section \ref{adaptive_loop} discusses the details of the adaptive loop implementations and provides some example results. Finally, Sec. \ref{high_order_geom} provides a quick overview of the steps taken towards moving to higher-order geometric meshes.
+In this report, we provide some details on state of the Omega3P project. In particular, Sec. \ref{load_balance} describes what has been done for partitioning and load balancing. Section \ref{in_memory} provides the details of in-memory mesh integration. Section \ref{adaptive_loop} discusses the details of the adaptive loop implementations and provides some example results. Finally, Sec. \ref{high_order_geom} provides a quick overview of the steps taken towards moving to higher-order geometric meshes.
 
 \section{\label{load_balance}Load Balancing}
 In each iteration of the mesh adaptation loop a new partition is generated on the
