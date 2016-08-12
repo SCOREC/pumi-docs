@@ -152,9 +152,36 @@ Thus ParMA can readily account for balancing the work load, in terms of number
 of equations per-part, for p-version finite elements by setting mesh entity
 weights based on the different entity p-orders.
 
+%need to add results on the load balancing from old report
 
 \section{Fully Parallel In-Memory \dots}
-TODO: Ask Cameron/Gerrett To Fill This Out
+Towards complete support of the solve-adapt cycle we have implemented in-memory
+procedures to convert from Omega3P meshes to PUMI meshes.
+The key advantage of this approach is the small amount of relatively simple code
+required; we simply needed to read and write the Omega3P mesh and field
+structures.
+A similar PUMI in-memory integration with the Albany Multiphysics
+framework~\cite{salinger2013albany,Albany2015} reduced the data transfer time
+required to support an adaptive step on a 22 million element mesh from over 100
+seconds using files to 23 seconds on 1024 cores.
+
+Mesh conversion begins with a version of Omega3P's NetCDF file reader that is altered
+to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
+the PUMI mesh we are able to perform partitioning and load balancing as well as adaptation 
+while only storing the PUMI mesh. After we have a finalized PUMI mesh a second 
+overloaded version of Omega3P's file reader is used to convert the PUMI mesh to 
+Omega3P's DistMesh. This is done by using the data from the in-memory PUMI mesh as the 
+input instead of the NetCDF file. After the conversion to DistMesh, we store both the
+PUMI Mesh and the Omega3P DistMesh for the duration of the finite element setup and 
+computations. The time required to convert from the PUMI parallel mesh to the
+parallel DistMesh requires less than 0.1\% of the total execution time.
+Adaptive simulations will call the PUMI-to-DistMesh conversion routine every
+solve-adapt cycle after executing PUMI mesh adaptation and load balancing.
+We have demonstrated a low runtime and memory overhead implementation for the
+PUMI-to-DistMesh conversion which ensures that it is not a bottleneck
+in these simulations.
+
+%Memory images to be added
 
 \section{Adaptive Loop}
 At this stage, we have the adaptation loop in place which consists of the following steps:
@@ -176,7 +203,7 @@ At this stage, we have the adaptation loop in place which consists of the follow
    \begin{itemize}
           \item partition the mesh with a focus of owned and ghost elements
           \item convert PUMI-mesh to SLAC-mesh
-	  \item do a Omega3P solve %could use better wording
+	  \item do a Omega3P solve 
 	  \item transfer electric field values to the PUMI-mesh
           \item check for convergence
           \item run Super-convergent Patch Recovery (SPR) for error estimation to get the size field
