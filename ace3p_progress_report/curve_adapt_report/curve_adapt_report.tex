@@ -94,7 +94,7 @@ Cameron W. Smith}
 
 
 \begin{abstract}
-  In this document we provide and update on the current status of the Omega3P project. In particular, the following issues will be addresses. (a) In Memory Integration and Load Balancing, (b) the fully parallel adaptive loop, and (c) the implementation details for replacing the geometry calls in Omega3P  with the corresponding PUMI calls.
+  In this document we provide and update on the current status of the Omega3P project. In particular, the following issues will be addresses. (a) In-memory mesh integration and load balancing, (b) the parallel adaptive loop, and (c) the implementation details for replacing the geometry calls in Omega3P  with the corresponding PUMI calls.
 \end{abstract}
 
 % \begin{keyword}
@@ -109,7 +109,7 @@ Cameron W. Smith}
 
 
 \section{Introduction}
-In this report, we provide a details state of the Omega3P project. In particular Sec. \ref{load_balance} describes what has been done for \dots . Section \ref{adaptive_loop} discusses the details of the adaptive loop implementations and provides some example results. Finally, Sec. \ref{higher_order_geom} provides a quick overview of the steps taken towards moving to higher-order geometric meshes.
+In this report, we provide some details on state of the Omega3P project. In particular, Sec. \ref{load_balance} describes what has been done for \dots . Section \ref{in_memory} provides the details of in-memory mesh integration. Section \ref{adaptive_loop} discusses the details of the adaptive loop implementations and provides some example results. Finally, Sec. \ref{high_order_geom} provides a quick overview of the steps taken towards moving to higher-order geometric meshes.
 
 \section{\label{load_balance}Load Balancing}
 In each iteration of the mesh adaptation loop a new partition is generated on the
@@ -156,7 +156,7 @@ weights based on the different entity p-orders.
 
 %need to add results on the load balancing from old report
 
-\section{Fully Parallel In-Memory Mesh Integration}
+\section{\label{in_memory}Fully Parallel In-Memory Mesh Integration}
 Towards complete support of the solve-adapt cycle we have implemented in-memory
 procedures to convert from Omega3P meshes to PUMI meshes.
 The key advantage of this approach is the small amount of relatively simple code
@@ -240,7 +240,7 @@ Figures \ref{pill} and \ref{cav} show two working examples for the curve adaptat
 In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed and it is shown in Fig. \ref{pill_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) is shown in Fig. \ref{pill_adapt}. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model.
 
 
-\section{\label{high_order_goem}Moving Towards Higher-Order Geometries}
+\section{\label{high_order_geom}Moving Towards Higher-Order Geometries}
 As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute determinant of the Jacobian with the corresponding PUMI calls. This is done by storing and additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation).
 \begin{figure}[ph!]
 \centering
