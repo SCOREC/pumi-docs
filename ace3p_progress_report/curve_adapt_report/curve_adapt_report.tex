@@ -174,7 +174,7 @@ TODO: Explain The State of Things Before And Summarize The New Things That Have 
 \section{Load Balancing}
 In each iteration of the mesh adaptation loop a new partition is generated on the
 pumi-mesh before converted over to the slac-mesh. The initial partition is generated
-using Zoltan's graph partitioning. Then SCOREC's ParMA, partitiong using mesh adjacencies,
+using Zoltan's graph partitioning. Then SCOREC's ParMA, partitioning using mesh adjacencies,
 is used to perform load balancing by iterative diffusion. ParMA's multi-entity balancing
 traverses an application-specified priority list of entity orders (vertex, edge, face,
 region) to balance in descending order.
