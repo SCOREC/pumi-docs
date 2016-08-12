@@ -25,12 +25,12 @@ file=${texFiles[$job]}
 pdflatex $file
 bname=$(basename $file .tex)
 
-# echo "Running BibTex"
-# bibtex $bname &> /dev/null
+echo "Running BibTex"
+bibtex $bname &> /dev/null
 
-echo "Running Index Make"
-cmd="makeindex ${bname}.nlo -s nomencl.ist -o ${bname}.nls -t ${bname}.nlg"
-eval $cmd
+# echo "Running Index Make"
+# cmd="makeindex ${bname}.nlo -s nomencl.ist -o ${bname}.nls -t ${bname}.nlg"
+# eval $cmd
 
 echo "Running Latex Again"
 pdflatex $file &> /dev/null
