@@ -121,13 +121,13 @@ Finally, Sec. \ref{high_order_geom} provides a quick overview of the steps taken
 
 \section{\label{in_memory}Fully Parallel In-Memory Mesh Integration}
 In order to achieve high performing and scalable component interactions between
-Omega3P and PUMI we avoid \color{red} [any serials step and?] \color{black}
+Omega3P and PUMI we avoid any serials step and 
 file-based I/O through in-memory data streams and component functional
 interfaces. Towards complete support of the solve-adapt cycle we have implemented in-memory
 procedures to convert Omega3P meshes and fields to and from  PUMI data structures.
-The key advantage of this approach is \color{red} [that] \st{the} [a] \color{black} small amount of \color{red} \st{relatively simple} \color{black} code \color{red} is \color{black}
-required; we simply \color{red} \st{needed to read and write} ``read and write''\color{black} the Omega3P mesh and field
-structures \color{red} by directly accessing PUMI data structures \color{black}.
+The key advantage of this approach is that a small amount of code is 
+required; we simply read and write the Omega3P mesh and field
+structures by directly accessing PUMI data structures.
 A similar PUMI in-memory integration with the Albany Multiphysics
 framework~\cite{salinger2013albany,Albany2015} reduced the data transfer time
 required to support an adaptive step on a 22 million element mesh from over 100
@@ -143,7 +143,7 @@ input instead of the NetCDF file. After the conversion to DistMesh, we store bot
 PUMI Mesh and the Omega3P DistMesh for the duration of the finite element setup and 
 computations. The time required to convert from the PUMI parallel mesh to the
 parallel DistMesh requires less than 0.1\% of the total execution time.
-Adaptive simulations \color{red} \st{will} \color{black} call the PUMI-to-DistMesh conversion routine every
+Adaptive simulations call the PUMI-to-DistMesh conversion routine every
 solve-adapt cycle after executing PUMI mesh adaptation and load balancing.
 We have demonstrated a low runtime and memory overhead implementation for the
 PUMI-to-DistMesh conversion which ensures that it is not a bottleneck
@@ -191,7 +191,7 @@ entities holding degrees-of-freedom.
 \end{figure}
 
 ParMA balances the degree-of-freedom holders defined by 
-hierarchical Nedelec basis functions~\cite{ko2010advances,ingelstrom2006new} \color{blue} Mark: are these references correct? \color{black} by
+hierarchical Nedelec basis functions~\cite{ingelstrom2006new,ko2010advances} by
 reusing existing multi-entity target and boundary-element selection
 procedures.
 For first order elements this requires balancing edges.
