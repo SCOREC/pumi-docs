@@ -46,6 +46,7 @@
 \usepackage{dcolumn}% Align table columns on decimal point
 \usepackage{bm}% bold math
 \usepackage{pdflscape}
+\usepackage{soul}
 % \usepackage{showkeys}
 %%%%%%%%%%%%%%%%%%%%
 
@@ -120,17 +121,17 @@ Finally, Sec. \ref{high_order_geom} provides a quick overview of the steps taken
 
 \section{\label{in_memory}Fully Parallel In-Memory Mesh Integration}
 In order to achieve high performing and scalable component interactions between
-Omega3P and PUMI we avoid
+Omega3P and PUMI we avoid \color{red} [any serials step and?] \color{black}
 file-based I/O through in-memory data streams and component functional
 interfaces. Towards complete support of the solve-adapt cycle we have implemented in-memory
 procedures to convert Omega3P meshes and fields to and from  PUMI data structures.
-The key advantage of this approach is the small amount of relatively simple code
-required; we simply needed to read and write the Omega3P mesh and field
-structures.
+The key advantage of this approach is \color{red} [that] \st{the} [a] \color{black} small amount of \color{red} \st{relatively simple} \color{black} code \color{red} is \color{black}
+required; we simply \color{red} \st{needed to read and write} ``read and write''\color{black} the Omega3P mesh and field
+structures \color{red} by directly accessing PUMI data structures \color{black}.
 A similar PUMI in-memory integration with the Albany Multiphysics
 framework~\cite{salinger2013albany,Albany2015} reduced the data transfer time
 required to support an adaptive step on a 22 million element mesh from over 100
-seconds using files to 23 seconds on 1024 cores.
+seconds using files to 23 seconds on 1024 cores. \color{blue} Mark: My guess is the improvements here are much higher since the previous procedures had a serial step. I think there should be some discussion of that. Can we get any data (of any type) on comparing to the old procedures? \color{black}
 
 Mesh conversion begins with a version of Omega3P's NetCDF file reader that is altered
 to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
@@ -142,11 +143,22 @@ input instead of the NetCDF file. After the conversion to DistMesh, we store bot
 PUMI Mesh and the Omega3P DistMesh for the duration of the finite element setup and 
 computations. The time required to convert from the PUMI parallel mesh to the
 parallel DistMesh requires less than 0.1\% of the total execution time.
-Adaptive simulations will call the PUMI-to-DistMesh conversion routine every
+Adaptive simulations \color{red} \st{will} \color{black} call the PUMI-to-DistMesh conversion routine every
 solve-adapt cycle after executing PUMI mesh adaptation and load balancing.
 We have demonstrated a low runtime and memory overhead implementation for the
 PUMI-to-DistMesh conversion which ensures that it is not a bottleneck
-in these simulations.
+in these simulations. \color{blue} Mark: can we get some actual data?  \color{black}
+
+\subsection{\label{in_memory_future} Future Steps}
+Our plan for future developments in regard to the in memory integration is as follows:
+
+\setstretch{0.75}
+\begin{itemize}
+  \item item 1
+  \item item 2
+  \item \dots
+\end{itemize}
+\setstretch{1.5}
 
 %Memory images to be added
 
@@ -179,26 +191,37 @@ entities holding degrees-of-freedom.
 \end{figure}
 
 ParMA balances the degree-of-freedom holders defined by 
-hierarchical Nedelec basis functions~\cite{ko2010advances,ingelstrom2006new} by
+hierarchical Nedelec basis functions~\cite{ko2010advances,ingelstrom2006new} \color{blue} Mark: are these references correct? \color{black} by
 reusing existing multi-entity target and boundary-element selection
 procedures.
 For first order elements this requires balancing edges.
 Second order elements requires edges and faces, and above that edges, faces, and
-regions need to be balanced.
+regions need to be balanced. \color{blue} Mark: Are we sure this is right? (I expect that is the case) \color{black}
 Each of these entity balancing procedures accounts for the ghosted weight
 contribution by performing an additional neighborhood
 exchange~\cite{ibanez2014hybrid} of the exact weight of ghosted layer entities.
 Thus ParMA can readily account for balancing the work load, in terms of number
 of equations per-part, for p-version finite elements by setting mesh entity
-weights based on the different entity p-orders.
+weights based on the different entity p-orders. 
 
+\color{blue} Mark: Any results that we can report? I know we do not have run-time improvements yet- but there is other data so far. \color{black}
+
+\subsection{\label{load_balance_future} Future Steps}
+Our plan for future developments in regard to the load balancing  is as follows:
+\setstretch{0.75}
+\begin{itemize}
+  \item item 1
+  \item item 2
+  \item \dots
+\end{itemize}
+\setstretch{1.5}
 
 
 \clearpage
 \newpage
 
 \section{\label{adaptive_loop}The Adaptive Loop}
-At this stage, we have the adaptation loop in place which consists of the following steps:
+At this stage, we have the adaptation loop in place which consists of the following steps: \color{red} MORE TECHNICAL DETAILS NEEDED HERE \color{black}
 
 \setstretch{0.75}
 \begin{itemize}
@@ -211,7 +234,7 @@ At this stage, we have the adaptation loop in place which consists of the follow
      \item \texttt{check for convergence}
      \item \texttt{run Super-convergent Patch Recovery (SPR) -> error estimation -> size field}
      % \item \texttt{convert 2nd order Lagrange to 2nd order Bezier}
-     \item \texttt{run the curve adapt}
+     \item \texttt{run the curve adapt} \color{red} What about (1)predictive load balancing (2) re-balancing before solve, etc \color{black}
      % \item \texttt{convert 2nd order Bezier back to 2nd order Lagrange}
    \end{itemize}
 
@@ -223,6 +246,13 @@ It is important to emphasize that, the current adaptive loop improves upon the p
 Also worth mentioning, is the fact that our current pipeline works with PUMI-meshes as an input without the need for an input ncdf mesh. This enables us to generate our initial meshes using Simmetrix. Note that the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model, requires Simmetrix.
 
 \subsection{Results for the Adaptive Loop}
+
+\color{blue} Mark: The mesh adaptation procedures are currently doing what looks like a poor job on creating the new mesh topology. This is something we will want to work on when we can get to it. (will likely (1) be a while before we can get to it, (2) take a fair amount of work) \color{black}
+
+\color{blue} Mark on subfigurs (b) and (d): Why are we plotting such different things? We want the same simulation fields on both. \color{black}
+
+
+
 Figures \ref{pill} and \ref{cav} show two working examples for the current curve adaptation loop.
 \begin{landscape}
 \begin{figure}[ph!]
@@ -250,7 +280,19 @@ Figures \ref{pill} and \ref{cav} show two working examples for the current curve
 \caption{\label{cav} This Figure shows the results for the CAV17 model. (a) shows the initial mesh [$\sim126\text{K}$ elements], (b) shows the initial size-field, (c) shows the adapted mesh after 3 adaptation steps [$\sim380\text{K}$ elements], and (d) shows the electric field for the final adapted mesh.}
 \end{figure}
 \end{landscape}
-In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed and it is shown in Fig. \ref{pill_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) is shown in Fig. \ref{pill_adapt}. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model.
+In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed and it is shown in Fig. \ref{pill_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) is shown in Fig. \ref{pill_adapt}. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model. \color{blue} Mark: More technical Info \color{black}
+
+\subsection{\label{adaptive_loop_future} Future Steps}
+
+Our plan for future developments in regard to the adaptive loop is as follows:
+\setstretch{0.75}
+\begin{itemize}
+  \item item 1
+  \item item 2
+  \item \dots
+\end{itemize}
+\setstretch{1.5}
+
 
 
 \section{\label{high_order_geom}Moving Towards Higher-Order Geometries}
@@ -265,6 +307,16 @@ As a first step towards using higher-order geometric elements, we have been able
 \end{figure}
 This, in theory, should make it possible to raise the (geometric) order of the elements to higher than quadratic. (Currently, we have support for up to 6th order Bezier elements in PUMI.)
 
+\subsection{\label{high_order_geom_future} Future Steps}
+
+Our plan for future developments in regard to the higher-order geometries is as follows:
+\setstretch{0.75}
+\begin{itemize}
+  \item item 1
+  \item item 2
+  \item \dots
+\end{itemize}
+\setstretch{1.5}
 
 \section*{References}
 % \bibliographystyle{elsarticle-harv_noURL}
