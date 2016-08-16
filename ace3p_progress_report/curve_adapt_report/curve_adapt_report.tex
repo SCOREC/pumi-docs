@@ -129,7 +129,7 @@ The key advantage of this approach is that a small amount of code is
 required; we simply read and write the Omega3P mesh and field
 structures by directly accessing PUMI data structures.
 A similar PUMI in-memory integration with the Albany Multiphysics
-framework~\cite{salinger2013albany,Albany2015} reduced the data transfer time
+framework~\cite{Albany2015,salinger2013albany} reduced the data transfer time
 required to support an adaptive step on a 22 million element mesh from over 100
 seconds using files to 23 seconds on 1024 cores. \color{blue} Mark: My guess is the improvements here are much higher since the previous procedures had a serial step. I think there should be some discussion of that. Can we get any data (of any type) on comparing to the old procedures? \color{black}
 
@@ -148,6 +148,8 @@ solve-adapt cycle after executing PUMI mesh adaptation and load balancing.
 We have demonstrated a low runtime and memory overhead implementation for the
 PUMI-to-DistMesh conversion which ensures that it is not a bottleneck
 in these simulations. \color{blue} Mark: can we get some actual data?  \color{black}
+
+\subsection{\label{in_memory_results} Results}
 
 \subsection{\label{in_memory_future} Future Steps}
 Our plan for future developments in regard to the in memory integration is as follows:
@@ -204,15 +206,66 @@ Thus ParMA can readily account for balancing the work load, in terms of number
 of equations per-part, for p-version finite elements by setting mesh entity
 weights based on the different entity p-orders. 
 
-\color{blue} Mark: Any results that we can report? I know we do not have run-time improvements yet- but there is other data so far. \color{black}
+\subsection{\label{load_balance_results} Results}
+
+We ran Omega3P and Omega3P with ParMA's ghost balances, from here on our referred
+to as Omega3P+PUMI, on the \texttt{cav17} model with a 318,118
+element quadratic mesh on up to 128 cores (32 cores per node) of the NERSC Cori
+Phase I system.
+The Omega3P+PUMI average number of ghost + owned edges and faces per-part
+is less than 1.46\% higher than the Omega3P counts at 32 parts.
+At 64 and 128 parts the average entity counts of Omega3P+PUMI is less than 0.3\%
+higher than Omega3P counts.
+While maintaining nearly identical entity counts ParMA significantly reduces the
+imbalance of ghost + owned edges and faces degree-of-freedom holders.
+Figure~\ref{fig:cav17imb} shows the imbalance of edges and faces.
+At 128 parts ParMA reduces the edge imbalance by 30 points and the face
+imbalance by 27 points.
+At 64 parts the edge and face imbalances are reduced by over 15 points each and
+at 32 parts ParMA reduces the imbalances by eight points.
+
+\begin{figure}[ht]
+\centering
+  \includegraphics[width=\textwidth]{cav17-edge-imb.eps} \\
+  \includegraphics[width=\textwidth]{cav17-face-imb.eps} \\
+  \caption{\label{fig:cav17imb} Edge and face imbalance in the {\texttt cav17} mesh.}
+\end{figure}
+
+Additional tests of ParMA ghost-aware edge balancing were executed on the
+\texttt{pillbox} model with a 2 million element quadratic mesh on up to 1024
+cores (32 cores per node) of the NERSC Cori Phase I system.
+The Omega3P+PUMI average number of ghost + owned edges and faces per-part
+is less than 1.15\% higher than the Omega3P counts at 256, 512, and 1024 parts.
+With this insignificant increase in entity count ParMA reduces the imbalance of 
+ghost + owned edges and faces by over 50 points.
+At 1024 parts Figure~\ref{fig:pillboximb} depicts the ParMA reduction of the
+edge imbalance by 55 points and the face imbalance by 48 points.
+At 512 parts the edge and face imbalances are reduced by over 40 points each and
+at 256 parts ParMA reduces the imbalances by over 25 points.
+These reductions to the degree-of-freedom holding entities have been
+demonstrated to significantly improve the performance and scalability of
+parallel finite element simulations~\cite{zhou2012unstructured,rasquinCise2014}.
+
+
+\begin{figure}[ht]
+\centering
+  \includegraphics[width=\textwidth]{pillbox2M-edge-imb.eps} \\
+  \includegraphics[width=\textwidth]{pillbox2M-face-imb.eps} \\
+  \caption{\label{fig:pillboximb} Edge and face imbalance in the {\texttt
+  pillbox-2M}
+  mesh.}
+\end{figure}
 
 \subsection{\label{load_balance_future} Future Steps}
-Our plan for future developments in regard to the load balancing  is as follows:
+
+While we have seen major improvements in the degree of freedom holder imbalance,
+we have yet to see an improvement in runtime as a result of the balancing. Thus
+our plan for future developments in regard to the load balancing  is as follows:
+
 \setstretch{0.75}
 \begin{itemize}
-  \item item 1
-  \item item 2
-  \item \dots
+  \item Determine how the distribution of degrees of freedom effects the runtime for Omega3P.
+  \item Further optimize the ParMA ghost balancer to improve runtime of Omega3P solvers.
 \end{itemize}
 \setstretch{1.5}
 
@@ -243,13 +296,13 @@ At this stage, we have the adaptation loop in place which consists of the follow
 \setstretch{1.5}
 It is important to emphasize that, the current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel. Recall that the previous implementation required repartitioning a serial mesh after parallel adaptation.
 
-Also worth mentioning, is the fact that our current pipeline works with PUMI-meshes as an input without the need for an input ncdf mesh. This enables us to generate our initial meshes using Simmetrix. Note that the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model, requires Simmetrix.
+Also worth mentioning, is the fact that our current pipeline works with PUMI-meshes as an input without the need for an input NETCDF mesh. This enables us to generate our initial meshes using Simmetrix. Note that the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model, requires Simmetrix.
 
 \subsection{Results for the Adaptive Loop}
 
 \color{blue} Mark: The mesh adaptation procedures are currently doing what looks like a poor job on creating the new mesh topology. This is something we will want to work on when we can get to it. (will likely (1) be a while before we can get to it, (2) take a fair amount of work) \color{black}
 
-\color{blue} Mark on subfigurs (b) and (d): Why are we plotting such different things? We want the same simulation fields on both. \color{black}
+\color{blue} Mark on subfigures (b) and (d): Why are we plotting such different things? We want the same simulation fields on both. \color{black}
 
 
 
