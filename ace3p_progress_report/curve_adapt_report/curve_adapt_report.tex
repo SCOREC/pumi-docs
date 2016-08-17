@@ -24,6 +24,7 @@
 \usepackage{bm}% bold math
 \usepackage{pdflscape}
 \usepackage{soul}
+\usepackage{parskip}
 % \usepackage{showkeys}
 %%%%%%%%%%%%%%%%%%%%
 
@@ -256,7 +257,7 @@ our plan for future developments in regard to the load balancing  is as follows:
 \newpage
 
 \section{\label{adaptive_loop}The Adaptive Loop}
-At this stage, we have the adaptation loop in place which consists of the following steps: \color{red} MORE TECHNICAL DETAILS NEEDED HERE \color{black}
+At this stage, we have the adaptation loop in place which consists of the following steps:
 
 \setstretch{0.75}
 \begin{itemize}
@@ -269,22 +270,42 @@ At this stage, we have the adaptation loop in place which consists of the follow
      \item \texttt{check for convergence}
      \item \texttt{run Super-convergent Patch Recovery (SPR) -> error estimation -> size field}
      % \item \texttt{convert 2nd order Lagrange to 2nd order Bezier}
-     \item \texttt{run the curve adapt} \color{red} What about (1)predictive load balancing (2) re-balancing before solve, etc \color{black}
+     \item \texttt{run the curve adapt} % \color{red} What about (1)predictive load balancing (2) re-balancing before solve, etc \color{black}
      % \item \texttt{convert 2nd order Bezier back to 2nd order Lagrange}
    \end{itemize}
 
  \item[] \texttt{  \} }
 \end{itemize}
 \setstretch{1.5}
-It is important to emphasize that, the current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel. Recall that the previous implementation required repartitioning a serial mesh after parallel adaptation.
+
+The curve adapt step in the above loop involves more details that are explained next.
+\setstretch{0.75}
+\begin{itemize}
+  \item [1.]In order to be able to use the curve adapt tools in Pumi we first need to convert the mesh to a quadratic Bezier mesh (currently curve adapt in PUMI only supports Bezier meshes).
+  \item [2.]The actual curve adapt step involves the following operations
+  	\begin{itemize}
+	  \item \texttt{pre-adapt balancing of the mesh}
+	  \item \texttt{coarsening the mesh based on the size-field}
+	  \item \texttt{mid-adapt balancing of the mesh}
+	  \item \texttt{refining the mesh base on the size-field}
+	  \item \texttt{post-adapt balancing of the mesh}
+  	\end{itemize}
+  \item [3.]After the adaptation is done we convert the mesh back to Lagrange quadratic.
+\end{itemize}
+\setstretch{1.5}
+
+It is important to note that the coarsening and refinement steps are done with snapping functionality (i.e., the newly created vertexes and Bezier interpolating points will be snapped to the corresponding model entities that they are categorized on). 
+
 
 Also worth mentioning, is the fact that our current pipeline works with PUMI-meshes as an input without the need for an input NETCDF mesh. This enables us to generate our initial meshes using Simmetrix. Note that the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model, requires Simmetrix.
+
+Finally,  the current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel. Recall that the previous implementation required repartitioning a serial mesh after parallel adaptation.
 
 \subsection{Results for the Adaptive Loop}
 
 \color{blue} Mark: The mesh adaptation procedures are currently doing what looks like a poor job on creating the new mesh topology. This is something we will want to work on when we can get to it. (will likely (1) be a while before we can get to it, (2) take a fair amount of work) \color{black}
 
-\color{blue} Mark on subfigures (b) and (d): Why are we plotting such different things? We want the same simulation fields on both. \color{black}
+\color{blue} Mark: on subfigures (b) and (d): Why are we plotting such different things? We want the same simulation fields on both. \color{black}
 
 
 
