@@ -1,26 +1,3 @@
-%%%\documentclass[%
-%%%%reprint,
-%%%%superscriptaddress,
-%%%%groupedaddress,
-%%%%unsortedaddress,
-%%%%runinaddress,
-%%%%frontmatterverbose, 
-%%%preprint,
-%%%%showpacs,preprintnumbers,
-%%%%nofootinbib,
-%%%%nobibnotes,
-%%%%bibnotes,
-%%% amsmath,amssymb,
-%%%%aps,
-%%%%pra,
-%%% prb,
-%%%%rmp,
-%%%%prstab,
-%%%%prstper,
-%%%floatfix,
-%%%%nolongbibliography
-%%%]{revtex4-1}
-
 \documentclass[review,12pt]{elsarticle_summary_report}
 \usepackage[top=1.0in, bottom=1.0in, left=1in, right=1in]{geometry}
 
@@ -71,6 +48,11 @@
 %\renewenvironment{equation}[0]{equation}{equation}
 
 %%%%%%%%%%%%%%%%%%%% Additional Commands
+\newcommand{\pr}[1]{\left( #1 \right)} 
+\newcommand{\br}[1]{\left[ #1 \right]} 
+\newcommand{\cbr}[1]{\left\lbrace #1 \right\rbrace} 
+\newcommand{\abs}[1]{\left | #1 \right |} 
+\newcommand{\mref}[2]{(#1)$_{\text{#2}}$} 
 %%%%%%%%%%%%%%%%%%%%
 %\numberwithin{equation}{section}  	%%Equation Numbering
 %%%%%%%%%%%%%%%%%%%%
@@ -352,22 +334,42 @@ Our plan for future developments in regard to the adaptive loop is as follows:
 
 In order to be able to increase the order of the finite element basis functions to exploit the exponential convergence rate of the p-version finite elements, one needs to also increase the geometric order of the elements near the curved boundaries. Otherwise, the error in the geometric representation of such curved elements prevents the exponential growth rate in the p-version finite element \cite{LuoShephard_04, DeyShephard_97, LuoShephard_02}.
 
-As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute determinant of the Jacobian with the corresponding PUMI calls. This is done by storing and additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation).
+The finite element discretization of the problem involves volume integrals of the form \cite{LeeLi_09}
+\begin{equation}
+  \int _\Omega \pr{D \textbf{N}^i} \cdot \pr{D \textbf{N}^j} d\Omega \quad \quad \text{or} \quad \quad \int _{\Omega _e} \pr{D \textbf{N}^i} \cdot \pr{D \textbf{N}^j} d\Omega _e	
+  \label{integrals}
+\end{equation}
+where $\Omega$ and $\Omega _e$ denote the whole domain of the problem  and the element volume, respectively, and the operator $D$ is either of the following two operators 
+\begin{equation}
+  D \in \cbr{\textbf{I}, \nabla \times }.
+\end{equation}
+The element integrals in \mref{\ref{integrals}}{2}, can then be re-written with respect to the parametric coordinates in the reference element, e.g., the stiffness matrix for each element can be written as follows
+\begin{equation}
+\begin{aligned}
+  K^{ij} 	&= \int _{\Omega _e} \pr{\nabla _x \times \textbf{N}^i} \cdot \pr{\nabla _x \times \textbf{N}^j} d\Omega _e \\
+  &= \int _{\Omega _e} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial x_n} \frac{\partial N^j_p}{\partial x_q}   d\Omega _e \\
+  &= \int _{\Omega _\xi} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial \xi_s} \frac{\partial \xi_s}{\partial x_n}  \frac{\partial N^j_p}{\partial \xi_t}  \frac{\partial \xi_t}{\partial x_q} \abs{\frac{\partial x}{\partial \xi}  } d\Omega _\xi \\
+  &= \int _{\Omega _\xi} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial \xi_s} J^{-1}_{sn}  \frac{\partial N^j_p}{\partial \xi_t}  J^{-1}_{tq} \abs{J} d\Omega _\xi.
+\end{aligned}
+\end{equation}
+Here $\epsilon_{kmn}$ is the third-order permutation tensor, and $N^i$ are the shape functions. Assuming that the Omega3P's code for the computation of the stiffness matrix (or any other matrix pertaining the fem discretization) does not make any specific assumption on the choice of the shape functions, we can safely use other valid shape functions, and  achieve a valid fem discretization. Note that the geometric information of each element is encapsulated in the Jacobians appearing in the above integral, and therefore incorporating higher order geometries into the finite element formulations requires the computation of the Jacobian for higher order elements.  
+
+As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute the Jacobian-related quantities (e.g., the determinant) with the corresponding PUMI calls. This is done by storing an additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation).
 \begin{figure}[ph!]
 \centering
 \includegraphics[width=0.95\textwidth]{hide_ten_point_tet.png}
 \caption{\label{imp} This Figure shows the implementation details for replacing Omega3P calls for determinant calculation with the corresponding PUMI calls.}
 \end{figure}
-This, in theory, should make it possible to raise the (geometric) order of the elements to higher than quadratic. (Currently, we have support for up to 6th order Bezier elements in PUMI.)
+This enables us to easily redirect any call in Omega3P that requires the Jacobians to PUMI and retrieve the corresponding value using the PUMI Jacobian calculations, which supports higher than quadratic geometries. (Currently, we have support for up to 6th order Bezier elements in PUMI.)
+
 
 \subsection{\label{high_order_geom_future} Future Steps}
+By replacing the Jacobian calls in Omega3P with the corresponding PUMI calls we were able to pass the current tests for meshes with quadratic curved  elements, and therefore demonstrate that the above approach works. Our plan for future developments in regard to the higher-order geometries is as follows:
 
-Our plan for future developments in regard to the higher-order geometries is as follows:
 \setstretch{0.75}
 \begin{itemize}
-  \item item 1
-  \item item 2
-  \item \dots
+  \item Move to higher order finite element with support for higher order geometries using the approach described above
+  \item Once we have full support for higher order geometries we plan to compare the performance improvements of p-version finite element with that of the h-version finite element. 
 \end{itemize}
 \setstretch{1.5}
 
