@@ -25,6 +25,8 @@
 \usepackage{pdflscape}
 \usepackage{soul}
 \usepackage{parskip}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 % \usepackage{showkeys}
 %%%%%%%%%%%%%%%%%%%%
 
@@ -278,49 +280,51 @@ our plan for future developments in regard to the load balancing  is as follows:
 % \newpage
 
 \section{\label{adaptive_loop}The Adaptive Loop}
-At this stage, we have the adaptation loop in place which consists of the following steps:
 
-\setstretch{0.75}
+For the adaptive loop we use a size-driven mesh adaptation procedure \cite{LiShephard_03}, in which a mesh size metric is defined for the desired size of the elements. Then a series of mesh modifications is applied to achieve the desired edge lengths in the mesh. These operations are:
 \begin{itemize}
-  \item[] \texttt{while not converged \{ }
-   \begin{itemize}
-     \item \texttt{partition the mesh using ParMA with a focus of owned and ghost elements}
-     \item \texttt{convert PUMI-mesh to SLAC-mesh}
-     \item \texttt{run the appropriate Omega3P eigensolver}
-     \item \texttt{transfer electric field values to the PUMI-mesh}
-     \item \texttt{check for convergence}
-     \item \texttt{run Super-convergent Patch Recovery (SPR) -> error estimation -> size field}
-     % \item \texttt{convert 2nd order Lagrange to 2nd order Bezier}
-     \item \texttt{run the curve adapt} % \color{red} What about (1)predictive load balancing (2) re-balancing before solve, etc \color{black}
-     % \item \texttt{convert 2nd order Bezier back to 2nd order Lagrange}
-   \end{itemize}
-
- \item[] \texttt{  \} }
+  \item \textbf{coarsening}: This stage removes the edges in the mesh that are shorter than the desired edge length. This is achieved by applying collapse operations on short edges.
+  \item \textbf{refinement}: This stage applies edge-based refinement to the mesh in order to achieve the desired edge-lengths. This stage is accompanied by other local mesh modification steps to snap the newly created nodes during the refinement step to the model boundary. They are repeated until the desired sizes are achieved.
+  \item \textbf{shape improvement}: This stage uses operations like edge-swap and vertex repositioning to improve the quality of the mesh. Currently, not implemented for curved mesh adaptation in PUMI.
 \end{itemize}
-\setstretch{1.5}
+A mesh validity check is performed anytime a local mesh modification is run in place with curved elements to ensure that the resulting elements are not inverted \cite[see][for more details]{LuoShephard_11}. The pseudo-code for the above-described curve adapt procedure is given below.
 
-The curve adapt step in the above loop involves more details that are explained next.
-\setstretch{0.75}
-\begin{itemize}
-  \item [1.]In order to be able to use the curve adapt tools in Pumi we first need to convert the mesh to a quadratic Bezier mesh (currently curve adapt in PUMI only supports Bezier meshes).
-  \item [2.]The actual curve adapt step involves the following operations
-  	\begin{itemize}
-	  \item \texttt{pre-adapt balancing of the mesh}
-	  \item \texttt{coarsening the mesh based on the size-field}
-	  \item \texttt{mid-adapt balancing of the mesh}
-	  \item \texttt{refining the mesh base on the size-field}
-	  \item \texttt{post-adapt balancing of the mesh}
-  	\end{itemize}
-  \item [3.]After the adaptation is done we convert the mesh back to Lagrange quadratic.
-\end{itemize}
-\setstretch{1.5}
+\begin{algorithm}
+\caption{The Curve Adapt}\label{crv_adapt}
+\begin{algorithmic}[1]
+\Procedure{CurveAdapt}{PumiMesh, SizeField}
+\State pre-adapt \textbf{balancing} of the mesh
+\State mesh validity check
+\State \textbf{coarsening}
+\State mesh validity check
+\State mid-adapt \textbf{balancing} of the mesh
+\State \textbf{refinement} and \textbf{snapping to model boundary}
+\State mesh validity check
+\State post-adapt \textbf{balancing} of the mesh
+\State \textbf{shape improvement} [currently not implemented]
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
-It is important to note that the coarsening and refinement steps are done with snapping functionality (i.e., the newly created vertexes and Bezier interpolating points will be snapped to the corresponding model entities that they are categorized on). 
+With the in-memory integration technique described in section \ref{in_memory}, we always have access to a PUMI-mesh object which enables us to seamlessly \textbf{integrate} the Omega3P's eigen-solvers with different PUMI functionalities, such as load-balancing which was discussed earlier in this report, and adaptations. The following pseudo-code shows the adaptive loop which make use of Omega3P's eigen-solver to compute a size field.
 
+\begin{algorithm}
+\caption{The Adaptive Loop}\label{adapt_loop}
+\begin{algorithmic}[1]
+\State \textbf{while} not converged
+\State \quad partition the mesh using ParMA with a focus of owned and ghost elements
+\State \quad convert PUMI-mesh to SLAC-mesh
+\State \quad run the appropriate Omega3P eigensolver
+\State \quad transfer electric field values to the PUMI-mesh
+\State \quad check for convergence
+\State \quad run Super-convergent Patch Recovery (SPR) -> error estimation -> size field
+\State \quad run CurveAdapt
+\end{algorithmic}
+\end{algorithm}
 
-Also worth mentioning, is the fact that our current pipeline works with PUMI-meshes as an input without the need for an input NETCDF mesh. This enables us to generate our initial meshes using Simmetrix. Note that the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model, requires Simmetrix.
+Note that our current pipeline works with PUMI-meshes as an input without the need for an input NCDF mesh. This enables us to generate our initial meshes using Simmetrix. Note that the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model, requires Simmetrix.
 
-Finally,  the current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel. Recall that the previous implementation required repartitioning a serial mesh after parallel adaptation.
+Also worth mentioning, is the fact that our current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel. Recall that the previous implementation required repartitioning a serial mesh after parallel adaptation.
 
 \subsection{Results for the Adaptive Loop}
 
