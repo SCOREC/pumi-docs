@@ -130,9 +130,31 @@ Adaptive simulations call the PUMI-to-DistMesh conversion routine every
 solve-adapt cycle after executing PUMI mesh adaptation and load balancing.
 We have demonstrated a low runtime and memory overhead implementation for the
 PUMI-to-DistMesh conversion which ensures that it is not a bottleneck
-in these simulations. \color{blue} Mark: can we get some actual data?  \color{black}
+in these simulations.
 
 \subsection{\label{in_memory_results} Results}
+The cost of our in-memory integration approach is an increase in peak memory
+usage during the data transfer when there are two copies of the mesh and/or
+field data stored in memory.
+Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
+execution on the {\texttt cav17} and {\texttt pillbox-2M} case for both the
+original Omega3P code and with the code that executes PUMI mesh conversion and
+load balancing (Omega3P+PUMI).
+The increase in peak memory when storing the PUMI mesh is 2\% at 32 cores,
+decreases by less than one percent at 64 cores, and increases by 6\% at 128
+cores of the {\texttt cav17} case.
+At 256, 512, and 1024 cores of the {\texttt pillbox-2M} case memory is reduced by
+0.87\%, 1.1\% and 2.9\%, respectively.
+Demonstrating low memory overhead is critical for efficient parallel adaptive
+simulation execution.
+
+\begin{figure}[!ph]
+\centering
+  \includegraphics[width=.9\textwidth]{cav17-peak-mem.eps}
+  \includegraphics[width=.9\textwidth]{pillbox2M-peak-mem.eps}
+  \caption{\label{fig:memusage} Peak memory usage. The labels above the Omega3P+PUMI bars
+  list the percent increase versus Omega3P.}
+\end{figure}
 
 \subsection{\label{in_memory_future} Future Steps}
 Our plan for future developments in regard to the in memory integration is as follows:
@@ -227,7 +249,7 @@ At 512 parts the edge and face imbalances are reduced by over 40 points each and
 at 256 parts ParMA reduces the imbalances by over 25 points.
 These reductions to the degree-of-freedom holding entities have been
 demonstrated to significantly improve the performance and scalability of
-parallel finite element simulations~\cite{zhou2012unstructured,rasquinCise2014}.
+parallel finite element simulations~\cite{zhou2012unstructured}.
 
 
 \begin{figure}[!ph]
