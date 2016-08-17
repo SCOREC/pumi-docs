@@ -169,7 +169,7 @@ In order to improve Omega3P's performance and scalability, ParMA targets
 minimizing the sum of the ghosted and on-part elements as well as the mesh
 entities holding degrees-of-freedom.
 
-\begin{figure}[ht]
+\begin{figure}[!ph]
 \centering
 \includegraphics[width=0.6\textwidth]{ghost.eps} 
 \caption{\label{fig:ghost3} A layer of ghosted elements from part A to part B. The darker elements represent all the elements on part A that part B will copy to create its remote mesh.}
@@ -207,10 +207,10 @@ imbalance by 27 points.
 At 64 parts the edge and face imbalances are reduced by over 15 points each and
 at 32 parts ParMA reduces the imbalances by eight points.
 
-\begin{figure}[ht]
+\begin{figure}[!ph]
 \centering
-  \includegraphics[width=\textwidth]{cav17-edge-imb.eps} \\
-  \includegraphics[width=\textwidth]{cav17-face-imb.eps} \\
+  \includegraphics[width=0.75\textwidth]{cav17-edge-imb.eps} \\
+  \includegraphics[width=0.75\textwidth]{cav17-face-imb.eps} 
   \caption{\label{fig:cav17imb} Edge and face imbalance in the {\texttt cav17} mesh.}
 \end{figure}
 
@@ -230,17 +230,16 @@ demonstrated to significantly improve the performance and scalability of
 parallel finite element simulations~\cite{zhou2012unstructured,rasquinCise2014}.
 
 
-\begin{figure}[ht]
+\begin{figure}[!ph]
 \centering
-  \includegraphics[width=\textwidth]{pillbox2M-edge-imb.eps} \\
-  \includegraphics[width=\textwidth]{pillbox2M-face-imb.eps} \\
+  \includegraphics[width=0.75\textwidth]{pillbox2M-edge-imb.eps} \\
+  \includegraphics[width=0.75\textwidth]{pillbox2M-face-imb.eps}
   \caption{\label{fig:pillboximb} Edge and face imbalance in the {\texttt
   pillbox-2M}
   mesh.}
 \end{figure}
 
 \subsection{\label{load_balance_future} Future Steps}
-
 While we have seen major improvements in the degree of freedom holder imbalance,
 we have yet to see an improvement in runtime as a result of the balancing. Thus
 our plan for future developments in regard to the load balancing  is as follows:
@@ -253,8 +252,8 @@ our plan for future developments in regard to the load balancing  is as follows:
 \setstretch{1.5}
 
 
-\clearpage
-\newpage
+% \clearpage
+% \newpage
 
 \section{\label{adaptive_loop}The Adaptive Loop}
 At this stage, we have the adaptation loop in place which consists of the following steps:
@@ -308,8 +307,8 @@ Finally,  the current adaptive loop improves upon the previously available adapt
 \color{blue} Mark: on subfigures (b) and (d): Why are we plotting such different things? We want the same simulation fields on both. \color{black}
 
 
-
 Figures \ref{pill} and \ref{cav} show two working examples for the current curve adaptation loop.
+In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed and it is shown in Fig. \ref{pill_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) is shown in Fig. \ref{pill_adapt}. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model. \color{blue} Mark: More technical Info \color{black}
 \begin{landscape}
 \begin{figure}[ph!]
 \centering
@@ -336,15 +335,12 @@ Figures \ref{pill} and \ref{cav} show two working examples for the current curve
 \caption{\label{cav} This Figure shows the results for the CAV17 model. (a) shows the initial mesh [$\sim126\text{K}$ elements], (b) shows the initial size-field, (c) shows the adapted mesh after 3 adaptation steps [$\sim380\text{K}$ elements], and (d) shows the electric field for the final adapted mesh.}
 \end{figure}
 \end{landscape}
-In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed and it is shown in Fig. \ref{pill_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) is shown in Fig. \ref{pill_adapt}. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model. \color{blue} Mark: More technical Info \color{black}
-
 \subsection{\label{adaptive_loop_future} Future Steps}
 
 Our plan for future developments in regard to the adaptive loop is as follows:
 \setstretch{0.75}
 \begin{itemize}
-  \item item 1
-  \item item 2
+  \item to be completed
   \item \dots
 \end{itemize}
 \setstretch{1.5}
