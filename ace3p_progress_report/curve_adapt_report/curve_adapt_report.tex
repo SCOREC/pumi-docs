@@ -112,12 +112,12 @@ file-based I/O through in-memory data streams and component functional
 interfaces. Towards complete support of the solve-adapt cycle we have implemented in-memory
 procedures to convert Omega3P meshes and fields to and from  PUMI data structures.
 The key advantage of this approach is that a small amount of code is 
-required; we simply read and write the Omega3P mesh and field
+required; we read and write the Omega3P mesh and field
 structures by directly accessing PUMI data structures.
 A similar PUMI in-memory integration with the Albany Multiphysics
 framework~\cite{Albany2015,salinger2013albany} reduced the data transfer time
 required to support an adaptive step on a 22 million element mesh from over 100
-seconds using files to 23 seconds on 1024 cores. \color{blue} Mark: My guess is the improvements here are much higher since the previous procedures had a serial step. I think there should be some discussion of that. Can we get any data (of any type) on comparing to the old procedures? \color{black}
+seconds using files to 23 seconds on 1024 cores. \color{blue} Mark: My guess is the improvements here are much higher since the previous procedures had a serial step. I think there should be some discussion of that. Can we get any data (of any type) on comparing to the old procedures? \color{red} Kai is looking into it.\color{black} 
 
 Mesh conversion begins with a version of Omega3P's NetCDF file reader that is altered
 to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
@@ -159,18 +159,17 @@ simulation execution.
   list the percent increase versus Omega3P.}
 \end{figure}
 
-\subsection{\label{in_memory_future} Future Steps}
-Our plan for future developments in regard to the in memory integration is as follows:
+%\subsection{\label{in_memory_future} Future Steps}
+%Our plan for future developments in regard to the in memory integration is as follows:
 
-\setstretch{0.75}
-\begin{itemize}
-  \item item 1
-  \item item 2
-  \item \dots
-\end{itemize}
+%\setstretch{0.75}
+%\begin{itemize}
+%  \item item 1
+%  \item item 2
+%  \item \dots
+%\end{itemize}
 \setstretch{1.5}
 
-%Memory images to be added
 
 \section{\label{load_balance}Load Balancing}
 In each iteration of the mesh adaptation loop a new partition is generated on the
@@ -206,7 +205,7 @@ reusing existing multi-entity target and boundary-element selection
 procedures.
 For first order elements this requires balancing edges.
 Second order elements requires edges and faces, and above that edges, faces, and
-regions need to be balanced. \color{blue} Mark: Are we sure this is right? (I expect that is the case) \color{black}
+regions need to be balanced. 
 Each of these entity balancing procedures accounts for the ghosted weight
 contribution by performing an additional neighborhood
 exchange~\cite{ibanez2014hybrid} of the exact weight of ghosted layer entities.
@@ -216,21 +215,22 @@ weights based on the different entity p-orders.
 
 \subsection{\label{load_balance_results} Results}
 
-We ran Omega3P and Omega3P with ParMA's ghost balances, from here on our referred
-to as Omega3P+PUMI, on the \texttt{cav17} model with a 318,118
+We ran Omega3P and Omega3P+PUMI on the \texttt{cav17} model with a 318,118
 element quadratic mesh on up to 128 cores (32 cores per node) of the NERSC Cori
-Phase I system.
+Phase I system. Two results come from using ParMA's ghost load balancing. The first 
+is the improvement of the imbalance of ghost+ owned edges and faces, while the second 
+is an increase in average number of ghost+owned entities.
+Figure~\ref{fig:cav17imb} shows the imbalance of edges and faces.
+At 128 parts ParMA reduces the edge imbalance by 23\%  and the face
+imbalance by 14\%.
+At 64 parts the edge and face imbalances are reduced by over 12\% each and
+at 32 parts ParMA reduces the imbalances by 6\%.
+While ParMA significantly reduces the imbalance of ghost+ owned edges and faces
+there is a small cost in the number of ghost + owned entities.
 The Omega3P+PUMI average number of ghost + owned edges and faces per-part
 is less than 1.46\% higher than the Omega3P counts at 32 parts.
 At 64 and 128 parts the average entity counts of Omega3P+PUMI is less than 0.3\%
 higher than Omega3P counts.
-While maintaining nearly identical entity counts ParMA significantly reduces the
-imbalance of ghost + owned edges and faces degree-of-freedom holders.
-Figure~\ref{fig:cav17imb} shows the imbalance of edges and faces.
-At 128 parts ParMA reduces the edge imbalance by 30 points and the face
-imbalance by 27 points.
-At 64 parts the edge and face imbalances are reduced by over 15 points each and
-at 32 parts ParMA reduces the imbalances by eight points.
 
 \begin{figure}[!ph]
 \centering
@@ -242,17 +242,14 @@ at 32 parts ParMA reduces the imbalances by eight points.
 Additional tests of ParMA ghost-aware edge balancing were executed on the
 \texttt{pillbox} model with a 2 million element quadratic mesh on up to 1024
 cores (32 cores per node) of the NERSC Cori Phase I system.
+Again we see the two results as in the \texttt{cav17} model, with significant reduciton in 
+imbalance with a less significant increase in the number of degree of freedom entities.
+At 1024 parts Figure~\ref{fig:pillboximb} depicts the ParMA reduction of the
+edge imbalance by 36\% and the face imbalance by 34\%.
+At 512 parts the edge and face imbalances are reduced by over 30\% each and
+at 256 parts ParMA reduces the imbalances by over 20\%.
 The Omega3P+PUMI average number of ghost + owned edges and faces per-part
 is less than 1.15\% higher than the Omega3P counts at 256, 512, and 1024 parts.
-With this insignificant increase in entity count ParMA reduces the imbalance of 
-ghost + owned edges and faces by over 50 points.
-At 1024 parts Figure~\ref{fig:pillboximb} depicts the ParMA reduction of the
-edge imbalance by 55 points and the face imbalance by 48 points.
-At 512 parts the edge and face imbalances are reduced by over 40 points each and
-at 256 parts ParMA reduces the imbalances by over 25 points.
-These reductions to the degree-of-freedom holding entities have been
-demonstrated to significantly improve the performance and scalability of
-parallel finite element simulations~\cite{zhou2012unstructured}.
 
 
 \begin{figure}[!ph]
@@ -266,8 +263,11 @@ parallel finite element simulations~\cite{zhou2012unstructured}.
 
 \subsection{\label{load_balance_future} Future Steps}
 While we have seen major improvements in the degree of freedom holder imbalance,
-we have yet to see an improvement in runtime as a result of the balancing. Thus
-our plan for future developments in regard to the load balancing  is as follows:
+we have yet to see an improvement in runtime as a result of the balancing. It has been shown that 
+these reductions to the degree-of-freedom holding entities significantly improve the 
+performance and scalability of
+parallel finite element simulations~\cite{zhou2012unstructured}.
+ Thus our plan for future developments in regard to the load balancing  is as follows:
 
 \setstretch{0.75}
 \begin{itemize}
