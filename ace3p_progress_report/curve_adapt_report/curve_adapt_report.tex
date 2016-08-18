@@ -281,13 +281,13 @@ our plan for future developments in regard to the load balancing  is as follows:
 
 \section{\label{adaptive_loop}The Adaptive Loop}
 
-For the adaptive loop we use a size-driven mesh adaptation procedure \cite{LiShephard_03}, in which a mesh size metric is defined for the desired size of the elements. Then a series of mesh modifications is applied to achieve the desired edge lengths in the mesh. These operations are:
+For the adaptive loop we use a size-driven mesh adaptation procedure \cite{LiShephard_03}, in which a mesh size metric is defined for the desired size of the elements. Then a series of mesh modifications are applied to achieve the desired edge lengths in the mesh. These operations are:
 \begin{itemize}
-  \item \textbf{coarsening}: This stage removes the edges in the mesh that are shorter than the desired edge length. This is achieved by applying collapse operations on short edges.
-  \item \textbf{refinement}: This stage applies edge-based refinement to the mesh in order to achieve the desired edge-lengths. This stage is accompanied by other local mesh modification steps to snap the newly created nodes during the refinement step to the model boundary. They are repeated until the desired sizes are achieved.
-  \item \textbf{shape improvement}: This stage uses operations like edge-swap and vertex repositioning to improve the quality of the mesh. Currently, not implemented for curved mesh adaptation in PUMI.
+  \item \textbf{Coarsening}: This stage removes the edges in the mesh that are shorter than the desired edge length. This is achieved by applying collapse operations on short edges.
+  \item \textbf{Refinement}: This stage applies edge-based refinement to the mesh in order to achieve the desired edge-lengths. This stage is accompanied by other local mesh modification steps to snap the newly created nodes during the refinement step to the model boundary. They are repeated until the desired sizes are achieved.
+  \item \textbf{Shape improvement}: This stage uses operations like edge-swap and vertex repositioning to improve the quality of the mesh. Currently, not implemented for curved mesh adaptation in PUMI.
 \end{itemize}
-A mesh validity check is performed anytime a local mesh modification is run in place with curved elements to ensure that the resulting elements are not inverted \cite[see][for more details]{LuoShephard_11}. The pseudo-code for the above-described curve adapt procedure is given below.
+A mesh validity check is performed anytime a local mesh modification is run in places with curved elements to ensure that the resulting elements are not inverted \cite[see][for more details]{LuoShephard_11}. The pseudo-code for the above-described curve adapt procedure is given below.
 
 \begin{algorithm}
 \caption{The Curve Adapt}\label{crv_adapt}
@@ -306,7 +306,7 @@ A mesh validity check is performed anytime a local mesh modification is run in p
 \end{algorithmic}
 \end{algorithm}
 
-With the in-memory integration technique described in section \ref{in_memory}, we always have access to a PUMI-mesh object which enables us to seamlessly \textbf{integrate} the Omega3P's eigen-solvers with different PUMI functionalities, such as load-balancing which was discussed earlier in this report, and adaptations. The following pseudo-code shows the adaptive loop which make use of Omega3P's eigen-solver to compute a size field.
+With the in-memory integration technique described in section \ref{in_memory}, we always have access to a PUMI-mesh object which enables us to seamlessly \textbf{integrate} the Omega3P's eigen-solvers with different PUMI functionalities, such as load-balancing which was discussed earlier in this report, and adaptations. The following pseudo-code shows the implemented adaptive loop which make use of Omega3P's eigen-solver to compute a size field which is them inputted into the curve adapt procedure described above.
 
 \begin{algorithm}
 \caption{The Adaptive Loop}\label{adapt_loop}
@@ -322,7 +322,7 @@ With the in-memory integration technique described in section \ref{in_memory}, w
 \end{algorithmic}
 \end{algorithm}
 
-Note that our current pipeline works with PUMI-meshes as an input without the need for an input NCDF mesh. This enables us to generate our initial meshes using Simmetrix. Note that the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model, requires Simmetrix.
+Note that our current pipeline works with PUMI-meshes as an input without the need for an input NCDF mesh. This enables us to generate our initial meshes using Simmetrix. Furthermore, the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model, requires Simmetrix.
 
 Also worth mentioning, is the fact that our current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel. Recall that the previous implementation required repartitioning a serial mesh after parallel adaptation.
 
