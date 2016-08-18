@@ -3,9 +3,9 @@
 
 
 %%%%%%%%%%%%%%%%%%%%
-%\usepackage{amsfonts}
-%\usepackage{amssymb}
-%\usepackage{MnSymbol}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+% \usepackage{MnSymbol}
 \usepackage{graphicx}
 \usepackage{courier}
 \usepackage{psfrag}
@@ -51,6 +51,7 @@
 %\renewenvironment{equation}[0]{equation}{equation}
 
 %%%%%%%%%%%%%%%%%%%% Additional Commands
+\newcommand{\bs}[1]{\boldsymbol{#1}} 
 \newcommand{\pr}[1]{\left( #1 \right)} 
 \newcommand{\br}[1]{\left[ #1 \right]} 
 \newcommand{\cbr}[1]{\left\lbrace #1 \right\rbrace} 
@@ -294,14 +295,13 @@ A mesh validity check is performed anytime a local mesh modification is run in p
 \begin{algorithmic}[1]
 \Procedure{CurveAdapt}{PumiMesh, SizeField}
 \State pre-adapt \textbf{balancing} of the mesh
-\State mesh validity check
+\State \textbf{fix} invalid elements 
 \State \textbf{coarsening}
-\State mesh validity check
 \State mid-adapt \textbf{balancing} of the mesh
 \State \textbf{refinement} and \textbf{snapping to model boundary}
-\State mesh validity check
+\State \textbf{fix} invalid elements 
 \State post-adapt \textbf{balancing} of the mesh
-\State \textbf{shape improvement} [currently not implemented]
+\State \textbf{shape improvement}[currently not implemented for curved mesh adaptation]
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
@@ -317,7 +317,7 @@ With the in-memory integration technique described in section \ref{in_memory}, w
 \State \quad run the appropriate Omega3P eigensolver
 \State \quad transfer electric field values to the PUMI-mesh
 \State \quad check for convergence
-\State \quad run Super-convergent Patch Recovery (SPR) -> error estimation -> size field
+\State \quad run Super-convergent Patch Recovery (SPR) error estimator to obtain the size field
 \State \quad run CurveAdapt
 \end{algorithmic}
 \end{algorithm}
@@ -327,14 +327,12 @@ Note that our current pipeline works with PUMI-meshes as an input without the ne
 Also worth mentioning, is the fact that our current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel. Recall that the previous implementation required repartitioning a serial mesh after parallel adaptation.
 
 \subsection{Results for the Adaptive Loop}
+% \color{blue} Mark: The mesh adaptation procedures are currently doing what looks like a poor job on creating the new mesh topology. This is something we will want to work on when we can get to it. (will likely (1) be a while before we can get to it, (2) take a fair amount of work) \color{black}
 
-\color{blue} Mark: The mesh adaptation procedures are currently doing what looks like a poor job on creating the new mesh topology. This is something we will want to work on when we can get to it. (will likely (1) be a while before we can get to it, (2) take a fair amount of work) \color{black}
-
-\color{blue} Mark: on subfigures (b) and (d): Why are we plotting such different things? We want the same simulation fields on both. \color{black}
-
+% \color{blue} Mark: on subfigures (b) and (d): Why are we plotting such different things? We want the same simulation fields on both. \color{black}
 
 Figures \ref{pill} and \ref{cav} show two working examples for the current curve adaptation loop.
-In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed and it is shown in Fig. \ref{pill_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) is shown in Fig. \ref{pill_adapt}. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model. \color{blue} Mark: More technical Info \color{black}
+In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init_mesh}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed shown in Fig. \ref{pill_init_field}. The resulting size field is plotted in Fig. \ref{pill_init_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) and the final electric field for the first eigen-mode are shown in Figs. \ref{pill_final_mesh} and \ref{pill_final_field}, respectively. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model.
 \begin{landscape}
 \begin{figure}[ph!]
 \centering
@@ -361,13 +359,19 @@ In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We
 \caption{\label{cav}  This Figure shows the results for the CAV17 model. (a) shows the first eigen-mode electric field on the initial mesh (b) shows the initial  mesh [$\sim126\text{K}$ elements], (c) shows the first eigen-mode electric field on the final adapted mesh, and (d) shows the final adapted mesh [$\sim380\text{K}$ elements] after 3 adaptation level.}
 \end{figure}
 \end{landscape}
+\begin{figure}[ph!]
+\centering
+\subfigure[]{\label{pill_init_size}\includegraphics[width=0.75\textwidth]{al_0_ar_0p0125_3721_elems_size_field.png}}
+\subfigure[]{\label{cav_init_size}\includegraphics[width=0.75\textwidth]{al_0_ar_0p0125_126044_elems_size_field.png}}
+\caption{\label{size_fields} This figure shows the initial size fields for (a) the PILLBOX problem and (b) the CAV17 problem. The size fields are obtained by running the SPR error estimation on the electric electric field in the initial mesh. Note that a new size field is computed at the beginning of each adaptation loop based on the fields values in the pre-adapted mesh, but here we are only showing the initial size fields as a reference for the size distribution in the final adapted mesh with respect to the initial mesh.}
+\end{figure}
+
 \subsection{\label{adaptive_loop_future} Future Steps}
 
 Our plan for future developments in regard to the adaptive loop is as follows:
 \setstretch{0.75}
 \begin{itemize}
-  \item to be completed
-  \item \dots
+  \item Work on the \textbf{shape improvement} step in the adaptive loop for curved meshes in order to be able to produce better quality adapted curved meshes.
 \end{itemize}
 \setstretch{1.5}
 
@@ -379,45 +383,51 @@ In order to be able to increase the order of the finite element basis functions 
 
 The finite element discretization of the problem involves volume integrals of the form \cite{LeeLi_09}
 \begin{equation}
-  E^{ij} =  \int _{\Omega _e} \pr{D \textbf{N}^i} \cdot \pr{D \textbf{N}^j} d\Omega _e	
+  E^{ij} =  \int _{\Omega _e} \pr{\bs{D} \textbf{N}^i} \cdot \pr{\bs{D} \textbf{N}^j} d\Omega _e	
   \label{integrals}
 \end{equation}
-where $\Omega _e$ denotes the volume occupied by element $e$ and the operator $D$ is either of the following two operators 
+where $\Omega _e$ denotes the volume occupied by element $e$ and the operator $\bs{D}$ is either of the following two operators 
 \begin{equation}
-  D \in \cbr{\textbf{I}, \nabla \times }.
+  \bs{D} \in \cbr{\bs{I}, \bs{\nabla} \times }.
 \end{equation}
 The element integrals in \mref{\ref{integrals}}, can then be re-written with respect to the parametric coordinates in the reference element. For example, the stiffness matrix for each element can be written as follows
 \begin{equation}
 \begin{aligned}
-\mu  K^{ij}	&= \int _{\Omega _e} \pr{\nabla _x \times \textbf{N}^i} \cdot \pr{\nabla _x \times \textbf{N}^j} d\Omega _e \\
+  \mu  K^{ij}	&= \int _{\Omega _e} \pr{\bs{\nabla} _x \times \textbf{N}^i} \cdot \pr{\bs{\nabla} _x \times \textbf{N}^j} d\Omega _e \\
   &= \int _{\Omega _e} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial x_n} \frac{\partial N^j_p}{\partial x_q}   d\Omega _e \\
-  &= \int _{\Omega _\xi} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial \xi_s} \frac{\partial \xi_s}{\partial x_n}  \frac{\partial N^j_p}{\partial \xi_t}  \frac{\partial \xi_t}{\partial x_q} \abs{\frac{\partial x}{\partial \xi}  } d\Omega _\xi \\
-  &= \int _{\Omega _\xi} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial \xi_s} J^{-1}_{sn}  \frac{\partial N^j_p}{\partial \xi_t}  J^{-1}_{tq} \abs{J} d\Omega _\xi.
+  &= \int _{\Omega _ {{\xi}}} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial \xi_s} \frac{\partial \xi_s}{\partial x_n}  \frac{\partial N^j_p}{\partial \xi_t}  \frac{\partial \xi_t}{\partial x_q} \abs{\frac{\partial \mathbf{x}}{\partial \bs{\xi}}  } d\Omega _ {{\xi}} \\
+  &= \int _{\Omega _{{\xi}}} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial \xi_s} J^{-1}_{sn}  \frac{\partial N^j_p}{\partial \xi_t}  J^{-1}_{tq} \abs{\bs{J}} d\Omega _ {{\xi}}.
 \end{aligned}
 \end{equation}
-Here $\epsilon_{kmn}$ is the third-order permutation tensor, and $N^i$ are the shape functions. Assuming that the Omega3P's code for the computation of the stiffness matrix (or any other matrix pertaining the fem discretization) does not make any specific assumption on the choice of the shape functions, we can safely use other valid shape functions, and  achieve a valid fem discretization. Note that the geometric information of each element is encapsulated in the Jacobians appearing in the above integral, and therefore incorporating higher order geometries into the finite element formulations requires the computation of the Jacobian for higher order elements.  
+Here $\epsilon_{kmn}$ is the third-order permutation tensor, and $\mathbf{N}^i$ are the shape functions. Assuming that the Omega3P's code for the computation of the stiffness matrix (or any other matrix pertaining the fem discretization) does not make any specific assumption on the choice of the shape functions, we can safely use other valid shape functions, and  achieve a valid fem discretization. Note that the geometric information of each element is encapsulated in the Jacobians appearing in the above integral, and therefore incorporating higher order geometries into the finite element formulations requires the computation of the Jacobian for higher order elements.
 
-Before moving on to the implementation details, it is worthwhile to mention that for certain type of boundary condition one may need to perform surface integrals over the element faces that fall on the boundary, \cite[for example, see the integral in equation nn of ]{LeeLi_09}. Such integrals can also be written in terms of the corresponding integrals in with respect to the reference element by using the Nanson's relations 
+Before moving on to the implementation details, it is worthwhile to mention that for certain type of boundary condition one may need to perform surface integrals over the element faces that fall on the boundary, \cite[cf. section II.E. in][, for example]{LeeLi_09}. Such integrals can also be written in terms of the corresponding integrals in the reference element by using the Nanson's relations
 \begin{equation}
-  \mathbf{n} dS _x = \abs{J} J^{-T}\mathbf{N} dS _\xi
+  \mathbf{n} dS _x = \abs{\bs{J}} \pr{\bs{J}^{-T}\mathbf{n}'} dS _{{\xi}}
+  \label{Nanson}
 \end{equation}
-where $dS_x$ and $dS _{\xi}$ denote the surface areas in the physical and reference elements, respectively, and $\mathbf{n}$ and $\mathbf{N}$ denote the corresponding surface normals. As an example, take the following integral which appear is the formulation of the problems with absorbing boundary conditions
+where $dS_x$ and $dS _{\xi}$ denote the surface areas in the physical and reference elements, respectively, and $\mathbf{n}$ and $\mathbf{n}'$ denote the corresponding surface normals. As an example, take the following integral which appear is the formulation of the problems with absorbing boundary conditions \cite{LeeLi_09}
 \begin{equation}
-	absorbin integral goes here
+  \begin{aligned}
+    W^{ij} &= \int _{S_x} \pr{\mathbf{n} \times \mathbf{N}^i} \cdot \pr{\mathbf{n} \times \mathbf{N}^j} dS_x \\
+    &= \int _{S_\xi} \frac{\br{\pr{\bs{J}^{-T} \mathbf{n}'} \times \mathbf{N}^i} \cdot \br{\pr{\bs{J}^{-T} \mathbf{n}'} \times \mathbf{N}^j}}{\br{\pr{\bs{J}^{-T}\mathbf{n}'} \cdot \pr{\bs{J}^{-T}\mathbf{n}'}}^{1/2}} \abs{\bs{J}}  dS_\xi.
+  \end{aligned}
 \end{equation}
 
 
-As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute the Jacobian-related quantities (e.g., the determinant) with the corresponding PUMI calls. This is done by storing an additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation).
-\begin{figure}[ph!]
+\begin{figure}[!ph]
 \centering
 \includegraphics[width=0.95\textwidth]{hide_ten_point_tet.png}
 \caption{\label{imp} This Figure shows the implementation details for replacing Omega3P calls for determinant calculation with the corresponding PUMI calls.}
 \end{figure}
+As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute the Jacobian-related quantities (e.g., the determinant) with the corresponding PUMI calls. This is done by storing an additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation).
 This enables us to easily redirect any call in Omega3P that requires the Jacobians to PUMI and retrieve the corresponding value using the PUMI Jacobian calculations, which supports higher than quadratic geometries. (Currently, we have support for up to 6th order Bezier elements in PUMI.)
 
+\subsection{Results}
+By replacing the Jacobian calls in Omega3P with the corresponding PUMI calls we were able to pass the current tests for meshes with quadratic curved  elements, and therefore demonstrate that the above approach works.
 
 \subsection{\label{high_order_geom_future} Future Steps}
-By replacing the Jacobian calls in Omega3P with the corresponding PUMI calls we were able to pass the current tests for meshes with quadratic curved  elements, and therefore demonstrate that the above approach works. Our plan for future developments in regard to the higher-order geometries is as follows:
+Our plan for future developments in regard to the higher-order geometries is as follows:
 
 \setstretch{0.75}
 \begin{itemize}
