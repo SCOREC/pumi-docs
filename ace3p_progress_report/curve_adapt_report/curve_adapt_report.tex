@@ -379,23 +379,33 @@ In order to be able to increase the order of the finite element basis functions 
 
 The finite element discretization of the problem involves volume integrals of the form \cite{LeeLi_09}
 \begin{equation}
-  \int _\Omega \pr{D \textbf{N}^i} \cdot \pr{D \textbf{N}^j} d\Omega \quad \quad \text{or} \quad \quad \int _{\Omega _e} \pr{D \textbf{N}^i} \cdot \pr{D \textbf{N}^j} d\Omega _e	
+  E^{ij} =  \int _{\Omega _e} \pr{D \textbf{N}^i} \cdot \pr{D \textbf{N}^j} d\Omega _e	
   \label{integrals}
 \end{equation}
-where $\Omega$ and $\Omega _e$ denote the whole domain of the problem  and the element volume, respectively, and the operator $D$ is either of the following two operators 
+where $\Omega _e$ denotes the volume occupied by element $e$ and the operator $D$ is either of the following two operators 
 \begin{equation}
   D \in \cbr{\textbf{I}, \nabla \times }.
 \end{equation}
-The element integrals in \mref{\ref{integrals}}{2}, can then be re-written with respect to the parametric coordinates in the reference element, e.g., the stiffness matrix for each element can be written as follows
+The element integrals in \mref{\ref{integrals}}, can then be re-written with respect to the parametric coordinates in the reference element. For example, the stiffness matrix for each element can be written as follows
 \begin{equation}
 \begin{aligned}
-  K^{ij} 	&= \int _{\Omega _e} \pr{\nabla _x \times \textbf{N}^i} \cdot \pr{\nabla _x \times \textbf{N}^j} d\Omega _e \\
+\mu  K^{ij}	&= \int _{\Omega _e} \pr{\nabla _x \times \textbf{N}^i} \cdot \pr{\nabla _x \times \textbf{N}^j} d\Omega _e \\
   &= \int _{\Omega _e} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial x_n} \frac{\partial N^j_p}{\partial x_q}   d\Omega _e \\
   &= \int _{\Omega _\xi} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial \xi_s} \frac{\partial \xi_s}{\partial x_n}  \frac{\partial N^j_p}{\partial \xi_t}  \frac{\partial \xi_t}{\partial x_q} \abs{\frac{\partial x}{\partial \xi}  } d\Omega _\xi \\
   &= \int _{\Omega _\xi} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial \xi_s} J^{-1}_{sn}  \frac{\partial N^j_p}{\partial \xi_t}  J^{-1}_{tq} \abs{J} d\Omega _\xi.
 \end{aligned}
 \end{equation}
 Here $\epsilon_{kmn}$ is the third-order permutation tensor, and $N^i$ are the shape functions. Assuming that the Omega3P's code for the computation of the stiffness matrix (or any other matrix pertaining the fem discretization) does not make any specific assumption on the choice of the shape functions, we can safely use other valid shape functions, and  achieve a valid fem discretization. Note that the geometric information of each element is encapsulated in the Jacobians appearing in the above integral, and therefore incorporating higher order geometries into the finite element formulations requires the computation of the Jacobian for higher order elements.  
+
+Before moving on to the implementation details, it is worthwhile to mention that for certain type of boundary condition one may need to perform surface integrals over the element faces that fall on the boundary, \cite[for example, see the integral in equation nn of ]{LeeLi_09}. Such integrals can also be written in terms of the corresponding integrals in with respect to the reference element by using the Nanson's relations 
+\begin{equation}
+  \mathbf{n} dS _x = \abs{J} J^{-T}\mathbf{N} dS _\xi
+\end{equation}
+where $dS_x$ and $dS _{\xi}$ denote the surface areas in the physical and reference elements, respectively, and $\mathbf{n}$ and $\mathbf{N}$ denote the corresponding surface normals. As an example, take the following integral which appear is the formulation of the problems with absorbing boundary conditions
+\begin{equation}
+	absorbin integral goes here
+\end{equation}
+
 
 As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute the Jacobian-related quantities (e.g., the determinant) with the corresponding PUMI calls. This is done by storing an additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation).
 \begin{figure}[ph!]
