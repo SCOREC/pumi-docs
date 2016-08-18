@@ -153,8 +153,8 @@ simulation execution.
 
 \begin{figure}[!ph]
 \centering
-  \includegraphics[width=.9\textwidth]{cav17-peak-mem.eps}
-  \includegraphics[width=.9\textwidth]{pillbox2M-peak-mem.eps}
+  \includegraphics[width=.75\textwidth]{cav17-peak-mem.eps}
+  \includegraphics[width=.75\textwidth]{pillbox2M-peak-mem.eps}
   \caption{\label{fig:memusage} Peak memory usage. The labels above the Omega3P+PUMI bars
   list the percent increase versus Omega3P.}
 \end{figure}
@@ -286,7 +286,7 @@ For the adaptive loop we use a size-driven mesh adaptation procedure \cite{LiShe
 \begin{itemize}
   \item \textbf{Coarsening}: This stage removes the edges in the mesh that are shorter than the desired edge length. This is achieved by applying collapse operations on short edges.
   \item \textbf{Refinement}: This stage applies edge-based refinement to the mesh in order to achieve the desired edge-lengths. This stage is accompanied by other local mesh modification steps to snap the newly created nodes during the refinement step to the model boundary. They are repeated until the desired sizes are achieved.
-  \item \textbf{Shape improvement}: This stage uses operations like edge-swap and vertex repositioning to improve the quality of the mesh. Currently, not implemented for curved mesh adaptation in PUMI.
+  \item \textbf{Shape improvement}: This stage uses operations like edge-swap and vertex repositioning to improve the quality of the mesh. Currently, not implemented for curved meshes in PUMI.
 \end{itemize}
 A mesh validity check is performed anytime a local mesh modification is run in places with curved elements to ensure that the resulting elements are not inverted \cite[see][for more details]{LuoShephard_11}. The pseudo-code for the above-described curve adapt procedure is given below.
 
@@ -301,7 +301,7 @@ A mesh validity check is performed anytime a local mesh modification is run in p
 \State \textbf{refinement} and \textbf{snapping to model boundary}
 \State \textbf{fix} invalid elements 
 \State post-adapt \textbf{balancing} of the mesh
-\State \textbf{shape improvement}[currently not implemented for curved mesh adaptation]
+\State \textbf{shape improvement}[currently not implemented for curved meshes]
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
@@ -363,7 +363,7 @@ In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We
 \centering
 \subfigure[]{\label{pill_init_size}\includegraphics[width=0.75\textwidth]{al_0_ar_0p0125_3721_elems_size_field.png}}
 \subfigure[]{\label{cav_init_size}\includegraphics[width=0.75\textwidth]{al_0_ar_0p0125_126044_elems_size_field.png}}
-\caption{\label{size_fields} This figure shows the initial size fields for (a) the PILLBOX problem and (b) the CAV17 problem. The size fields are obtained by running the SPR error estimation on the electric electric field in the initial mesh. Note that a new size field is computed at the beginning of each adaptation loop based on the fields values in the pre-adapted mesh, but here we are only showing the initial size fields as a reference for the size distribution in the final adapted mesh with respect to the initial mesh.}
+\caption{\label{size_fields} This figure shows the initial size fields for (a) the PILLBOX problem and (b) the CAV17 problem. The size fields are obtained by running the SPR error estimation on the electric electric field in the initial mesh. Note that a new size field is computed at the beginning of each adaptation loop based on the field values in the pre-adapted mesh, but here we are only showing the initial size fields as a reference for the size distribution in the final adapted mesh with respect to the initial mesh.}
 \end{figure}
 
 \subsection{\label{adaptive_loop_future} Future Steps}
@@ -401,19 +401,20 @@ The element integrals in \mref{\ref{integrals}}, can then be re-written with res
 \end{equation}
 Here $\epsilon_{kmn}$ is the third-order permutation tensor, and $\mathbf{N}^i$ are the shape functions. Assuming that the Omega3P's code for the computation of the stiffness matrix (or any other matrix pertaining the fem discretization) does not make any specific assumption on the choice of the shape functions, we can safely use other valid shape functions, and  achieve a valid fem discretization. Note that the geometric information of each element is encapsulated in the Jacobians appearing in the above integral, and therefore incorporating higher order geometries into the finite element formulations requires the computation of the Jacobian for higher order elements.
 
-Before moving on to the implementation details, it is worthwhile to mention that for certain type of boundary condition one may need to perform surface integrals over the element faces that fall on the boundary, \cite[cf. section II.E. in][, for example]{LeeLi_09}. Such integrals can also be written in terms of the corresponding integrals in the reference element by using the Nanson's relations
+
+
+Before moving on to the implementation details, it is worthwhile to mention that for certain type of boundary condition one may need to compute surface integrals over the element faces that fall on the boundary, \cite[cf. section II.E. in][, for example]{LeeLi_09}. Such integrals can also be written in terms of the corresponding integrals in the reference element by using the Nanson's relations
 \begin{equation}
   \mathbf{n} dS _x = \abs{\bs{J}} \pr{\bs{J}^{-T}\mathbf{n}'} dS _{{\xi}}
   \label{Nanson}
 \end{equation}
-where $dS_x$ and $dS _{\xi}$ denote the surface areas in the physical and reference elements, respectively, and $\mathbf{n}$ and $\mathbf{n}'$ denote the corresponding surface normals. As an example, take the following integral which appear is the formulation of the problems with absorbing boundary conditions \cite{LeeLi_09}
+where $dS_x$ and $dS _{\xi}$ denote the surface areas in the physical and reference elements, respectively, and $\mathbf{n}$ and $\mathbf{n}'$ denote the corresponding surface normals. As an example, consider the following integral which appears in the formulation of the problems with absorbing boundary conditions \cite{LeeLi_09}
 \begin{equation}
   \begin{aligned}
     W^{ij} &= \int _{S_x} \pr{\mathbf{n} \times \mathbf{N}^i} \cdot \pr{\mathbf{n} \times \mathbf{N}^j} dS_x \\
     &= \int _{S_\xi} \frac{\br{\pr{\bs{J}^{-T} \mathbf{n}'} \times \mathbf{N}^i} \cdot \br{\pr{\bs{J}^{-T} \mathbf{n}'} \times \mathbf{N}^j}}{\br{\pr{\bs{J}^{-T}\mathbf{n}'} \cdot \pr{\bs{J}^{-T}\mathbf{n}'}}^{1/2}} \abs{\bs{J}}  dS_\xi.
   \end{aligned}
 \end{equation}
-
 
 \begin{figure}[!ph]
 \centering
@@ -435,6 +436,9 @@ Our plan for future developments in regard to the higher-order geometries is as 
   \item Once we have full support for higher order geometries we plan to compare the performance improvements of p-version finite element with that of the h-version finite element. 
 \end{itemize}
 \setstretch{1.5}
+
+\clearpage
+\newpage
 
 \section*{References}
 % \bibliographystyle{elsarticle-harv_noURL}
