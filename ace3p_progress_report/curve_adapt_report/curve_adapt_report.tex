@@ -77,7 +77,7 @@
 \author[inst1]{Mark S. Shephard \corref{cor1}}
 \cortext[cor1]{Corresponding author}
 \ead{shephard@rpi.edu}
-\address[inst1]{Scientific Computing Research Center, Rensselaer Polytechnique Institute,\\ Troy, NY 12180}
+\address[inst1]{Scientific Computing Research Center, Rensselaer Polytechnic Institute,\\ Troy, NY 12180}
 
 
 \date{\today}
@@ -111,8 +111,7 @@ Finally, Sec. \ref{high_order_geom} provides a quick overview of the steps taken
 
 \section{\label{in_memory}Fully Parallel In-Memory Mesh Integration}
 In order to achieve high performing and scalable component interactions between
-Omega3P and PUMI we avoid any serials step and 
-file-based I/O through in-memory data streams and component functional
+Omega3P and PUMI we avoid any serial steps and file-based I/O through in-memory data streams and component functional
 interfaces. Towards complete support of the solve-adapt cycle we have implemented in-memory
 procedures to convert Omega3P meshes and fields to and from  PUMI data structures.
 The key advantage of this approach is that a small amount of code is 
@@ -121,22 +120,22 @@ structures by directly accessing PUMI data structures.
 A similar PUMI in-memory integration with the Albany Multiphysics
 framework~\cite{Albany2015,salinger2013albany} reduced the data transfer time
 required to support an adaptive step on a 22 million element mesh from over 100
-seconds using files to 23 seconds on 1024 cores. \color{blue} Mark on Aug 19: Get what you can, if anything, in there and delete these comments. Mark: My guess is the improvements here are much higher since the previous procedures had a serial step. I think there should be some discussion of that. Can we get any data (of any type) on comparing to the old procedures? \color{red} Kai is looking into it.\color{black} 
+seconds using files to 23 seconds on 1024 cores. \color{red} Still Waiting for  Kai .\color{black} 
 
 Mesh conversion begins with a version of Omega3P's NetCDF file reader that is altered
 to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
 the PUMI mesh we are able to perform partitioning and load balancing as well as adaptation 
 while only storing the PUMI mesh. After we have a finalized PUMI mesh a second 
 overloaded version of Omega3P's file reader is used to convert the PUMI mesh to 
-Omega3P's DistMesh. This is done by using the data from the in-memory PUMI mesh as the 
-input instead of the NetCDF file. After the conversion to DistMesh, we store both the
-PUMI Mesh and the Omega3P DistMesh for the duration of the finite element setup and 
-computations. The time required to convert from the PUMI parallel mesh to the
-parallel DistMesh requires less than 0.1\% of the total execution time.
-Adaptive simulations call the PUMI-to-DistMesh conversion routine every
-solve-adapt cycle after executing PUMI mesh adaptation and load balancing.
+Omega3P's Distmesh. This is done by using the data from the in-memory PUMI mesh as the 
+input instead of the NetCDF file. After the conversion to Distmesh, we store both the
+PUMI Mesh and the Omega3P Distmesh for the duration of the finite element setup and 
+computations. The time required to convert from the parallel PUMI mesh to the
+parallel Distmesh is less than 0.1\% of the total execution time.
+The adaptive loop calls the PUMI-to-Distmesh conversion routines every
+solve-adapt cycle after executing PUMI mesh adaptation and load balancing (see further below for more details).
 We have demonstrated a low runtime and memory overhead implementation for the
-PUMI-to-DistMesh conversion which ensures that it is not a bottleneck
+PUMI-to-Distmesh conversion which ensures that it is not a bottleneck
 in these simulations.
 
 \subsection{\label{in_memory_results} Results}
@@ -144,21 +143,16 @@ The ``cost'' of our in-memory integration approach is an increase in peak memory
 usage during the data transfer when there are two copies of the mesh and/or
 field data stored in memory.
 Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
-execution on the {\texttt cav17} and {\texttt pillbox-2M} case for both the
+execution on the {\texttt cav17} and {\texttt pillbox-2M} cases for both the
 original Omega3P code and with the code that executes PUMI mesh conversion and
-load balancing (Omega3P+PUMI).
-The increase in peak memory when storing the PUMI mesh is 2\% at 32 cores,
-decreases by less than one percent at 64 cores, and increases by 6\% at 128
-cores of the {\texttt cav17} case.
-At 256, 512, and 1024 cores of the {\texttt pillbox-2M} case the peak memory is actually reduced by
-0.87\%, 1.1\% and 2.9\%, respectively. These results indicate there is little, if any, ``memory'' cost with the in-memory integration process.
+load balancing (Omega3P+PUMI). As can be seen in Fig. \ref{fig:memusage}(top), for the {\texttt cav17} model, the peak memory when storing the PUMI mesh increases by 2\% at 32 cores and by 6\% at 128 cores, while it decreases by less that 1\% at 64 cores.
+On the other hand, for the {\texttt pillbox-2M} case at 256, 512, and 1024 cores the peak memory is actually reduced by 0.87\%, 1.1\% and 2.9\%, respectively. These results indicate there is little, if any, ``memory'' cost with the in-memory integration process.
 
 \begin{figure}[!ph]
 \centering
   \includegraphics[width=.75\textwidth]{cav17-peak-mem.eps}
   \includegraphics[width=.75\textwidth]{pillbox2M-peak-mem.eps}
-  \caption{\label{fig:memusage} Peak memory usage. The labels above the Omega3P+PUMI bars
-  list the percent increase versus Omega3P.}
+  \caption{\label{fig:memusage} This figure shows the peak memory usage for different Omega3P and Omega3P+PUMI runs. (top) shows the results for the {\texttt cav17 model} and (bottom) shows the results for the {\texttt pillbox-2M} model. The numbers above the Omega3P+PUMI bars list the ratio of the peak memory used by the Omega3P+PUMI code and the peak memory used by the Omega3P code.}
 \end{figure}
 
 %\subsection{\label{in_memory_future} Future Steps}
@@ -170,27 +164,26 @@ At 256, 512, and 1024 cores of the {\texttt pillbox-2M} case the peak memory is 
 %  \item item 2
 %  \item \dots
 %\end{itemize}
-\setstretch{1.5}
+%\setstretch{1.5}
 
 
 \section{\label{load_balance}Load Balancing}
 In each iteration of the mesh adaptation loop a new partition is generated on the
-pumi-mesh before converted over to the slac-mesh. The initial partition is generated
-using Zoltan's graph partitioning. Then SCOREC's ParMA, partitioning using mesh adjacencies,
-is used to perform load balancing by iterative diffusion. ParMA's multi-entity balancing
+PUMI mesh before it is converted back to the Distmesh. The initial partition is generated
+using Zoltan's graph partitioning. Then SCOREC's ParMA partitioning tool, which used mesh adjacencies, is used to perform load balancing by iterative diffusion. ParMA's multi-entity balancing
 traverses an application-specified priority list of entity orders (vertex, edge, face,
-region) to balance in descending order.
-For each entity order iterative diffusion is executed until balance is reached
+region) to balance in descending orders.
+For each entity order, iterative diffusion steps are executed until balance is reached
 or no further improvement is possible.
 
 ParMA's support for multi-entity balancing was extended for Omega3P's needs.
-The Omega3P solving step relies on both on-part mesh entities as well as a layer
-of ghosted elements along each part boundary.
+The Omega3P solving step relies on both on-part (or local) mesh entities as well as a layer
+of ghosted (or remote) elements along each part boundary.
 Omega3P's ghosting uses vertex adjacency such that every element that shares a
 vertex with a part boundary will be ghosted to each part that shares that
 boundary.
-This can be seen in Figure \ref{fig:ghost3} that shows an example of a mesh with
-a layer of ghosting.
+Figure \ref{fig:ghost3} shows an example of a mesh with
+a layer of ghosted elements.
 In order to improve Omega3P's performance and scalability, ParMA targets
 minimizing the sum of the ghosted and on-part elements as well as the mesh
 entities holding degrees-of-freedom.
@@ -205,9 +198,8 @@ ParMA balances the degree-of-freedom holders defined by
 hierarchical Nedelec basis functions~\cite{ingelstrom2006new,ko2010advances} by
 reusing existing multi-entity target and boundary-element selection
 procedures.
-For first order elements this requires balancing edges.
-Second order elements requires edges and faces, and above that edges, faces, and
-regions need to be balanced. 
+For linear elements this requires balancing edges. For quadratic elements, on the other hand, this requires edges and faces. For higher than quadratic elements, edges, faces, and
+regions need to be balanced.
 Each of these entity balancing procedures accounts for the ghosted weight
 contribution by performing an additional neighborhood
 exchange~\cite{ibanez2014hybrid} of the exact weight of ghosted layer entities.
@@ -225,29 +217,29 @@ At 128 parts ParMA reduces the edge imbalance by 23\%  and the face
 imbalance by 14\%.
 At 64 parts the edge and face imbalances are reduced by over 12\% each and
 at 32 parts ParMA reduces the imbalances by 6\%.
-While ParMA significantly reduces the imbalance of ghost+ owned edges and faces
-there is a small cost in the number of ghost + owned entities.
-The Omega3P+PUMI average number of ghost + owned edges and faces per-part
+While ParMA significantly reduces the imbalance of ghost+owned edges and faces
+there is a small cost in the number of ghost+owned entities.
+The Omega3P+PUMI average number of ghost+owned edges and faces per-part
 is less than 1.46\% higher than the Omega3P counts at 32 parts.
 At 64 and 128 parts the average entity counts of Omega3P+PUMI is less than 0.3\%
-higher than Omega3P counts.
+higher than the corresponding Omega3P counts.
 
 \begin{figure}[!ph]
 \centering
   \includegraphics[width=0.75\textwidth]{cav17-edge-imb.eps} \\
   \includegraphics[width=0.75\textwidth]{cav17-face-imb.eps} 
-  \caption{\label{fig:cav17imb} Edge and face imbalance in the {\texttt cav17} mesh.}
+  \caption{\label{fig:cav17imb} Edge (top) and face (bottom) imbalance information in the {\texttt cav17} mesh.}
 \end{figure}
 
 Additional tests of ParMA ghost-aware edge balancing were executed on the
 \texttt{pillbox} model with a 2 million element quadratic mesh on up to 1024
 cores (32 cores per node) of the NERSC Cori Phase I system.
-Again we see a significant reduction in imbalance with a less significant increase in the number of degree of freedom entities.
+Again we see a significant reduction in imbalance with a less significant increase in the number of degree of freedom entities \color{red} [what do we mean by dof entities] \color{black}.
 At 1024 parts Figure~\ref{fig:pillboximb} depicts the ParMA reduction of the
 edge imbalance by 36\% and the face imbalance by 34\%.
 At 512 parts the edge and face imbalances are reduced by over 30\% each and
 at 256 parts ParMA reduces the imbalances by over 20\%.
-The Omega3P+PUMI average number of ghost + owned edges and faces per-part
+The Omega3P+PUMI average number of ghost+owned edges and faces per-part
 is less than 1.15\% higher than the Omega3P counts at 256, 512, and 1024 parts.
 
 
@@ -255,7 +247,7 @@ is less than 1.15\% higher than the Omega3P counts at 256, 512, and 1024 parts.
 \centering
   \includegraphics[width=0.75\textwidth]{pillbox2M-edge-imb.eps} \\
   \includegraphics[width=0.75\textwidth]{pillbox2M-face-imb.eps}
-  \caption{\label{fig:pillboximb} Edge and face imbalance in the {\texttt
+  \caption{\label{fig:pillboximb} Edge (top) and face(bottom) imbalance information  in the {\texttt
   pillbox-2M}
   mesh.}
 \end{figure}
@@ -278,6 +270,7 @@ parallel finite element simulations~\cite{zhou2012unstructured}.
 
 % \clearpage
 % \newpage
+
 
 \section{\label{adaptive_loop}The Adaptive Loop}
 
@@ -305,23 +298,23 @@ A mesh validity check is performed anytime a local mesh modification is run in p
 \end{algorithmic}
 \end{algorithm}
 
-With the in-memory integration technique described in section \ref{in_memory}, we always have access to a PUMI-mesh object which enables us to seamlessly \textbf{integrate} the Omega3P's eigen-solvers with different PUMI functionalities, such as load-balancing which was discussed earlier in this report, and adaptations. The following pseudo-code shows the implemented adaptive loop which make use of Omega3P's eigen-solver to compute a size field which is then input in the curve adapt procedure described above.
+With the in-memory integration technique described in section \ref{in_memory}, we always have access to a PUMI mesh object which enables us to seamlessly \textbf{integrate} the Omega3P's eigen-solvers with different PUMI functionalities, such as load-balancing which was discussed earlier in this report, and adaptations. The following pseudo-code shows the implemented adaptive loop which make use of Omega3P's eigen-solver to compute a size field which is then input in the curve adapt procedure described above.
 
 \begin{algorithm}
 \caption{The Adaptive Loop}\label{adapt_loop}
 \begin{algorithmic}[1]
 \State \textbf{while} not converged
 \State \quad partition the mesh using ParMA with a focus of owned and ghost elements
-\State \quad convert PUMI-mesh to SLAC-mesh
+\State \quad convert PUMI mesh to Distmesh
 \State \quad run the appropriate Omega3P eigensolver
-\State \quad transfer electric field values to the PUMI-mesh
+\State \quad transfer electric field values to the PUMI mesh
 \State \quad check for convergence
 \State \quad run Super-convergent Patch Recovery (SPR) error estimator to obtain the size field
 \State \quad run CurveAdapt
 \end{algorithmic}
 \end{algorithm}
 
-Note that our current pipeline works with PUMI-meshes as an input without the need for an input NCDF mesh. This enables us to generate our initial meshes using Simmetrix. Furthermore, the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model is then fully and reliably supported by Simmetrix geometry interrogation API. 
+Note that our current pipeline works with PUMI meshes as an input without the need for an input NetCDF mesh. This enables us to generate our initial meshes using Simmetrix. The geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model are then fully and reliably supported by Simmetrix geometry interrogation API.
 
 Also worth mentioning, is the fact that our current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that each, and every, step is executed in parallel within the in-memory process. The previous implementation required repartitioning a serial mesh after parallel adaptation.
 
@@ -331,7 +324,7 @@ Also worth mentioning, is the fact that our current adaptive loop improves upon 
 % \color{blue} Mark: on subfigures (b) and (d): Why are we plotting such different things? We want the same simulation fields on both. \color{black}
 
 Figures \ref{pill} and \ref{cav} show two working examples for the current curve adaptation loop.
-In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX''. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init_mesh}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed shown in Fig. \ref{pill_init_field}. The resulting size field is plotted in Fig. \ref{pill_init_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) and the final electric field for the first eigen-mode are shown in Figs. \ref{pill_final_mesh} and \ref{pill_final_field}, respectively. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model.
+In particular, Fig. \ref{pill} shows the results for the smaller ``PILLBOX'' model. We start with a uniform and relatively coarse mesh as shown in Fig. \ref{pill_init_mesh}. The desired size field for this initial mesh is obtained based on the magnitude of the electric filed shown in Fig. \ref{pill_init_field}. The resulting size field is plotted in Fig. \ref{pill_init_size}. The final, adapted mesh (for this specific example we needed 3 levels of adaptation) and the final electric field for the first eigen-mode are shown in Figs. \ref{pill_final_mesh} and \ref{pill_final_field}, respectively. Figure \ref{cav} shows the corresponding result for the larger ``CAV17'' model.
 \begin{landscape}
 \begin{figure}[ph!]
 \centering
@@ -399,11 +392,11 @@ The element integrals in \mref{\ref{integrals}}, can then be re-written with res
   &= \int _{\Omega _{{\xi}}} \epsilon _{kmn} \epsilon_{kpq} \frac{\partial N^i_m}{\partial \xi_s} J^{-1}_{sn}  \frac{\partial N^j_p}{\partial \xi_t}  J^{-1}_{tq} \abs{\bs{J}} d\Omega _ {{\xi}}.
 \end{aligned}
 \end{equation}
-Here $\epsilon_{kmn}$ is the third-order permutation tensor, and $\mathbf{N}^i$ are the shape functions. Assuming that the Omega3P's code for the computation of the stiffness matrix (or any other matrix pertaining the fem discretization) does not make any specific assumption on the choice of the shape functions, we can safely use other valid shape functions, and  achieve a valid fem discretization. Note that the geometric information of each element is encapsulated in the Jacobians appearing in the above integral, and therefore incorporating higher order geometries into the finite element formulations requires the computation of the Jacobian for higher order elements.
+Here $\epsilon_{kmn}$ is the third-order permutation tensor, and $\mathbf{N}^i$ are the shape functions. Assuming that the Omega3P's code for the computation of the stiffness matrix (or any other matrix pertaining the fem discretization) does not make any specific assumption on the choice of the shape functions, we can safely use other valid shape functions, and  achieve a valid fem discretization. Note that the geometric information of each element is encapsulated in the Jacobians appearing in the above integral, and therefore incorporating higher order geometries into the finite element formulation requires the computation of the Jacobian for higher order elements.
 
 
 
-Before moving on to the implementation details, it is worthwhile to mention that for certain type of boundary condition one may need to compute surface integrals over the element faces that fall on the boundary, \cite[cf. section II.E. in][, for example]{LeeLi_09}. Such integrals can also be written in terms of the corresponding integrals in the reference element by using the Nanson's relations
+Before moving on to the implementation details, it is worthwhile to mention that for certain type of boundary condition one may need to compute surface integrals over the element faces that fall on the boundary, \cite[cf. section II.E. in][, for example]{LeeLi_09}. Such integrals can also be written in terms of the corresponding integrals in the reference element by using the Nanson's relation
 \begin{equation}
   \mathbf{n} dS _x = \abs{\bs{J}} \pr{\bs{J}^{-T}\mathbf{n}'} dS _{{\xi}}
   \label{Nanson}
@@ -419,7 +412,7 @@ where $dS_x$ and $dS _{\xi}$ denote the surface areas in the physical and refere
 \begin{figure}[!ph]
 \centering
 \includegraphics[width=0.95\textwidth]{hide_ten_point_tet.png}
-\caption{\label{imp} This Figure shows the implementation details for replacing Omega3P calls for determinant calculation with the corresponding PUMI calls.}
+\caption{\label{imp} This figure shows the implementation details for replacing Omega3P calls for determinant calculation with the corresponding PUMI calls.}
 \end{figure}
 As a first step towards using higher-order geometric elements, we have been able to replace the Omega3P calls to compute the Jacobian-related quantities (e.g., the determinant) with the corresponding PUMI calls. This is done by storing an additional pointer in each Omega3P-element that points to the corresponding  PUMI-element (see Fig. \ref{imp} for the details of the implementation).
 This enables us to easily redirect any call in Omega3P that requires the Jacobians to PUMI and retrieve the corresponding value using the PUMI Jacobian calculations, which supports higher than quadratic geometries. (Currently, we have support for up to 6th order Bezier elements in PUMI.)
