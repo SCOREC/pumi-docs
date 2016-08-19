@@ -120,7 +120,7 @@ structures by directly accessing PUMI data structures.
 A similar PUMI in-memory integration with the Albany Multiphysics
 framework~\cite{Albany2015,salinger2013albany} reduced the data transfer time
 required to support an adaptive step on a 22 million element mesh from over 100
-seconds using files to 23 seconds on 1024 cores. \color{red} Still Waiting for  Kai .\color{black} 
+seconds using files to 23 seconds on 1024 cores.
 
 Mesh conversion begins with a version of Omega3P's NetCDF file reader that is altered
 to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
@@ -234,7 +234,7 @@ higher than the corresponding Omega3P counts.
 Additional tests of ParMA ghost-aware edge balancing were executed on the
 \texttt{pillbox} model with a 2 million element quadratic mesh on up to 1024
 cores (32 cores per node) of the NERSC Cori Phase I system.
-Again we see a significant reduction in imbalance with a less significant increase in the number of degree of freedom entities \color{red} [what do we mean by dof entities] \color{black}.
+Again we see a significant reduction in imbalance with a less significant increase in the number of degree of freedom entities.
 At 1024 parts Figure~\ref{fig:pillboximb} depicts the ParMA reduction of the
 edge imbalance by 36\% and the face imbalance by 34\%.
 At 512 parts the edge and face imbalances are reduced by over 30\% each and
