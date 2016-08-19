@@ -62,18 +62,22 @@
 %%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\title{PROGRESS REPORT}% Force line breaks with \\
+\title{Improvements in Curved Mesh Adaptation Procedure for the Omega3P Code}% Force line breaks with \\
 %\thanks{}%
 
-\author[]{Morteza H. Siboni \\
-Gerrett Diamond \\
-Cameron W. Smith}
-%\ead{email address}
 
-%\author[inst1]{Corresponding Author \corref{cor1}}
-%\cortext[cor1]{Corresponding author}
-%\ead{ca@email.host.edu}
-%\address[inst1]{Department of Mechanical Engineering and Applied Mechanics, University of Pennsylvania, \\ Philadelphia, PA 19104-6315, USA}
+\author[inst1]{Gerrett Diamond}
+\ead{diamog@rpi.edu}
+\author[inst1]{Morteza H. Siboni}
+\ead{hakimm2@rpi.edu}
+\author[inst1]{Cameron W. Smith}
+\ead{smithc11@rpi.edu}
+
+
+\author[inst1]{Mark S. Shephard \corref{cor1}}
+\cortext[cor1]{Corresponding author}
+\ead{shephard@rpi.edu}
+\address[inst1]{Scientific Computing Research Center, Rensselaer Polytechnique Institute,\\ Troy, NY 12180}
 
 
 \date{\today}
@@ -117,7 +121,7 @@ structures by directly accessing PUMI data structures.
 A similar PUMI in-memory integration with the Albany Multiphysics
 framework~\cite{Albany2015,salinger2013albany} reduced the data transfer time
 required to support an adaptive step on a 22 million element mesh from over 100
-seconds using files to 23 seconds on 1024 cores. \color{blue} Mark: My guess is the improvements here are much higher since the previous procedures had a serial step. I think there should be some discussion of that. Can we get any data (of any type) on comparing to the old procedures? \color{red} Kai is looking into it.\color{black} 
+seconds using files to 23 seconds on 1024 cores. \color{blue} Mark on Aug 19: Get what you can, if anything, in there and delete these comments. Mark: My guess is the improvements here are much higher since the previous procedures had a serial step. I think there should be some discussion of that. Can we get any data (of any type) on comparing to the old procedures? \color{red} Kai is looking into it.\color{black} 
 
 Mesh conversion begins with a version of Omega3P's NetCDF file reader that is altered
 to read the mesh data into PUMI data structures instead of Omega3P's Distmesh. With 
@@ -136,7 +140,7 @@ PUMI-to-DistMesh conversion which ensures that it is not a bottleneck
 in these simulations.
 
 \subsection{\label{in_memory_results} Results}
-The cost of our in-memory integration approach is an increase in peak memory
+The ``cost'' of our in-memory integration approach is an increase in peak memory
 usage during the data transfer when there are two copies of the mesh and/or
 field data stored in memory.
 Figure \ref{fig:memusage} shows the peak memory usage over the entire Omega3P
@@ -146,10 +150,8 @@ load balancing (Omega3P+PUMI).
 The increase in peak memory when storing the PUMI mesh is 2\% at 32 cores,
 decreases by less than one percent at 64 cores, and increases by 6\% at 128
 cores of the {\texttt cav17} case.
-At 256, 512, and 1024 cores of the {\texttt pillbox-2M} case memory is reduced by
-0.87\%, 1.1\% and 2.9\%, respectively.
-Demonstrating low memory overhead is critical for efficient parallel adaptive
-simulation execution.
+At 256, 512, and 1024 cores of the {\texttt pillbox-2M} case the peak memory is actually reduced by
+0.87\%, 1.1\% and 2.9\%, respectively. These results indicate there is little, if any, ``memory'' cost with the in-memory integration process.
 
 \begin{figure}[!ph]
 \centering
@@ -217,9 +219,7 @@ weights based on the different entity p-orders.
 
 We ran Omega3P and Omega3P+PUMI on the \texttt{cav17} model with a 318,118
 element quadratic mesh on up to 128 cores (32 cores per node) of the NERSC Cori
-Phase I system. Two results come from using ParMA's ghost load balancing. The first 
-is the improvement of the imbalance of ghost+ owned edges and faces, while the second 
-is an increase in average number of ghost+owned entities.
+Phase I system. The results indicate a substantial reduction in the imbalance of ghost+owned edges and faces at the cost of a small increase in average number of ghost+owned entities.
 Figure~\ref{fig:cav17imb} shows the imbalance of edges and faces.
 At 128 parts ParMA reduces the edge imbalance by 23\%  and the face
 imbalance by 14\%.
@@ -242,8 +242,7 @@ higher than Omega3P counts.
 Additional tests of ParMA ghost-aware edge balancing were executed on the
 \texttt{pillbox} model with a 2 million element quadratic mesh on up to 1024
 cores (32 cores per node) of the NERSC Cori Phase I system.
-Again we see the two results as in the \texttt{cav17} model, with significant reduciton in 
-imbalance with a less significant increase in the number of degree of freedom entities.
+Again we see a significant reduction in imbalance with a less significant increase in the number of degree of freedom entities.
 At 1024 parts Figure~\ref{fig:pillboximb} depicts the ParMA reduction of the
 edge imbalance by 36\% and the face imbalance by 34\%.
 At 512 parts the edge and face imbalances are reduced by over 30\% each and
@@ -306,7 +305,7 @@ A mesh validity check is performed anytime a local mesh modification is run in p
 \end{algorithmic}
 \end{algorithm}
 
-With the in-memory integration technique described in section \ref{in_memory}, we always have access to a PUMI-mesh object which enables us to seamlessly \textbf{integrate} the Omega3P's eigen-solvers with different PUMI functionalities, such as load-balancing which was discussed earlier in this report, and adaptations. The following pseudo-code shows the implemented adaptive loop which make use of Omega3P's eigen-solver to compute a size field which is them inputted into the curve adapt procedure described above.
+With the in-memory integration technique described in section \ref{in_memory}, we always have access to a PUMI-mesh object which enables us to seamlessly \textbf{integrate} the Omega3P's eigen-solvers with different PUMI functionalities, such as load-balancing which was discussed earlier in this report, and adaptations. The following pseudo-code shows the implemented adaptive loop which make use of Omega3P's eigen-solver to compute a size field which is then input in the curve adapt procedure described above.
 
 \begin{algorithm}
 \caption{The Adaptive Loop}\label{adapt_loop}
@@ -322,9 +321,9 @@ With the in-memory integration technique described in section \ref{in_memory}, w
 \end{algorithmic}
 \end{algorithm}
 
-Note that our current pipeline works with PUMI-meshes as an input without the need for an input NCDF mesh. This enables us to generate our initial meshes using Simmetrix. Furthermore, the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model, requires Simmetrix.
+Note that our current pipeline works with PUMI-meshes as an input without the need for an input NCDF mesh. This enables us to generate our initial meshes using Simmetrix. Furthermore, the current geometric model inquiries for the purpose of snapping the vertex and mid-edge nodes to the model is then fully and reliably supported by Simmetrix geometry interrogation API. 
 
-Also worth mentioning, is the fact that our current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that it is fully parallel. Recall that the previous implementation required repartitioning a serial mesh after parallel adaptation.
+Also worth mentioning, is the fact that our current adaptive loop improves upon the previously available adaptive loop (implemented by Kai) in that each, and every, step is executed in parallel within the in-memory process. The previous implementation required repartitioning a serial mesh after parallel adaptation.
 
 \subsection{Results for the Adaptive Loop}
 % \color{blue} Mark: The mesh adaptation procedures are currently doing what looks like a poor job on creating the new mesh topology. This is something we will want to work on when we can get to it. (will likely (1) be a while before we can get to it, (2) take a fair amount of work) \color{black}
@@ -372,6 +371,7 @@ Our plan for future developments in regard to the adaptive loop is as follows:
 \setstretch{0.75}
 \begin{itemize}
   \item Work on the \textbf{shape improvement} step in the adaptive loop for curved meshes in order to be able to produce better quality adapted curved meshes.
+  \item Improve the efficiency of the expensive curved geometry operations.
 \end{itemize}
 \setstretch{1.5}
 
