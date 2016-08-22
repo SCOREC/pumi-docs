@@ -1,0 +1,3 @@
+#this find replace command was used in Vim to remove the extra ':' delimiter from the
+#imbalance output lines
+%s!Max:\(\d\)!Max \1!gc

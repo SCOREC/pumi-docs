@@ -1,0 +1,60 @@
+ModelInfo: {
+  File: ./cav17f.ncdf
+  Tolerant: 1 
+
+  BoundaryCondition: {
+    HFormulation: 0
+    Electric: 3 4 7 8 9 68
+    // Magnetic:  3 4 
+    Exterior: 6
+    //Waveguide: 7 8 9
+    // Absorbing: 3 4
+  }
+
+  Material: {
+    Attribute: 1
+    Epsilon:   1.0
+    Mu:	       1.0
+  }
+
+
+  SurfaceMaterial: {
+    ReferenceNumber: 6
+    Sigma:	     5.8e7
+  }
+
+
+}
+
+PRegion: {
+     Type: Material
+     Reference: 1
+     Order:     2
+}
+PRegion: {
+     Type: Material
+     Reference: 2
+     Order:     2
+}
+
+
+FiniteElement: {
+  Order: 2
+  CurvedSurfaces: on
+}
+
+EigenSolver: {
+  NumEigenvalues:    1
+  FrequencyShift:    0.39e9
+  SolverMode : automatic
+  Arnoldi: {
+   EigenvalueLocation : AboveShift
+   MaxIterations : 500
+   Tolerance : 1e-12
+   LinearSolver: {
+     ParMetisOrdering: 0
+     Solver : MUMPS
+   }
+  }
+}
+
