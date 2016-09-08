@@ -25,8 +25,10 @@
 A climate application's pre-processor has a runtime proportional to the number
 of owned elements plus the number of ghost elements in three ghosting layers;
 the ghost bridge entity is an edge.
+Figure~\ref{fig:ghostEx} depicts an example of three layer ghosting in a
+2D hexagonal mesh.
 2D meshes of the ocean surface are created using Spherical Centroidal Voronoi
-Tesselations ~\cite{JuRingler2011,ringler2008}.
+Tesselations~\cite{JuRingler2011,ringler2008}.
 The goal is to partition this mesh such that Equation~\ref{eqn:costFn} is
 minimized while maintaining a low edge cut.
 Here the notation $M^d$ is a mesh element and $gM^d$ is a ghost mesh element.
@@ -41,11 +43,6 @@ I = \frac{max(w(p))}{avg(w(p))}
 Most partitioners cannot account for the ghosted elements as the affect of the
 ghosts on $w(p_i)$ changes with the partitioning of the owned elements.
 
-
-Figure~\ref{fig:ghostEx} depicts an example of three layer ghosting in a simple
-triangular mesh.
-
-
 \begin{figure}
 \centering
 \includegraphics[width=0.4\textwidth]{ghostingExample.png}
@@ -59,19 +56,19 @@ triangular mesh.
 
 ParMA diffusive partition improvement procedures can account for the ghosted
 layers using a combination of existing element selection criteria and an
-extended 'weight' tracking mechanism.
+extended `weight' tracking mechanism.
 The weight tracking extension relies on the exact knowledge of the change to the
 ghosted elements as elements on a heavy part are selected for migration to a
 light part.
 
-ParMA will be ran on the Delaunay triangularization of the Voronoi mesh
-(Figure~\ref{fig:delaunay}), as depicted in Figures~\ref{fig:NA240}, and will
+ParMA will be run on the Delaunay triangularization of the Voronoi mesh, as
+depicted in Figures~\ref{fig:delaunay} and~\ref{fig:NA240}, and will
 accordingly target vertex balance.
 The vertex part assignments, along with identifier information, will be output
-for partitioning the Voronoi mesh.
+for partitioning the Voronoi mesh by the climate application.
 Vertices in the initial partition are identified by their part id and local
 vertex id.
-Details on the meshes of interest are available online ~\cite{climateMesh}.
+Details on the meshes of interest are available online~\cite{climateMesh}.
 
 \begin{figure}
 \centering
@@ -93,22 +90,23 @@ Delaunay mesh is performed.
 Duplicate Delaunay vertices created on the part boundary as a result of the
 element partitioning are depicted in Figure~\ref{fig:ownership3} by dotted
 lines.
-These vertex copies in the Voroni mesh this correspond to an element assigned to
-multiple parts.
-Unique part assignment of the Voroni mesh elements is through the ownership
-associated with the Delaunay mesh vertices.
+In the Voroni mesh, these Delaunay mesh vertex copies correspond to an element 
+assigned to multiple parts.
+An Delaunay vertex ownership rule (the resident part with the fewest
+elements becomes the owner) uniquely assignment of the corresponding Voroni 
+elements.
 In Figure~\ref{fig:ownership3} ownership of a mesh vertex is depicted through a
 colored Voroni element.
-Using vertex ownership the weight of each part is defined in
-Equation~\ref{eqn:weightDelaunay}; the notation $M^0$ is a mesh vertex, $gM^d$
-is a ghost mesh vertex, and $\hat{M^0}$ denotes the owned copy of the vertex.
+The weight of each part is defined in Equation~\ref{eqn:weightDelaunay}; the 
+notation $M^0$ is a mesh vertex, $gM^d$ is a ghost mesh vertex, and $\hat{M^0}$ 
+denotes the owned copy of the vertex.
 \begin{equation}
 \label{eqn:weightDelaunay}
 w(p_i) = \sum_{\hat{M^0} \in p_i}w(\hat{M^0}) + \sum_{gM^0 \in p_i}w(gM^0)
 \end{equation}
 
-In the Voroni mesh the bridge entity is an edge and three layers of ghosts are
-needed.
+The climate application's Voroni mesh uses edges as the bridge entity and
+requires three layers of ghosts; as defined by edge adjacency traversals.
 For each shared Voroni mesh edge there is a Delaunay mesh edge connecting
 Delaunay mesh vertices.
 Ghost Delaunay mesh vertices are located using a edge-depth three BFS with root
@@ -232,12 +230,6 @@ concatenated in order to make the final part file.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{plateghosts.png}
-\caption{\label{fig:ownership4} Three layers of ghosting between two parts of a test mesh.  The boundary is only ghosted from the part that owns the vertices to the not owned part.}
-\end{figure}
-
 \section{Results}
 
 The 500K element North America graded 15km to 75km, and the 3.6M element 15km
@@ -252,16 +244,12 @@ America graded mesh.
 Likewise, results for the 15km uniform mesh are listed in Tables
 ~\ref{tab:15kmlg}, \ref{tab:15kmgg} and \ref{tab:15kmplrib}.
 
-Note, the 15km 6144 partition was ran using a combination of threads and MPI
-processes (COMING SOON) to accommodate the BlueGene/Q's power of two process per
-node requirement; all other ghost balancing tests were ran without threads.
-
 Figure~\ref{fig:60km0_255} and \ref{fig:60km384_404} respectively depict the
 initial ParMA RIB partition and the resulting ghost balanced partition.
 
 The ghost balanced partition maintains the original partitions low degree while
 smoothing out the part boundaries via a high surface area vertex selection
-mechanism discussed in ~\cite{ParMA-2014}.
+mechanism discussed in~\cite{ParMA-2016}.
 
 \begin{figure}
 \centering
@@ -316,7 +304,6 @@ mechanism discussed in ~\cite{ParMA-2014}.
     128 & 512 & 1024 & 2 & 0.43 & 0.76 & 1.20 & 1.116 & 1.048 & 11 & 0.70 \\
     128 & 512 & 2048 & 4 & 0.44 & 0.90 & 1.34 & 1.17 & 1.049 & 14 & 0.78 \\
     128 & 512 & 4096 & 8 & 0.46 & 1.01 & 1.47 & 1.207 & 1.05 & 21 & 0.96 \\
-    128 & 512 & 6144 & 12 & 0.48 & 1.08 & 1.55 &  &  &  &  \\
 \end{tabular}
 
 \caption{\label{tab:15kmgg}15km Uniform: Zoltan global ParMETIS followed by ghost balancing.}
@@ -329,7 +316,6 @@ mechanism discussed in ~\cite{ParMA-2014}.
       128 & 512 & 1024 & 2 & 1.13 & 1.44 & 2.56 & 1.131 & 1.05 & 23 & 1.46 \\
       128 & 512 & 2048 & 4 & 1.42 & 1.34 & 2.76 & 1.152 & 1.048 & 16 & 0.88 \\
       128 & 512 & 4096 & 8 & 2.07 & 1.21 & 3.27 & 1.202 & 1.049 & 23 & 1.04 \\
-      128 & 512 & 6144 & 12 & 2.63 & 1.19 & 3.82 &  &  &  & \  \\
 \end{tabular}
 
 \caption{\label{tab:15kmplrib}15km Uniform: ParMA local RIB followed by ghost balancing.}
@@ -350,26 +336,21 @@ mechanism discussed in ~\cite{ParMA-2014}.
 The source can be downloaded from the following github repo \\
 https://github.com/SCOREC/core
 
-The code in parma/diffMC/src/parma\_ghost.cc implements the partitioning
-procedures and test/ghost.cc provides a test driver.
-The test driver can be built with the command `make ghost'.
-In the plate/2 directory of the test meshes SVN repo http://redmine.
-scorec.rpi.edu/svn/meshes is a two part 2D mesh for testing.
-This mesh is classified on the plate/plate.dmg model.  Run the
-driver with the command `mpirun -np PROCS .
-/ghost MODEL MESH'.
+The code in \texttt{parma/diffMC/parma\_ghostMPAS.cc} implements the partitioning
+procedures and \texttt{test/ghostMPAS.cc} provides a test driver.
+The test driver can be built with the command `make ghostMPAS'.
 
-The code in mpas/apfMPAS.cc implements NetCDF to SCOREC and SCOREC to
-NetCDF protocols and test drivers are in test/mpas\_read.cc and
-test/mpas\_write.cc. These test drivers can be built using 'make mpas\_read'
-and 'make mpas\_write' respectively. First run mpas\_read with
-'./mpas\_read NetCDF OUT\_MESH OUT\_MODEL'.
-After reading the NetCDF file the SCOREC mesh must be split to desired part
-count using the split program, built with 'make split' and ran with './split
-MODEL MESH SPLIT\_MESH FACTOR'.
-To write graph.info.part.\# files for the newly
-balanced mesh run 'mpirun -np PROCS .
-/mpas\_write MODEL MESH NetCDF'.
+As of commit \texttt{20b039c} the code in \texttt{mpas/apfMPAS.cc} implements
+NetCDF to SCOREC and SCOREC to NetCDF protocols. NetCDF conversion test drivers
+are in \texttt{test/mpas\_read.cc} and \texttt{test/mpas\_write.cc}. These test
+drivers can be built using `make mpas\_read'
+and `make mpas\_write' respectively. First run \texttt{mpas\_read} with\\
+\texttt{./mpas\_read NetCDF OUT\_MESH OUT\_MODEL}\\
+.  After reading the NetCDF file the SCOREC mesh must be split to the desired part
+count using the \texttt{split} program, built with `make split' and ran with\\
+\texttt{./split MODEL MESH SPLIT\_MESH FACTOR}\\
+.  To write graph.info.part.\# files for the newly balanced mesh run\\
+\texttt{mpirun -np PROCS .  /mpas\_write MODEL MESH NetCDF}.
 
 \newpage
 \bibliographystyle{plain}
