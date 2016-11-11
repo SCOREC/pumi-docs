@@ -1,0 +1,112 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{titling}
+
+\setlength{\droptitle}{-10em}
+
+\title{A Simple Description of Adapt Operators}
+\author{Dan Ibanez}
+
+\begin{document}
+\maketitle
+
+This document describes in simple terms three key
+mesh modification operators, from the perspective
+of solution transfer.
+We illustrate these operators in 2D because
+the majority of transfer concerns are visible in
+both 2D and 3D.
+The edge split, edge collapse, and edge swap
+operators are chosen because they are the bare minimum
+required to carry out all parts of adaptivity.
+In practice, more operators may be used.
+
+Each operator can be viewed as acting on a group
+of elements called a cavity, and replacing that
+cavity with a different one.
+We explain how transfer is done for linear fields
+but don't go into much detail for other fields.
+Transfer algorithms are likely to depend on the
+physical meaning of a field and the
+chosen shape functions (``element type"),
+though some general algorithms have been proposed.
+More information can be added to this document as
+readers provide comments.
+
+\section{Edge Split}
+
+{\center\includegraphics[width=0.6\textwidth]{edge_split.png}}
+
+This is the simplest ``refine" operator.
+A new vertex is placed at the midpoint of
+and existing edge; all elements adjacent to
+that edge are split into two elements.
+
+The first concern would be a degree of freedom
+at the new vertex.
+Typically we interpolate its value along the
+edge based on the values at the endpoints,
+assuming the elements are interpolating and
+at least $C^{0}$ continuous.
+This transfer is exact in the sense that the
+field value at all points inside the new cavity is exactly the
+same as in the old cavity.
+
+If there is a $C^{-1}$ field over the elements,
+that too can be transferred exactly by
+having the child elements inherit the value
+from the parents.
+
+Edge and 3D face degrees of freedom can still
+be interpolated from the parent elements,
+but care should be taken to derive the results
+depending on the shape functions used.
+
+\section{Edge Collapse}
+
+{\center\includegraphics[width=0.6\textwidth]{edge_collapse.png}}
+
+This is the simplest ``coarsen" or ``de-refine" operator.
+An edge and its adjacent elements are removed
+by moving one of its endpoints onto the other.
+
+By definition, this is a coarser representation and
+so some accuracy will be lost; the transfer cannot
+be exact.
+However, one may still preserve certain quantities.
+
+In the case linear shape functions, we typically
+don't do anything in terms of transfer; we leave
+the remaining vertex values as they are.
+It is important that the adapt operators not modify
+the boundary of the cavity, including field values.
+
+When designing a transfer algorithm for coarsening,
+it may be useful to remember that every new entity
+in the cavity (element, face, or edge) corresponds
+to one of the old entities, via the transformation
+for moving the central vertex towards one of the
+boundary vertices.
+The internal edges and triangles in the 2D figure illustrate this.
+
+\section{Edge Swap}
+
+{\center\includegraphics[width=0.6\textwidth]{edge_swap.png}}
+
+This is one of the most effective ``shape correction" operators.
+The cavity around an edge is reconnected such that
+that edge is no longer there.
+In 2D that leaves only one other choice, but in 3D
+there are many resulting choices.
+
+This operator does not add or remove vertices, so for linear
+fields we again don't do any special transfer.
+
+For any other field, the challenge in edge swapping is that
+the new entities don't have a clear-cut relationship
+to the old entities as they did in splitting/collapsing,
+so the cavity should be considered
+as a whole when designing a transfer algorithm.
+
+\end{document}
