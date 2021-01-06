@@ -1,0 +1,58 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{System-wide API's}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This section describes API functions and enumeration types which are not bounded with a specific geometric model or mesh data.
+
+\begin{verbatim}
+void pumi_start()		
+\end{verbatim}
+\vspace{-.5cm}\hspace{1cm}
+	Initialize parallel services pertinent to PUMI.
+
+\begin{verbatim}	
+void pumi_finalize(bool /* in */ do_mpi_finalize=false)		
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Finalize parallel services and clean the memory. If the input parameter \emph{do}$\_$\emph{mpi}$\_$\emph{finalize} is true, MPI finalization is performed as well. \emph{do}$\_$\emph{mpi}$\_$\emph{finalize} is optional (default: \emph{false}).
+
+\begin{verbatim}
+int pumi_size()
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Return the number of processes.
+
+\begin{verbatim}
+int pumi_rank()
+\end{verbatim}	
+\vspace{-.5cm}\hspace{1cm}
+	Return the MPI rank in communicator. Rank starts from 0. 
+
+\begin{verbatim}
+void pumi_sync()
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Synchronize all processes in communicator
+
+\begin{verbatim}
+void pumi_printSys()
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Print system information such as host name, processor, operating system, etc.\\
+\emph{(Example)} Linux node10.borg.scorec.rpi.edu 2.6.9-89.ELsmp SMP Mon Jun 22 12:31:33 EDT 2009 x86$\_$64.
+
+\begin{verbatim}
+double pumi_getMem()
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Return the heap memory increase (MB) on local process since \emph{pumi}$\_$\emph{start()}.
+
+\begin{verbatim}
+double pumi_getTime()
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Return the current time in second.
+
+
+\begin{verbatim}
+void pumi_printTimeMem(
+        const char* /* in */ msg, 
+        double /* in */ time, 
+        double /* in */ memory)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Display $``$\emph{msg}: \emph{time} (sec) and \emph{memory} (MB)$"$.
+

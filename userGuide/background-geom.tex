@@ -1,0 +1,12 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Geometric Model}  
+
+PUMI geometric model interface supports the ability to interrogate solid models for topological adjacency and geometric shape information.
+
+The geometric model representation used by PUMI is a boundary representation based on the Radial Edge Data Structure~\cite{weiler88}. In this representation the model is a hierarchy of topological entities called regions, shells, faces, loops, edges and vertices. This representation is general and is capable of representing non-manifold models that are common in engineering analyses. The use of a boundary representation is convenient for the association of problem attributes (e.g., loads, material properties and boundary conditions) and mesh generation control information since the entities defining the model are explicitly represented. 
+
+The classes used to represent the geometric model support operations to find the various model entities that make up a model and to find which model entities are adjacent to a given entity. Other operations relating to performing geometric queries are also supported.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+

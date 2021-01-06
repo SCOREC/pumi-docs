@@ -1,0 +1,689 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Mesh API's}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This chapter describes mesh API functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Mesh Functions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Mesh management}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{verbatim}
+pMesh pumi_mesh_create(
+        pGeom /* in */ g, 
+        int /* in */ mesh_dim)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}   	
+Given a geometric model instance and mesh dimension, create an empty mesh instance. Call this function only if mesh entities will be created afterwards. Mesh vertex can be created by \emph{pumi}$\_$\emph{mesh}$\_$\emph{createVtx}. Non-vertex mesh entity can be created by \emph{pumi}$\_$\emph{mesh}$\_$\emph{createEnt}. Mesh element (faces in 2D or regions in 3D) can be created by either by \emph{pumi}$\_$\emph{mesh}$\_$\emph{createEnt} or \emph{pumi}$\_$\emph{mesh}$\_$\emph{createElem}. Note the followings: (i) in parallel, part boundaries construction should be set by users (ii) after finishing mesh entity creation, the function \emph{pumi}$\_$\emph{mesh}$\_$\emph{freeze} must be called to update internal mesh data accordingly.
+
+\begin{verbatim}
+void pumi_mesh_freeze(pMesh /* in */ m)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}   	
+Given a mesh instance, finalize the mesh entity creation. This function updates the internal geometric model data and partition model accordingly. No more mesh entity creation is allowed afterwards.
+
+\begin{verbatim}
+pMeshEnt pumi_mesh_createVtx(
+        pMesh /* in */ m, 
+        pGeomEnt /* in */ ge, 
+        double* /* in */ xyz)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, geometric model entity handle and \emph{xyz} coordinates, create a mesh vertex and return its handle.
+
+\begin{verbatim}
+pMeshEnt pumi_mesh_createEnt(
+        pMesh /* in */ m, 
+        pGeomEnt /* in */ ge,
+        int /* in */ target_topology, 
+        pMeshEnt* /* in */ downward)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, geometric model entity handle, target entity topology, and an array of one-level downward entities, create a non-vertex mesh entity and return its handle. The supported entity topologies are \emph{PUMI$\_$EDGE}, \emph{PUMI$\_$TRIANGLE}, \emph{PUMI$\_$QUAD}, \emph{PUMI$\_$TET}, \emph{PUMI$\_$HEX}, \emph{PUMI$\_$PRISM}, and \emph{PUMI$\_$PYRAMID}. For instance, to create an edge, \emph{target$\_$topology} is \texttt{PUMI$\_$EDGE} and \emph{downward} is an array with two vertices. 
+To create a prism, \emph{target$\_$topology} is \texttt{PUMI$\_$PRISM} and \emph{downward} is an array of five faces. In terms of the order of downward entities, see Figures 6 and 8. 
+
+\begin{verbatim}
+pMeshEnt pumi_mesh_createElem(
+        pMesh /* in */ m,
+        pGeomEnt /* in */ ge,
+        int /* in */ target_topology,
+        pMeshEnt* /* in */ vertices)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, geometric model entity handle, target entity topology, and an array of vertices, create a mesh element (regions in 3D and faces in 2D) and return its handle. The supported en
+tity topologies are \emph{PUMI$\_$TRIANGLE} and \emph{PUMI$\_$QUAD} for 2D mesh, \emph{PUMI$\_$TET}, \emph{PUMI$\_$HEX}, \emph{PUMI$\_$PRISM}, and \emph{PUMI$\_$PYRAMID} for 3D mesh. For instance,
+To create a prism, \emph{target$\_$topology} is \texttt{PUMI$\_$PRISM} and \emph{vertices} is an 
+array of six vertices. In terms of the order of downward vertices, see Figures 6 and 8.
+
+\begin{verbatim}
+pMesh pumi_mesh_loadSerial(
+        pGeom /* in */ g, 
+        const char* /* in */ filename, 
+        const char* /* in */ type="mds")
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}   	
+	Given a model instance, mesh file name, and mesh type, create a mesh instance, load the mesh data onto the master process, then return the mesh instance. If this function is called in $p$ processes ($p$$>$1), only the master process (process $0$) loads a mesh from the mesh file and the rest of processes have an empty mesh.
+
+As PUMI is designed to support multiple mesh types, the third argument is used to specify the mesh type in file. If \emph{type} is not specified, the default value is \emph{``mds"} where the file with exension {``.smb"} is loaded. \emph{``mds"} mesh file contains number $i$ before the file extension (\emph{``.smb"}), where $i$ represents the process rank. 
+
+For instance, for a four-part distributed mesh, the mesh files are \emph{``filename0.smb"}, \emph{``filename1.smb"}, \emph{``filename2.smb"} and \emph{``filename3.smb"}. For a serial mesh, the mesh file is \emph{``filename0.smb"}. 
+
+Note to drop the process rank $i$ in the second argument. For instance, to load a serial mesh in \emph{``filename0.smb"}, the second argument should be \emph{``filename.smb"}.
+
+\begin{verbatim}
+pMesh pumi_mesh_load(
+        pGeom /* in */ g, 
+        const char* /* in */ filename, 
+        int /* in */ n, 
+        const char* /* in */ type="mds")
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}   	
+	Given a model instance, file name, the number of input mesh files and mesh type, create a mesh instance, load the mesh data from the file, then return the mesh instance. The number of files \emph{n} is $1$ and the number of process $p$ is greater then $1$, first, the serial mesh is loaded onto the master process then partitioned to $p$ parts. 
+
+As PUMI is designed to support multiple mesh types, the third argument is used to specify the mesh type. If \emph{type} is not specified, the default value is \emph{``mds"} where the file with exension {``.smb"} is loaded. \emph{``mds"} mesh file contains number $i$ before the file extension (\emph{``.smb"}), where $i$ represents the process rank. For instance, for a four-part distributed mesh, the mesh files are \emph{``filename0.smb"}, \emph{``filename1.smb"}, \emph{``filename2.smb"} and \emph{``filename3.smb"}. For a serial mesh, the mesh file is \emph{``filename0.smb"}. 
+
+Note to drop the process rank $i$ in the second argument. For instance, to load a serial mesh in \emph{``filename0.smb"} onto $p$ processes ($p$$>$1), the second and the third arguments are \emph{``filename.smb"} and $1$. In order to load a three-part mesh in \emph{``filename0.smb"}, {``filename1.smb"}, {``filename2.smb"}, the second and the third arguments are \emph{``filename.smb"} and $3$.
+
+\begin{verbatim}	
+void pumi_mesh_delete (pMesh /* in */ m)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}	
+Given a mesh instance, delete the mesh instance and deallocate the memory.
+
+\begin{verbatim}	
+bool pumi_mesh_hasAdjacency (
+        pMesh /* in */ m,
+        int /* in */ from_dim, 
+        int /* in */ to_dim)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}	
+Given a mesh instance and dimensions \emph{from$\_$dim} and \emph{to$\_$dim}, return $true$ if the adjacency from \emph{from$\_$dim} to \emph{to$\_$dim} is explicitly stored and maintained. The default mesh representation is the one-level representation (See Figure \ref{fig:6completeMR}(b)).
+
+\begin{verbatim}	
+void pumi_mesh_createAdjacency( 
+        pMesh /* in */ m,
+        int /* in */ from_dim, 
+        int /* in */ to_dim)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}	
+Given a mesh instance and  dimensions \emph{from$\_$dim} and \emph{to$\_$dim}, if the adjacency from \emph{from$\_$dim} to \emph{to$\_$dim} is not explicitly stored and maintained, create the explicit adjacency from \emph{from$\_$dim} to \emph{to$\_$dim}. The performance of adjacency queries from \emph{from$\_$dim} to \emph{to$\_$dim} will improve at the cost of storing the adjacency. Please be noted that the development with the user-defined mesh representation is on-going, therefore currently not all PUMI API's are supported with user-defined mesh representation. 
+
+\begin{verbatim}	
+void pumi_mesh_deleteAdjacency (
+        pMesh /* in */ m,
+        int /* in */ from_dim, 
+        int /* in */ to_dim)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}	
+Given a mesh instance and  dimensions \emph{from$\_$dim} and \emph{to$\_$dim}, if the adjacency from \emph{from$\_$dim} to \emph{to$\_$dim} is explicitly stored and maintained, delete the adjacency from \emph{from$\_$dim} to \emph{to$\_$dim}. If \emph{from$\_$dim} is one-level apart from \emph{to$\_$dim}, the function doesn't perform. Please be noted that the development with the user-defined mesh representation is on-going, therefore currently not all PUMI API's are supported with user-defined mesh representation. 
+
+\begin{verbatim}	
+void pumi_mesh_createFullAdjacency (pMesh /* in */ m)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}	
+Given a mesh instance, create the full adjacencies. For instance, in 3D mesh, 12 adjacencies are explicitly stored (See Figure \ref{12adj}). Please be noted that the development with the full adjacencies is on-going, therefore currently not all PUMI API's are supported with the full adjacencies.
+
+\begin{verbatim}
+void pumi_mesh_write (
+        pMesh /* in */ m, 
+        const char* /* in */ filename, 
+        const char* /* in */ type="mds")
+\end{verbatim}\vspace{-.5cm}\hspace{1cm} 
+Given a model instance, write a mesh into mesh file(s). The third argument is used to specify the mesh file type. The supported \emph{type} is \emph{``mds"} and \emph{``vtk"}. If \emph{type} is not specified, the default value is \emph{``mds"}. If the second and third argument are  \emph{``filename.smb"} and \emph{``mds"}, each process $i$ writes its mesh data in the file ``filename$i$.smb". If the second and third argument are  \emph{``output"} and \emph{``vtk"}, all vtk files are created in the directory $output$. See Appendix A for how to visualize the \emph{vtk} mesh files in \emph{Paraview}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Mesh interrogation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+pGeom pumi_mesh_getGeom(pMesh /* in */ m)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Given a mesh instance, return the geometry model instance associated with.
+
+\begin{verbatim}
+int pumi_mesh_getDim(pMesh /* in */ m)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh instance, return the dimension.
+
+\begin{verbatim}
+void pumi_mesh_setCount(
+        pMesh /* in */ m, 
+        pOwnership  /* im */  o=NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and an ownership rule handle, compute the global/owned entity counts for dimension $0$$-$$3$ on local process. The ownership rule is an optional argument (default: \emph{NULL}). If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum number of elements among residence parts. 
+
+This function must be called before \texttt{pumi$\_$mesh$\_$getNumGlobalEnt} and \texttt{pumi$\_$mesh$\_$getNumOwnEnt},
+
+\begin{verbatim}
+int pumi_mesh_getNumEnt(
+        pMesh /* in */ m, 
+        int /* in */ d)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and dimension $d$ ($0$$-$$3$), return the local entity count of the dimension $d$ on local process. When a mesh entity is duplicated (part boundary or ghost) on $N$ processes, each duplicate copy is counted.
+
+\begin{verbatim}
+int pumi_mesh_getNumGlobalEnt(
+        pMesh /* in */ m, 
+        int /* in */ d)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and dimension $d$ ($0$$-$$3$), return the global entity count of the dimension $d$ on all processes. When a mesh entity is duplicated (part boundary or ghost) on $N$ processes, only the owner copy is counted. 
+
+Prerequisite: \texttt{pumi$\_$mesh$\_$setCount}
+
+\begin{verbatim}
+int pumi_mesh_getNumOwnEnt(
+        pMesh /* in */ m, 
+        int /* in */ d)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and dimension $d$ ($0$$-$$3$), return the owned entity count of the dimension $d$ on local process. 
+
+Prerequisite: \texttt{pumi$\_$mesh$\_$setCount}
+
+\begin{verbatim}
+pMeshEnt pumi_mesh_findEnt(
+	pMesh /* in */ m, 
+        int /* in*/ d, 
+        int /* in */ id)
+\end{verbatim}
+Given a mesh instance, dimension $d$ ($0$$-$$3$), and a local ID, find the corresponding mesh entity and return its handle. If a mesh entity of the ID doesn't exist, return \emph{NULL}. For local ID of mesh entity, see \emph{pumi$\_$ment$\_$getID}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Mesh iteration}\label{mIter}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+pMeshEnt e;
+pMeshIter it = m->begin(d);
+while ((e = m->iterate(it)))
+{ ... }
+m->end(it);
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+Iterate mesh entities by dimension $d$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Tag management}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{verbatim}
+pMeshTag pumi_mesh_createIntTag ( 
+        pMesh /* in */ m, 
+        const char* /* in */ name, 
+        int /* in */ size)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, tag name, and tag data size (>0), create an integer tag and return its handle.
+If \emph{size} is 1, the associated tag data is single integer. If \emph{size} is greater than 1, the associated tag data is an integer array.
+
+\begin{verbatim}
+pMeshTag pumi_mesh_createLongTag (
+        pMesh /* in */ m, 
+        const char* /* in */ name, 
+        int /* in */ size)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+Given a mesh instance, tag name, and tag data size (>0), create a long tag and return its handle.
+If \emph{size} is 1, the associated tag data is single long. If \emph{size} is greater than 1, the associated tag data is a long array.
+
+\begin{verbatim}
+pMeshTag pumi_mesh_createDblTag (
+        pMesh /* in */ m,
+        const char* /* in */ name, 
+        int /* in */ size)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, tag name, and tag data size (>0), create a double tag and return its handle.
+If \emph{size} is 1, the associated tag data is single double. If \emph{size} is greater than 1, the associated tag data is a double array.
+
+\begin{verbatim}
+void pumi_mesh_deleteTag(
+        pMesh /* in */ m, 
+        pMeshTag /* in */ tag, 
+        bool /* in */ force_delete=false)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+       Given a mesh instance and a tag handle, destroy the tag from the mesh instance. If \emph{force$\_$delete} is \emph{true}, delete any existing tag data associated with the tag handle before deleting tag handle. If \emph{force$\_$delete} is \emph{false}, the tag handle is deleted without checking tag data associated with the tag. \emph{force$\_$delete} is optional (default: $false$).
+
+Note: Since PUMI doesn't keep track of tag data attachment, forced tag deletion is $O(N)$.
+
+\begin{verbatim}
+pMeshTag pumi_mesh_findTag (
+       pMesh /* in */ m, 
+       const char* /* in */ name)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and tag name, return a tag handle with the given name. If no tag handle is found, return \emph{NULL}.
+
+\begin{verbatim}
+bool pumi_mesh_hasTag (
+        pMesh /* in */ m, 
+        const pMeshTag /* in */ tag)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and a tag handle, return \emph{true} if the tag handle exists in the mesh. Otherwise, return \emph{false}.
+\begin{verbatim}
+
+void pumi_mesh_getTag (
+        pMesh /* in */ m, 
+        std::vector<pMeshTag> /* inout */ tags)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, get the vector \emph{tags} filled with tag handles created.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+\subsubsection{Mesh migration}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+class Migration
+{
+  public:
+    Migration(pMesh m);
+    ~Migration();
+    // assign a destination part ID to an element
+    void send(pMeshEnt e, int to); 
+    // return the destination part ID of an element
+    int sending(pMeshEnt e); 
+    ...
+};
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+Mesh migration is a mesh-level procedure to send a local partition object (or element) to a single destination part. Duplicated off-part entities along the part boundaries are accessible through remote copies. The class \texttt{Migration} provides the mechanism to register a local element for migration. Using the member function \texttt{Migration::send}, an element can be registed to migrate to \emph{at most} one remote part. As the \texttt{Migration} object keeps the list of elements to be migrated, it is termed \emph{migration plan}. 
+
+\begin{verbatim}
+void pumi_mesh_migrate (
+        pMesh  /* in */  m,
+        Migration*  /* in */  plan)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and a migration object \emph{plan}, migrate the elements as registed in \emph{plan}. Tagged data, field, global numbering and global entity ID are maintained during the migration.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+\subsubsection{Mesh distribution}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+class Distribution
+{
+  public:
+    Distribution(pMesh m);
+    ~Distribution();
+    // assign a destination part ID to an element
+    void send(pMeshEnt e, int to); 
+    // return destination part ID's of an element
+    std::set<int>& sending(pMeshEnt e); 
+    ...
+};
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+Mesh distribution is a mesh-level procedure to send a local partition object (or element) to \emph{multiple} destination parts. Duplicated off-part elements are accessible through remote copies. The class \emph{Distribution} provides the mechanism to register a local element for distribution. Using the member function \texttt{Distribution::send}, an element can be registed to distribute to other remote part.  As the \texttt{Migration} object keeps the list of elements to be distributed, it is termed \emph{distribution plan}. 
+
+\begin{verbatim}
+void pumi_mesh_distribute (
+        pMesh  /* in */  m,
+        Distribution*  /* in */  plan)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and a distribution object \emph{plan}, distribute the elements as registed in \emph{plan}. Tagged data, field, global numbering and global entity ID are maintained during the distribution.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+\subsubsection{Ghosting}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+class Ghosting
+{
+  public:
+    // create a ghosting object with ghost dimension (1-3)
+    Ghosting(pMesh, int d);
+    ~Ghosting();
+    // assign a destination part ID to an entity of ghost dimension
+    void send(pMeshEnt e, int to);
+    // assign a destination part ID to all entities of ghost dimension
+    void send(int to);
+    // return destination part ID's of an entity
+    std::set<int>& sending(pMeshEnt e); 
+    ...
+};
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+Mesh ghosting is a mesh-level procedure to create local copy of off-part (\emph{internal} or \emph{part boundary}) entities. The local copy of off-part entities are termed ``ghost copy". The ghost copy maintains the link to its original entity copy. If the ghost copy is originated from a part boundary entity, it maintains the link only to the owning copy of part boundary entity. However all duplicate copies of part part entity (owned or not) maintain the link to the ghost copy. The class \texttt{Ghosting} provides the mechanism to register a local entity for ghosting. Using the member function \texttt{Ghosting::send}, an entity can be registed to be ghosted on \emph{at least} one destination part ID.  As the \texttt{Ghosting} object keeps the list of entities to be ghosted, it is termed \emph{ghosting plan}. 
+ Ghosting procedure is \emph{accumulative}; it can be performed multiple times with different options resulting in adding more ghost copies or ghost layers incrementally.
+
+\begin{verbatim}
+void pumi_ghost_create (
+        pMesh  /* in */  m,
+        Ghosting*  /* in */  plan)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and a ghosting object \emph{plan}, create ghost copies as registed in \emph{plan}.
+
+\begin{verbatim}
+void pumi_ghost_createLayer (
+        pMesh /* in */ m, 
+        int /* in */ brg_dim, 
+        int /* in */ ghost_dim, 
+        int /* in */ num_layer, 
+        int /* in */ include_copies)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, desired bridge entity type ($0$-$2$) on part boundary, desired ghost entity type ($1$-$3$), the number of ghost layers, and an integer flag indicating whether to include non-owned bridge entity (1: yes, 0: no) in ghosting plan computation, create ghost entities. If \emph{include$\_$copies} equals \emph{0} and part boundary entity of type \emph{brg$\_$dim} is not owned by a local part (shortly, non-owned bridge type entity), \emph{ghost$\_$dim}-dimensional entities adjacent to the non-owned bridge type entity is not ghosted. If \emph{include$\_$copies} is non-zero integer, all \emph{ghost$\_$dim} dimensional entities adjacent to the bridge type entities on part boundaries are ghost copied.
+
+The function fails in the following cases:
+\begin{enumerate}
+\item bridge dimension is greater than or equal to ghost dimension
+\item bridge dimension is greater than or equal to mesh dimension
+\item ghost dimension is mesh vertex
+\item ghost dimension is grester than mesh dimension
+\end{enumerate}
+
+Tagged data, field, global numbering and global entity ID are maintained during the ghosting.
+
+\begin{verbatim}
+int pumi_ghost_delete (pMesh  /* in */  m)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh instance, delete ghost entities.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Miscellaneous}\label{sec:meshmisc}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+void pumi_mesh_createGlobalID(
+    pMesh /* in */ m, 
+    pOwnership  /* im */  o=NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and an ownership rule handle, generate global entity ID's for each dimension $0$$-$$3$. Note that the global entity ID is maintained during mesh re-partitioning (migration and distribution) and ghosting. To retrieve mesh entity's global ID, use \emph{pumi$\_$ment$\_$getGlobalID}.
+
+The ownership rule is an optional argument (default: \emph{NULL}). If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum number of elements among residence parts. 
+
+\begin{verbatim}
+void pumi_mesh_deleteGlobalID(pMesh /* in */ m)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, delete global ID's generated by \emph{pumi$\_$mesh$\_$createGlobalID}.
+
+\begin{verbatim}
+void pumi_mesh_verify (
+    pMesh  /* in */  m,
+    bool abort_on_error=true)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh instance and a boolean flag specifing whether to abort on error or not, print the details of mesh entities,, check if the mesh is valid or not. Mesh verification with ghosted mesh is not supported. The argument \emph{abort$\_$on$\_$error} is optional (default: true).
+
+\begin{verbatim}
+void pumi_mesh_print (
+    pMesh  /* in */  m,
+    bool  /* in */  print_entities=false)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh instance and a boolean flag specifing whether to print the details of mesh entities, display the mesh information. The information includes size, tag, field and individual entities with global ID per part. The argument \emph{print$\_$entities} is optional (default: false).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Entity Functions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{General entity information}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+int pumi_ment_getDim(pMeshEnt /* in */ e)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, return the dimension (or type) of the entity ($0$-$3$).
+
+\begin{verbatim}
+int pumi_ment_getTopo(pMeshEnt /* in */ e)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, return the topology of the entity. The entity topology is encoded in a C++ enumeration value,
+\begin{verbatim}
+enum PUMI_EntTopology {
+  PUMI_VERTEX,   // 0
+  PUMI_EDGE,     // 1
+  PUMI_TRIANGLE, // 2
+  PUMI_QUAD,     // 3
+  PUMI_TET,      // 4
+  PUMI_HEX,      // 5
+  PUMI_PRISM,    // 6
+  PUMI_PYRAMID   // 7
+);
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+\begin{verbatim}
+int pumi_ment_getID(pMeshEnt /* in */ e)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, return its local ID. The local entity ID is not sequential and not maintained during mesh modification (migration, re-partitioning, and ghosting, etc.).
+
+\begin{verbatim}
+int pumi_ment_getGlobalID(pMeshEnt /* in */ e)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, return its global ID generated. Note that the global entity ID is maintained during mesh migration, re-partitioning, and ghosting.
+
+Prerequisite: \emph{pumi$\_$mesh$\_$createGlobalID}
+
+\begin{verbatim}
+int pumi_ment_getNumAdj(
+        pMeshEnt /* in */ e,
+        int /* in */ target_dim)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity and desired adjacency type \emph{target$\_$dim}, get the number of adjacent entities of the type. 
+
+\begin{verbatim}
+int pumi_ment_getAdjacent(
+        pMeshEnt /* in */ e,
+        int /* in */ target_dim,
+        Adjacent& /* out*/ adj_ents)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity and desired adjacency type \emph{target$\_$dim}, get the \emph{Adjacent} type container \emph{adj$\_$ents} filled with the adjacent entities of the type and return the number of resulting entities. \emph{target$\_$dim} should not be the same as the entity type. The type \texttt{Adjacent} is an array of entities. See how to iterate the resulting adjacent entities. This function is faster than \texttt{pumi$\_$ment$\_$getAdj}.
+\begin{verbatim}
+pMeshEnt vertex = ...;
+Adjacent adjacent;
+int num_adj=pumi_ment_getAdjacent(vertex, 2, adjacent);
+for (int i=0; i<num_adj; ++i)
+  pMeshEnt face = adjacent[i];
+  ...
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+\begin{verbatim}
+int pumi_ment_get2ndAdjacent(
+        pMeshEnt /* in */ e,
+        int /* in */ brg_dim,
+        int /* in */ target_dim,
+        Adjacent& /* out*/ adj_ents)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, bridge type \emph{brg$\_$dim}, and desired adjacency type \emph{target$\_$dim}, get the \emph{Adjacent} type container \emph{adj$\_$ents} filled with $2^{nd}$ order adjacent entities of type \emph{target$\_$dim} obtained through the bridge type \emph{brg$\_$dim} and return the number of resulting entities. \emph{target$\_$dim} should be greater than \emph{brg$\_$dim}. The type \texttt{Adjacent} is an array of entities. This function is faster than \texttt{pumi$\_$ment$\_$get2ndAdj}. See how to iterate the resulting adjacent entities.
+\begin{verbatim} 
+pMeshEnt face = ...;
+Adjacent adjacent;
+int num_adj=pumi_ment_get2ndAdjacent(face, 0, 2, adjacent);
+for (int i=0; i<num_adj; ++i)
+  pMeshEnt neighboring_face = adjacent[i];
+  ...
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+\begin{verbatim}
+void pumi_ment_getAdj(
+        pMeshEnt /* in */ e,
+        int /* in */ target_dim
+        std::vector<pMeshEnt>& /* inout */ adj_ents)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity and desired adjacency type \emph{target$\_$dim}, get the vector container \emph{adj$\_$ents} filled with the adjacent entities of the type. \emph{target$\_$dim} should not be the same as the entity type. If \emph{target$\_$dim} is negative, get all downward adjcent entities.
+
+\begin{verbatim}
+void pumi_ment_get2ndAdj (
+        pMeshEnt /* in */ e,
+        int /* in */ brg_dim,
+        int /* in */ target_dim,
+        std::vector<pMeshEnt>& /* inout */ adj_ents)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, bridge type \emph{brg$\_$dim}, and desired adjacency type \emph{target$\_$dim}, get the vector container \emph{adj$\_$ents} filled with $2^{nd}$ order adjacent entities of type \emph{target$\_$dim} obtained through the bridge type \emph{brg$\_$dim}. \emph{brg$\_$dim} and \emph{target$\_$dim} should not be equal.
+
+\begin{verbatim}
+pGeomEnt pumi_ment_getGeomClas(pMeshEnt /* in */ e)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Given a mesh entity handle, return the geometric entity classified on. 
+
+\begin{verbatim}
+pMeshEnt pumi_medge_getOtherVtx (
+        pMeshEnt /* in */ edge, 
+        pMeshEnt /* in */ vtx)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh edge and a vertex handle which is adjacent to the edge, return the other vertex handle.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Mesh entity tagging}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{verbatim}
+void pumi_ment_deleteTag (
+        pMeshEnt /* in */ e, 
+        pMeshTag /* in */ tag)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given mesh entity handle and tag handle, delete the tag data from the entity.
+
+\begin{verbatim}
+bool pumi_ment_hasTag (
+        pMeshEnt /* in */ e, 
+        pMeshTag /* in */ tag)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given mesh entity handle and tag handle, return $true$ if the tag data is attached to the entity. Otherwise, return $false$.
+
+\begin{verbatim}
+void pumi_ment_setIntTag (
+        pMeshEnt /* in */ e, 
+        pMeshTag /* in */ tag,
+        int const* /* in */ data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given mesh entity handle, tag handle, and integer data, set or update the tag value of the entity. It fails if (i) tag type is not \emph{PUMI}$\_$\emph{INT}, or (ii) the size of data doesn't match that of tag handle.
+
+\begin{verbatim}
+void pumi_ment_getIntTag(pMeshEnt e, pMeshTag tag, int* data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given mesh entity handle and tag handle, get integer type data tagged to the entity. It fails if (i) the tag doesn't exist with the entity, or (ii) tag type is not \emph{PUMI}$\_$\emph{INT}.
+
+
+\begin{verbatim}
+void pumi_ment_setLongTag(pMeshEnt e, pMeshTag tag, long const* data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given mesh entity handle, tag handle, and long data, set or update the tag value of the entity. It fails if (i) tag type is not \emph{PUMI}$\_$\emph{LONG}, or (ii) the size of data doesn't match that of tag handle.
+
+
+\begin{verbatim}
+void pumi_ment_getLongTag(pMeshEnt e, pMeshTag tag, long* data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given mesh entity handle and tag handle, get long type data tagged to the entity. It fails if (i) the tag doesn't exist with the entity, or (ii) tag type is not \emph{PUMI}$\_$\emph{LONG}.
+
+\begin{verbatim}
+void pumi_ment_setDblTag(pMeshEnt e, pMeshTag tag, double const* data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given mesh entity handle, tag handle, and double data, set or update the tag value of the entity. It fails if (i) tag type is not \emph{PUMI}$\_$\emph{DBL}, or (ii) the size of data doesn't match that of tag handle.
+
+
+\begin{verbatim}
+void pumi_ment_getDblTag ( 
+        pMeshEnt  /* in */  e, 
+        pMeshTag  /* in */  tag, 
+        double*  /* out */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given mesh entity handle and tag handle, get double type data tagged to the entity. It fails if (i) the tag doesn't exist with the entity, or (ii) tag type is not \emph{PUMI}$\_$\emph{DBL}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Entity in parallel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+int pumi_ment_getOwnPID(
+        pMeshEnt  /* in */  e, 
+        pOwnership  /* in */  o=NULL) 
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+       Given a mesh entity handle and an ownership rule, return owning part ID (part ID where the owning entity exists).
+The ownership rule is an optional argument (default: \emph{NULL}). If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum number of elements among residence parts. Note that the global numbering is maintained during mesh migration, re-partitioning, and ghosting.
+
+\begin{verbatim}
+pMeshEnt pumi_ment_getOwnEnt(
+        pMeshEnt  /* in */  e, 
+        pOwnership  /* in */  o=NULL) 
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}       
+        Given a mesh entity handle and an ownership rule, return owning entity handle. The ownership rule is an optional argument (default: \emph{NULL}). If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum number of elements among residence parts.
+
+\begin{verbatim}
+bool pumi_ment_isOwned(
+        pMeshEnt  /* in */  e, 
+        pOwnership  /* in */  o=NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}       
+        Given a mesh entity handle and an ownership rule, return $true$ if the entity is owned by the local process.  Otherwise, return $false$. The ownership rule is an optional argument (default: \emph{NULL}). If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum number of elements among residence parts.
+
+\begin{verbatim}
+bool pumi_ment_isOnBdry (pMeshEnt /* in */ e)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, return $true$ if the entity is on part boundary. Otherwise, return $false$.
+
+\begin{verbatim}
+int pumi_ment_getNumRmt (pMeshEnt /* in */ e)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Given a mesh entity handle, return the number of remote copies. If the entity is duplicated on $N$ processes, $N-1$ is returned.
+
+\begin{verbatim}
+void pumi_ment_getAllRmt(
+      pMeshEnt /* in */ e, 
+      Copies& /* out */ copies)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}	
+	Given a mesh entity handle, get \emph{copies} filled with remote part ID and the memory address of the entity on the remote part. \texttt{Copies} is a \href{http://www.cplusplus.com/reference/map/map/}{\texttt{std::map}}
+whose keys are part ID's and whose values are pointers to entities on those parts. All operations available for \texttt{std::map} can be applied to \texttt{Copies}. For instance, \texttt{copies.size()} indicates the number of remote copies and \texttt{copies[i]} is the remote entity copy on part $i$. 
+
+See how to iterate the remote copies using the iterator type \texttt{pCopyIter}.
+\begin{verbatim}
+pMeshEnt vertex = ...;
+Copies remotes;
+pumi_ment_getAllRmt(vertex, remotes);
+for (pCopyIter it = remotes.begin(); it != remotes.end(); ++it)
+  std::cout << "shared with part "<<it->first<<" on address "<<it->second<<"\n";
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+\begin{verbatim}
+pMeshEnt pumi_ment_getRmt(
+        pMeshEnt /* in */ e, 
+        int /* in */ part_id)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}        
+        Given a mesh entity handle and remote part ID, return the memory address of the entity on the part.
+
+\begin{verbatim}
+bool pumi_ment_isGhost(pMeshEnt /* in */ e)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, return $true$ if the entity is a ghost copy. Otherwise, return $false$.
+
+\begin{verbatim}
+bool pumi_ment_isGhosted(pMeshEnt /* in */ e)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, return $true$ if the entity is ghosted (its ghost copy exists on off-part process). Otherwise, return $false$.
+
+\begin{verbatim}
+int pumi_ment_getNumGhost (pMeshEnt /* in */ e)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Given a mesh entity handle, get the number of ghost copies. If the entity is a ghost copy, $0$ is retured.
+
+\begin{verbatim}
+void pumi_ment_getAllGhost(
+      pMeshEnt /* in */ e, 
+      Copies& /* out */ copies)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Given a mesh entity handle, get \emph{copies} filled with ghost part ID and the memory address of the ghost copy on the part. If \emph{e} is a ghost copy, the owner part ID and the memory address of the owning copy is returned. \texttt{Copies} is a \href{http://www.cplusplus.com/reference/map/map/}{\texttt{std::map}}
+whose keys are part IDs and whose values are pointers to entities on those parts.  All operations available for \texttt{std::map} can be applied to \texttt{Copies}
+
+See how to iterate the ghost copies using the iterator type \texttt{pCopyIter}.
+\begin{verbatim}
+pMeshEnt vertex = ...;
+Copies ghosts;
+pumi_ment_getAllGhost(vertex, ghosts);
+for (pCopyIter it = ghosts.begin(); it != ghosts.end(); ++it)
+  std::cout << "ghosted on part "<<it->first<<" on address "<<it->second<<"\n";
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+\begin{verbatim}
+pMeshEnt pumi_ment_getGhost(
+        pMeshEnt /* in */ e, 
+        int /* in */ part_id)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}        
+        Given a mesh entity handle and ghost part ID, return the memory address of the ghost copy on the part.
+
+\begin{verbatim}
+bool pumi_ment_isOn (
+      pMeshEnt /* in */ e, 
+      int /* in */ partID)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle and part ID, return $true$ if the entity exists on the part as a remote copy or ghost copy. Otherwise, return $false$.
+
+\begin{verbatim}
+void pumi_ment_getResidence(
+        pMeshEnt /* in */ e, 
+        Parts& /* inout */ residence)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, get \emph{residence} filled with residence part ID's where the entity physically exists as a remote copy or a ghost copy. \texttt{Parts} is a \href{http://www.cplusplus.com/reference/set/set/}{\texttt{std::set}} whose values are integers indicating part ID's. All operations available for \texttt{std::set} can be applied to \texttt{Parts}. For instance, \texttt{insert}, \texttt{size}, \texttt{union}, etc.
+
+\begin{verbatim}
+void pumi_ment_getClosureResidence(
+        pMeshEnt /* in */ e, 
+        Parts& /* inout */ residence)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, get \emph{residence} filled with residence part ID's where the entity and its downward adjacent entities physically exist as for a remote copy or a ghost copy. \texttt{Parts} is a \href{http://www.cplusplus.com/reference/set/set/}{\texttt{std::set}} whose values are integers indicating part ID's. All operations available for \texttt{std::set} can be applied to \texttt{Parts}. All operations available for \texttt{std::set} can be applied to \texttt{Parts}. For instance, \texttt{insert}, \texttt{size}, \texttt{union}, etc.
+

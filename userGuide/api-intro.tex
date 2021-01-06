@@ -1,0 +1,163 @@
+\section{Interface Structure}
+
+The PUMI API's are provided in the file \texttt{``pumi.h''}. Please be noted that in the current PUMI release, an entity set and multiple parts per process are not supported. Herein, with a single part per process, a mesh instance and a part handle are interchangeable.
+
+\subsection{API naming convention}
+
+PUMI API function name consists of two or three words connected with `$\_$'.
+
+\begin{itemize}
+\item the first word is ``pumi"
+\item the second word is an operation target. If the operation target is system-wide, the operation target is ommited. For instance, the function that initializes the PUMI service is \emph{pumi}$\_$\emph{start}.
+\item the third word is the operation description starting with a verb. For example, the function \emph{pumi}$\_$\emph{mesh}$\_$\emph{getNumEnt} returns the number of mesh entities with specific type. The function \emph{pumi}$\_$\emph{gent}$\_$\emph{getID} returns the global ID of geometric model entity.
+\end{itemize}
+
+The following are operation targets used in the second word.
+
+\begin{itemize}
+\item \textit{geom}: the api is performed on a geometric model
+\item \textit{gent}: the api is performed on a geometric model entity
+\item \textit{mesh}: the api is performed on a local mesh or global mesh
+\item \textit{ghost}: the api performs ghosting functions
+\item \textit{ment}: the api is performed on a mesh entity
+\item \textit{tag}: the api is performed on a tag handle
+\item \textit{field}: the api is performed on a field object
+\item \textit{shape}: the api is performed on a field shape object
+\item \textit{node}: the api is performed on a field node
+\item \textit{numbering}: the api is performed on a numbering object
+\end{itemize}
+
+\subsection{Abbreviation}
+
+Abbreviations may be used in API naming. See \textit{http://scorec.rpi.edu/wiki/Abbriviations} for more information.
+ 
+\subsection{Data Types and Classes}
+
+For a geometry, partition and mesh model, the term \emph{instance} is used to indicate the model data existing on each process. For example, a mesh instance on process \emph{i} means a pointer to a mesh data structure on process \emph{i}, in which all mesh entities on process \emph{i} are contained and from which they are accessible. For all other data such as entity and entity set, the term \emph{handle} is used to indicate the pointer to the data. For example, a mesh entity handle means a pointer to the mesh entity data. The predefined data type has a prefix \emph{p} to indicate the pointer data type.
+
+The following are predefined data types used in the interface function parameters.
+
+\begin{tabular}{lp{14cm}}	
+	pGeom &		geometric model instance \\
+	pGeomEnt &	geometric entity handle \\
+	&\\
+	pMesh &		mesh instance\\
+	pMeshEnt &	mesh entity handle\\
+        &\\
+        pOwnership &    an ownership handle to allow user-defined ownership rule for part boundary entities\\
+        Vector3 & 	an array of three doubles to hold the coordinate information of node\\
+        Adjacent & 	an array of entities to hold the adjacency\\
+        EntityVector  &    std::vector of mesh entity handle (pMeshEnt) \\
+        Copies &          std::map of part ID (int) and mesh entity handle (pMeshEnt) to hold remote or ghost copies \\
+        Parts  &          std::set of part ID (int) \\
+	&\\
+        pTag &          tag handle for geometric model\\
+        pMeshTag &      tag handle for mesh\\
+        &\\
+	pGeomIter &		iterator traversing over global geometric model entities \\
+        pMeshIter &          iterator traversing over local mesh entities\\
+        pCopyIter &       iterator traversing \texttt{Copies} \\
+        &\\
+	pShape &	     shape function handle to define how the field nodes are distributed \\
+        pField &             field handle\\
+        pNumbering & numbering handle to assign local numbering to multiple degree of freedoms in field nodes \\
+        pGlobalNumbering &   global numbering handle to assign global numbering to multiple degree of freedoms in field nodes\\
+\end{tabular}	
+
+The following classes are defined to support mesh re-distribution and ghosting.
+
+\begin{tabular}{lp{14cm}}	
+	Migration &	a class to define migration plan \\
+	Distribution &	a class to define distribution plan \\
+	Ghosting &	a class to define ghosting plan \\
+\end{tabular}	
+
+\subsection{Enumeration Types}
+
+The enumeration type for tag data type is:
+
+\begin{verbatim}
+    enum PUMI_TagType {
+        PUMI_DBL       = 0 /* double */,
+        PUMI_INT,      /* 1 - integer */
+        PUMI_LONG,     /* 2 - long integer */
+        PUMI_ENT,      /* 3 - entity handle. Only for geometric model*/
+        PUMI_SET,      /* 4 - set handle. NOT SUPPORTED */
+        PUMI_PTR,      /* 5 - opaque pointer. Only for geometric model*/
+        PUMI_STR,      /* 6 - string. NOT SUPPORTED */
+        PUMI_BYTE      /* 7 - 1 byte character. Only for geometric model */
+    }
+\end{verbatim}\vspace{-1cm}\hspace{1cm}
+
+For geometric model, the supported tag types are \emph{PUMI$\_$DBL}, \emph{PUMI$\_$INT}, \emph{PUMI$\_$LONG}, \emph{PUMI$\_$ENT}, \emph{PUMI$\_$PTR}, and \emph{PUMI$\_$BYTE}. For mesh, the supported tag types are \emph{PUMI$\_$DBL}, \emph{PUMI$\_$INT}, and \emph{PUMI$\_$LONG}.
+
+The enumeration type for entity topology is:
+
+\begin{verbatim}
+enum PUMI_EntTopology {
+  PUMI_VERTEX, 		// 0 
+  PUMI_EDGE,   		// 1 
+  PUMI_TRIANGLE, 	// 2 
+  PUMI_QUAD,		// 3
+  PUMI_TET,  		// 4
+  PUMI_HEX,  		// 5 
+  PUMI_PRISM, 		// 6
+  PUMI_PYRAMID 		// 7
+};
+\end{verbatim}\vspace{-1cm}\hspace{1cm}
+
+The enumeration type for field data type is:
+\begin{verbatim}
+enum PUMI_FieldType {
+  PUMI_SCALAR, 		//  a single scalar value
+  PUMI_VECTOR, 		// a 3D vector
+  PUMI_MATRIX, 		// a 3x3 matrix 
+  PUMI_PACKED 		// a user-defined set of components
+};
+\end{verbatim}\vspace{-1cm}\hspace{1cm}
+
+\subsection{Error Codes}
+If the API function returns an error code and the function succeeds, it returns 0,  otherwise, it returns a positive integer representing a type of error. The error codes are defined in \emph{pumi}$\_$\emph{errorcode.h}. 
+
+\begin{verbatim}
+ enum PUMI_ErrCode {
+  PUMI_SUCCESS = 0, // no error
+  PUMI_MESH_ALREADY_LOADED,
+  PUMI_FILE_NOT_FOUND,
+  PUMI_FILE_WRITE_ERROR,
+  PUMI_NULL_ARRAY,
+  PUMI_BAD_ARRAY_SIZE,
+  PUMI_BAD_ARRAY_DIMENSION,
+  PUMI_INVALID_ENTITY_HANDLE,
+  PUMI_INVALID_ENTITY_COUNT,
+  PUMI_INVALID_ENTITY_TYPE,
+  PUMI_INVALID_ENTITY_TOPO,
+  PUMI_BAD_TYPE_AND_TOPO,
+  PUMI_ENTITY_CREATION_ERROR,
+  PUMI_INVALID_TAG_HANDLE,
+  PUMI_TAG_NOT_FOUND,
+  PUMI_TAG_ALREADY_EXISTS,
+  PUMI_TAG_IN_USE, // try to delete a tag that is in use
+  PUMI_INVALID_SET_HANDLE,
+  PUMI_INVALID_ITERATOR,
+  PUMI_INVALID_ARGUMENT,
+  PUMI_MEMORY_ALLOCATION_FAILED,
+  PUMI_INVALID_MESH_INSTANCE,
+  PUMI_INVALID_GEOM_MODEL,
+  PUMI_INVALID_GEOM_CLAS,
+  PUMI_INVALID_PTN_CLAS,
+  PUMI_INVALID_REMOTE,
+  PUMI_INVALID_MATCH,
+  PUMI_INVALID_PART_HANDLE, 
+  PUMI_INVALID_PART_ID,
+  PUMI_INVALID_SET_TYPE,
+  PUMI_INVALID_TAG_TYPE,
+  PUMI_ENTITY_NOT_FOUND,
+  PUMI_ENTITY_ALREADY_EXISTS,
+  PUMI_REMOTE_NOT_FOUND,
+  PUMI_GHOST_NOT_FOUND,
+  PUMI_CB_ERROR,
+  PUMI_NOT_SUPPORTED,
+  PUMI_FAILURE, 
+}
+\end{verbatim}

@@ -1,0 +1,42 @@
+%----- algorithm.sty -----
+%
+%The following code creates an environment that works just like the
+%figure environment, except that it's for algorithms.  That is, its
+%captions look like
+%
+%  Algorithm 2.1:  An algorithm.
+%
+%The algorithms are numbered independently of the figures.
+%It also produces a .loa file, which can be used to create a list of
+%algorithms via the command \listofalgorithms.
+% Author: Martin Carroll
+
+
+\newcommand{\listalgorithmname}{List of Algorithms}
+
+\def\listofalgorithms{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+ \fi\chapter*{\listalgorithmname\@mkboth
+ {LIST OF ALGORITHMS}{LIST OF ALGORITHMS}}\@starttoc{loa}\if@restonecol\twocolumn
+ \fi}
+\def\l@algorithm{\@dottedtocline{1}{1.5em}{2.3em}}
+
+\newcounter{algorithm}[chapter]
+\def\thealgorithm{\thechapter.\@arabic\c@algorithm}
+\def\fps@algorithm{tbp}
+\def\ftype@algorithm{4}
+\def\ext@algorithm{loa}
+\def\fnum@algorithm{Algorithm \thealgorithm}
+\def\algorithm{\@float{algorithm}}
+\let\endalgorithm\end@float
+\@namedef{algorithm*}{\@dblfloat{algorithm}}
+\@namedef{endalgorithm*}{\end@dblfloat}
+
+\endinput
+
+Note: this file assumes chapters in the document (report or book). 
+For articles, you need to change only these two lines: 
+\newcounter{algorithm}[chapter] 
+\def\thealgorithm{\thechapter.\@arabic\c@algorithm}
+     to 
+\newcounter{algorithm}[section] 
+\def\thealgorithm{\thesection.\@arabic\c@algorithm} 

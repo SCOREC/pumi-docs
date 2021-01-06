@@ -1,0 +1,428 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Field API's}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This chapter describes API functions for field shape, field node and field management.
+
+\subsection{Field Shape}\label{sec:fieldshape}
+A field shape defines the node distribution where the coordinates and field values (DOF's) are stored. PUMI supports the following field shapes: 
+
+\begin{itemize}
+\item Linear: The default field shape. Nodes are associated only with vertices and there is no node associated with other entities.
+\item Lagrange: Lagrangian shape function of some polynomial order (first and second order only)
+\item Serendipity: Serendipity shape functions of second order
+\item Constant: Constant shape function over a specific dimension. Shape function places a node on every element
+ of the given dimension up to 3
+\item Integration Point (IP): Shape function over the integration points of elements. Orders 1 to 3 for dimension 2 or 3 are available. 
+\item Voronoi: Equivalent to the Integration Point except that it is capable of evaluating as a shape function whose
+           value at any point in the element is the value of the closest integration point in that element.
+\item Integration Point Fit (IPF): equivalent to the Integration Point except that it is capable of evaluating as a shape function whose value at any point in the element is a polynomial fit to the integration point data in that element.
+\item Hierarchic: Quadratic hierarchic shape function (first and second order only)
+\end{itemize}
+
+\begin{verbatim}
+pShape pumi_mesh_getShape (pMesh  /* in */  m)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, return its shape handle. The default field shape of the mesh is a linear field shape, where \emph{xyz} coordinates and DOF's are created only over the mesh vertices. Use \emph{pumi$\_$mesh$\_$setShape} to change the default field shape.
+
+\begin{verbatim}
+void pumi_mesh_setShape (
+        pMesh  /* in */  m,
+        pShape  /* in */  s, 
+        bool  /* in */  project=true)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and field shape handle, set the field shape associated with the mesh. Mesh's existing coordinate field is replaced with a new fresh coordinate field. If \emph{project} is \emph{true}, project coordinate values from the old coordinate field to the new coordinate field. If \emph{project} to \emph{false} and coordinate field is not manually set, the file I/O with the new shape will fail. If \emph{project} is not provided, the default is \emph{true}.
+
+\begin{verbatim}
+int pumi_shape_getNumNode (
+        pShape  /* in */  s, 
+        int  /* in */  t)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field shape handle and entity topology, return the number of nodes associated with the entity topology.
+
+\begin{verbatim}
+int pumi_shape_hasNode (
+        pShape  /* in */  s, 
+        int  /* in */  topology)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field shape handle and an entity topology, return \texttt{true} if nodes exist for the topology. Otherwise, return \texttt{false}. The entity topology is encoded in a C++ enumeration type.
+\begin{verbatim}
+enum PUMI_EntTopology {
+  PUMI_VERTEX,   // 0
+  PUMI_EDGE,     // 1
+  PUMI_TRIANGLE, // 2
+  PUMI_QUAD,     // 3
+  PUMI_TET,      // 4
+  PUMI_HEX,      // 5
+  PUMI_PRISM,    // 6
+  PUMI_PYRAMID   // 7
+);
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+
+\begin{verbatim}
+pShape pumi_shape_getLagrange (int  /* in */  order)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a polynomial order, get the Lagrangian shape function of the order (first and second order only).
+
+\begin{verbatim}
+pShape pumi_shape_getSerendipity ()
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Get the Serendipity shape functions of second order.
+
+\begin{verbatim}
+pShape pumi_shape_getConstant (int  /* in */ dimension)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given an entity dimension ($0$-$3$), get the constant shape function over the specific dimension. 
+The constant shape function places a node on every element of the given dimension. 
+
+\begin{verbatim}
+pShape pumi_shape_getIP (
+        int  /* in */  dimension, 
+        int  /* in */  order)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a dimension and order, get the Integration Point distribution. \emph{dimension} is the dimensionality of the elements order. \emph{order} is the order of accuracy, which determines the integration points. This allows users to create a field which has values at the integration points of elements. Orders 1 to 3 for dimension 2 or 3 are supported.
+
+\begin{verbatim}
+pShape pumi_shape_getVoronoi (
+        int  /* in */  dimension,
+        int  /* in */  order)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a dimension and order, get the Voronoi shape function. The Voronoi FieldShape is equivalent to the IPShape except that it is capable of evaluating as a shape function whose value at any point in the element is the value of the closest
+ integration point in that element.
+
+\begin{verbatim}
+pShape pumi_shape_getIPFit (
+        int  /* in */  dimension,
+        int  /* in */  order)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a dimension and order, get the IP Fit shape function. The IP Fit FieldShape is equivalent to the IPShape except
+ that it is capable of evaluating as a shape function whose value at any point in the element is a polynomial fit to
+ the integration point data in that element.
+
+\begin{verbatim}
+pShape pumi_shape_getHierarchic (int  /* in */  order)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given an order, get the quadratic hierarchic shape function (only first and second order are supported).
+
+\subsection{Field Node}
+\subsubsection{Node Coordinates}
+\begin{verbatim}
+void pumi_node_setCoord (
+        pMeshEnt  /* in */  e,
+        int  /* in */  n,
+        double*  /* in */  coord)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, node order \emph{n} and \emph{xyz} coordinates, set or update the coordinates of the $n^{th}$ node of the entity. \emph{n} starts from 0 and must be less than the number of nodes associated with the entity type. If the entity type is vertex, the order \emph{n} is 0.
+
+\begin{verbatim}
+void pumi_node_getCoord (
+        pMeshEnt  /* in */  e,
+        int  /* in */  n,
+        double*  /* out */  coord)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Given a vertex handle and node order \emph{n}, get \emph{xyz} coordinates of the $n^{th}$  node of the entity. \emph{n} starts from $0$ and must be less than the number of nodes associated with the entity type. If the entity type is vertex, the order \emph{n} is $0$.
+
+\begin{verbatim}
+void pumi_node_setCoordVector (
+        pMeshEnt  /* in */  e,
+        int  /* in */  n,
+        Vector3&  /* out */  coord)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mesh entity handle, node order \emph{n} and \emph{xyz} coordinates in data type \texttt{Vector3}, set or update the coordinates of the $n^{th}$ node of the entity. \emph{n} starts from 0 and must be less than the number of nodes associated with the entity type. If the entity type is vertex, the order \emph{n} is $0$. The data type \texttt{Vector3} is a vector of three doubles. \texttt{Vector3} can be treated like an array, but users can use a C++ stream output operator (\texttt{std::cout}) and mathematical operators like addition, subtraction, multiplication by a scalar, cross production, etc. 
+
+\begin{verbatim}
+void pumi_node_getCoordVector (
+        pMeshEnt  /* in */  e,
+        int  /* in */  n,
+        Vector3& /* out */  coord)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+	Given a vertex handle and node order \emph{n}, get \emph{xyz} coordinates of the $n^{th}$ node of the entity in \texttt{Vector3} object. \emph{n} starts from $0$ and must be less than the number of nodes associated with the entity type. If the entity type is vertex, the order \emph{i} is always $0$. \texttt{Vector3} can be treated like an array, but users can use a C++ stream output operator (\texttt{std::cout}) and mathematical operators like addition, subtraction, multiplication by a scalar, cross production, etc. 
+
+\begin{verbatim}
+Vector3 pumi_vector3_cross (
+        Vector3 const& /* in */ a, 
+        Vector3 const& /* in */ b)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given two Vector3 objects, return cross production in \texttt{Vector3} object.
+
+\subsubsection{Node Numbering}
+\begin{verbatim}
+pNumbering pumi_numbering_create(
+        pMesh  /* in */  m,
+        const char*  /* in */  name,
+        pShape  /* in */  shape=NULL,
+        int  /* in */  num_component=1)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, character string name, a field shape handle, and the number of component (degree of freedom) per  node, \emph{(i)} create a numbering object and \emph{(ii)} return the numbering handle. 
+Note that no number is assigned to DOF's. \texttt{pumi$\_$node$\_$setNumber} and \texttt{pumi$\_$node$\_$getNumber} allow the user to set/get the number of node.
+
+The argument $shape$ is optional (\emph{NULL}). If \emph{NULL}, the field shape of the mesh 
+(a field shape returned by \texttt{pumi$\_$mesh$\_$getShape}) is used. See Section \ref{sec:fieldshape} for the details of field shape.
+
+The argument \emph{num$\_$component} is also optional (default: $1$). 
+
+\begin{verbatim}
+pNumbering pumi_numbering_createLocal(
+        pMesh  /* in */  m,
+        const char*  /* in */  name,
+        pShape  /* in */  shape=NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, character string name and a field shape handle, \emph{(i)} create a numbering object for nodes, \emph{(ii)} assign a local number to $all$ $nodes$, and \emph{(iii)} return the numbering handle. The number begins from 0 on each process. Call \texttt{pumi$\_$node$\_$getNumber} to retrieve the number.
+
+The argument $shape$ is optional (\emph{NULL}). If \emph{NULL}, the field shape of the mesh 
+(a field shape returned by \texttt{pumi$\_$mesh$\_$getShape}) is used. See Section \ref{sec:fieldshape} for the details of field shape.
+
+\begin{verbatim}
+pNumbering pumi_numbering_createGlobal (
+        pMesh  /* in */  m,
+        const char*  /* in */  name,
+        pShape  /* in */  shape=NULL,
+        pOwnership  /* in */  own=NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, character string name, a field shape handle and an ownership rule, \emph{(i)} create a numbering object for \emph{owned entities}, \emph{(ii)} assign a global number to \emph{owned nodes}, and \emph{(iii)} return the numbering handle. Call \texttt{pumi$\_$node$\_$getNumber} to retrieve the number.
+
+The argument $shape$ is optional (\emph{NULL}). If \emph{NULL}, the field shape of the mesh 
+(a field shape returned by \texttt{pumi$\_$mesh$\_$getShape}) is used. See Section \ref{sec:fieldshape} for the details of field shape
+
+The ownership rule is optional (default: \emph{NULL}). If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum part ID among residence parts.
+
+\begin{verbatim}
+pNumbering pumi_numbering_createOwn(
+        pMesh  /* in */  m,
+        const char*  /* in */  name,
+        pShape  /* in */  shape=NULL,
+        pOwnership  /* in */  own=NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, character string name, a field shape handle and an ownership rule, \emph{(i)} create a numbering object for owned nodes, \emph{(ii)} assign a local number to $owned$ $nodes$, and \emph{(iii)} return the numbering handle. The number begins from 0 on each process. Call \texttt{pumi$\_$node$\_$getNumber} to retrieve the number.
+
+The argument $shape$ is optional (\emph{NULL}). If \emph{NULL}, the field shape of the mesh 
+(a field shape returned by \texttt{pumi$\_$mesh$\_$getShape}) is used. See Section \ref{sec:fieldshape} for the details of field shape
+
+The ownership rule is optional (default: \emph{NULL}). If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum part ID among residence parts.
+
+\begin{verbatim}
+pNumbering pumi_numbering_createOwnDim(
+        pMesh  /* in */  m,
+        const char*  /* in */  name,
+        int  /* in */  dimension,
+        pOwnership  /* in */  own=NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, character string name, an entity dimension ($0$-$3$) and an ownership rule,  \emph{(i)} create a numbering object for owned entities of the dimension, \emph{(ii)} assign a local number to $owned$ $nodes$, and \emph{(iii)} return the numbering handle. The number begins from 0 on each process. Call \texttt{pumi$\_$node$\_$getNumber} to retrieve the number.
+
+The ownership rule is optional (default: \emph{NULL}). If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum part ID among residence parts.
+
+\begin{verbatim}
+pNumbering pumi_numbering_createProcGrp (
+        pMesh  /* in */  m,
+        const char*  /* in */  name,
+        int  /* in */  n_pgrp,
+        int  /* in */  dimension,
+        pOwnership  /* in */  own=NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, character string name, the number of process group \emph{n}$\_$\emph{pgrp}, and entity dimension, \emph{(i)} create a numbering object for all entities of the dimension, \emph{(ii)} assign a \emph{intra-plane} global number to nodes of entities, and \emph{(iii)} return the numbering handle. For 16 processes, if \emph{n}$\_$\emph{pgrp} is 4, the processes 0 to 3 are process group 0, and  the processes 4 to 7 are process group $1$, and so on. Therefore, the \emph{sequential and unique} numbers are assined to nodes in each process group (start number is 0). Call \texttt{pumi$\_$node$\_$getNumber} to retrieve the number.
+
+The ownership rule is optional (default: \emph{NULL}). If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum part ID among residence parts.
+
+Prerequisite 1: \# total processes modulo \emph{n}$\_$\emph{pgrp} = 0\newline
+Prerequisite 2: any mesh entity in process group $p$ is owned by a process belonging to the group $p$
+
+\begin{verbatim}
+void pumi_numbering_delete (pNumbering  /* in */  nb)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a numbering handle, delete the numbering object.
+
+\begin{verbatim}
+void pumi_numbering_print (
+    pNumbering  /* in */  nb, 
+    int  /* in */  p=-1)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a numbering handle and a process rank $p$, print the node numbering of the process $p$.
+The process rank is an optional argument (default: $-1$). If $-1$, the numbering of all processes will be printed.
+
+\begin{verbatim}
+int pumi_numbering_getNumNode (pNumbering  /* in */ nb)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a numbering handle, return the number of nodes numbered in the numbering object.
+
+\begin{verbatim}
+void pumi_node_setNumber (
+        pNumbering  /* in */  nb, 
+        pMeshEnt  /* in */  e,
+        int  /* in */  n,
+        int  /* in */  c,
+        int  /* in */  number)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a numbering handle, a mesh entity handle, node order ($n$), component (DOF) order ($c$), and an integer number, number the $c^{th}$ component of $n^{th}$ node of the entity. The optional arguments \emph{n} and \emph{c} specify a high-order field node and degree of freedom per node (default: $0$). In case the mesh entity has only one node and one component, $n$ and $c$ are $0$.
+
+\begin{verbatim} 
+int pumi_node_getNumber (
+        pNumbering  /* in */ nb, 
+        pMeshEnt /* in */ e,
+        int  /* in */  n=0,
+        int  /* in */  c=0,
+        int  /* in */  number)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a numbering handle, a mesh entity handle, node order ($n$), component (DOF) order ($c$), return the number of the $c^{th}$ component of $n^{th}$ node of the entity. The  optional arguments \emph{n} and \emph{c} specify a high-order field node and degree of freedom per node (default: $0$). In case the mesh entity has only one node and one component, $n$ and $c$ are $0$.
+
+\begin{verbatim} 
+bool pumi_node_isNumbered (
+        pNumbering  /* in */  nb, 
+        pMeshEnt  /* in */  e,
+        int  /* in */  n=0,
+        int  /* in */  c=0)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a numbering handle, a mesh entity handle, node order ($n$), component (DOF) order ($c$), return $true$ if the $c^{th}$ component of $n^{th}$ node of the entity is numbered. Otherwise, return $false$. The  optional arguments \emph{n} and \emph{c} specify a high-order field node and degree of freedom per node (default: $0$). In case the mesh entity has only one node and one component, $n$ and $c$ are $0$.
+
+
+\subsection{Field Management}
+
+\begin{verbatim}
+pField pumi_field_create (
+        pMesh  /* in */  m, 
+        const char*  /* in */  name,
+        int  /* in */  num_component, 
+        int  /* in */  type=PUMI_PACKED, 
+        pShape  /* in */  shape = NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh handle, name, size (the number of DOF's per node), field type and field shape, create a field and return the field handle. The supported field type is encoded in a C++ enumeration type.
+
+\begin{itemize}
+\item PUMI$\_$SCALAR: a single scalar value (size=1)
+\item PUMI$\_$VECTOR: a 3D vector (size=3)
+\item PUMI$\_$MATRIX: a 3x3 matrix (size=9)
+\item PUMI$\_$PACKED: a user-defined set of field data of any size
+\end{itemize}
+
+The argument $type$ is optional (default: PUMI$\_$PACKED). The argument \emph{num$\_$component} is used only if the field type is \texttt{PUMI$\_$PACKED}. 
+
+The argument $shape$ is optional (\emph{NULL}). If \emph{NULL}, the field shape of the mesh 
+(a field shape returned by \texttt{pumi$\_$mesh$\_$getShape}) is used. See Section \ref{sec:fieldshape} for the details of field shape.
+
+There are two options to store the field data: (i) a double \emph{tag} per entity and (ii) a $contiguous$ double \emph{array} over the entire mesh. By default, the field data is stored in a double tag for each entity. \texttt{pumi$\_$field$\_$freeze} and \texttt{pumi$\_$field$\_$unfreeze} allow the user to change the field data structure from \emph{tag} to \emph{array}, and vice versa.
+
+\begin{verbatim}
+void pumi_node_setField (
+        pField  /* in */  f, 
+        pMeshEnt /* in */ e, 
+        int  /* in */  n,
+        double* /* in */ dof_data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field handle, a mesh entity handle, node order \emph{n}, and double array, set or update the field data of $n^{th}$ node of the entity. \emph{n} starts from $0$ and must be less than the number of nodes associated with the entity type. If the entity type is vertex, the order \emph{i} is $0$.
+
+\begin{verbatim}
+void pumi_node_getField (
+        pField  /* in */  f, 
+        pMeshEnt  /* in */  e, 
+        int  /* in */  n,
+        double*  /* out*/  dof_data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field handle, a mesh entity handle, and node order \emph{n}, get field data of $n^{th}$ node of the entity. \emph{n} starts from $0$ and must be less than the number of nodes associated with the entity type. If the entity type is vertex, the order \emph{i} is $0$.
+
+\begin{verbatim}
+int pumi_field_getSize (pField  /* in */  f)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Give a field handle, return the number of components (DOF's) per node.
+
+\begin{verbatim}
+int pumi_field_getType (pField  /* in */  f)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Give a field  handle, return the field type. 
+
+\begin{verbatim}
+std::string pumi_field_getName (pField  /* in*/  f)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Give a field  handle, return the field name.
+
+\begin{verbatim}
+pShape pumi_field_getShape (pField  /* in */  f)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Give a field  handle, return the field shape handle.
+
+\begin{verbatim}
+pNumbering pumi_field_getNumbering (pField  /* in */  f)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field handle, return a numbering object associated with the field shape where local numbers for all nodes are assigned.
+
+\begin{verbatim}
+void pumi_field_delete (pField  /* in */  f)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field handle, delete the field.
+
+\begin{verbatim}
+void pumi_field_synchronize (
+        pField  /* in */  f,
+        pOwnership  /* in */  own=NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field handle and an ownership rule, synchronize field data between remote, ghost and matched copies. The owner copy's field data is copied to the rest of copies. The ownership rule is an optional argument and the default is \emph{NULL}. If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum part ID among residence parts.
+
+\begin{verbatim}
+void pumi_field_accumulate (pField  /* in */  f)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field handle, add up field data between remote copies then synchronize.
+
+\begin{verbatim}
+void pumi_field_freeze (pField  /* in */  f)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field handle, turn the data structure of field data storage from a contiguous double array tag per entity to a double array over the entire mesh. 
+
+\begin{verbatim}
+void pumi_field_unfreeze (pField  /* in */  f)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field handle, turn the data structure of field data storage from a contiguous double array over the entire mesh to double array tag per entity.
+
+\begin{verbatim}
+pField pumi_mesh_findField (
+        pMesh  /* in */  m, 
+        const char* /* in */ name)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and field name, return a field handle with the given name. If no field handle is found, return \emph{NULL}.
+
+\begin{verbatim}
+int pumi_mesh_getNumField (pMesh  /* in */  m)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, return the number of fields created in the mesh.
+
+\begin{verbatim}
+pField pumi_mesh_getField (
+        pMesh  /* in */  m, 
+        int /* in */ i)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance and integer $i$, return the $i^{th}$ field handle of the mesh.
+
+\begin{verbatim}
+void pumi_field_copy (
+    pField  /* in */  f,
+    pField  /* out */  r)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Copy the field data from  field $f$ to field $r$.
+
+\begin{verbatim}
+void pumi_field_add (
+    pField  /* in */  f1,
+    pField  /* in */  f2,
+    pField  /* out */  r)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Add the field data in field $f1$ and field $f2$ and write the result to field $r$.
+
+\begin{verbatim}
+void pumi_field_multiply (
+    pField  /* in */  f,
+    double  /* in */  d,
+    pField  /* out */  r)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Multiply the field data in field $f$ by a double $d$, and write the result to field $r$.
+
+\begin{verbatim}
+void pumi_field_verify (
+        pMesh /* in */ m, 
+        pField  /* in */  f=NULL, 
+        pOwnership  /* in */  own=NULL)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a mesh instance, a field handle and an ownership rule, verify the field data between remote and ghost copies. The field handle is an optional argument. If it is \emph{NULL}, all field handles in the mesh are verified. If field data between copies don't match, warning messages are displayed. 
+
+The ownership rule is optional (default: \emph{NULL}). If \emph{NULL}, the default ownership rule provided by PUMI is used, where an owning part of part boundary entities is a part with the minimum part ID among residence parts.
+
+\begin{verbatim}
+void pumi_field_print (pField  /* in */  f)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Given a field handle, print the field data for all nodes.

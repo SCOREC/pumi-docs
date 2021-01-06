@@ -1,0 +1,51 @@
+\section{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+\subsection{Background and Motivation}
+An efficient distributed mesh data structure is needed to support
+parallel adaptive analysis since it strongly influences
+the overall performance of adaptive mesh-based simulations. In addition to
+the general mesh-based operations~\cite{beall97}, such as mesh entity creation/deletion,
+adjacency and geometric classification, iterators, arbitrary 
+attachable data to mesh entities, etc., the distributed
+mesh data structure must support $(i)$ efficient communication between
+ entities duplicated over multiple processors, $(ii)$ migration of mesh entities
+ between processors, and $(iii)$ dynamic load balancing. 
+
+Issues associated with supporting parallel adaptive
+analysis on unstructured meshes include dynamic mesh
+load balancing techniques~\cite{deCougny-etal95, Diekmann-etal00, Teresco-etal00, Walshaw-Cross00}, and data structure and algorithms for parallel 
+mesh adaptation~\cite{Ozturan-etal94, deCougny-Shephard99, libmesh, Oliker-etal00, Park-Kwon05, Remacle-etal02, Selwood-Berzins99, seolthesis, fmdb06}. 
+
+The PUMI is a unstructured, distributed mesh data management system that is capable of a parallel mesh infrastructure capable of handling general non-manifold \cite{Mantyla88, weiler88} models and
+effectively supporting automated adaptive analysis \cite{pumi16}. 
+
+This document describes an overview of the PUMI design, its interface functions and example codes.
+
+\subsection{Organization}
+
+Chapter 2 introduces the data sets involved with geometry-based analysis and the role of a topological mesh representation. Chapters 3-5 introduce the PUMI libraries which include parallel control, geometric model, distributed mesh data structure in accordance with a partition model, and mesh partitioning control. Chapters 6-11 present the PUMI API specifications. Chapter 12 presents example programs. Chapter 13 provides compilation and installation instructions.
+
+\subsection{Nomanclature}
+	
+\begin{tabular}{lp{14cm}}
+$V$ & the model, $V$ $\in$ \{$G$, $P$, $M$\} where $G$ signifies the
+geometric model, $P$ signifies the partition model, and
+ $M$ signifies the mesh model.\\
+\{$V\{V^d$\}\} & a set of topological entities of dimension $d$ in model $V$. 
+(e.g., \{$M\{M^2$\}\} is the set of all the faces in the mesh.)\\
+$V^d_i$ & the $i^{th}$ entity of dimension\footnote{In this document, entity dimension and entity type are interchangeable.} $d$ in model $V$. $d=0$ for a vertex, $d=1$ for an edge, $d=2$ for a face, and
+$d=3$ for a region.\\
+\{$\partial$($V^d_i$)\} & set of entities on the boundary of $V^d_i$. \\ 
+\{$V^d_i$\{$V^q$\}\} &a set of entities of dimension $q$ in model $V$ that are
+adjacent to $V^d_i$. (e.g., \{$M^1_3$\{$M^3$\}\} are the mesh regions adjacent to mesh edge $M^1_3$.) \\
+
+$V^d_i$\{$V^q$\}$_j$ & the $j^{th}$ entity in the set of entities of
+dimension $q$ in model $V$ that are adjacent to $V^d_i$. 
+(e.g., $M^3_1$\{$M^1$\}$_2$ is the $2^{nd}$ edge adjacent to mesh region $M^3_1$.) \\
+$U^{d_i}_i$ $\sqsubset$ $V^{d_j}_j$ & classification indicating the unique association
+of entity $U^{d_i}_i$ with entity $V^{d_j}_j$, $d_i \le d_j$, where $U$, $V$ $\in$
+\{$G$, $P$, $M$\} and $U$ is lower than $V$ in terms of a hierarchy of domain decomposition.\\
+\RP$[$$M^d_i$$]$ & set of part id(s) where entity $M^d_i$ exists.\\
+
+\end{tabular}

@@ -1,0 +1,107 @@
+%\appendix   % This command is used only once!
+%\addcontentsline{toc}{chapter}{APPENDICES}             %toc entry  or:
+%\addtocontents{toc}{\parindent0pt\vskip12pt APPENDICES} %toc entry, no page #
+
+\section{Displaying Mesh Statistics}\label{sec:mstat}
+
+[Example]
+\begin{small}
+\begin{verbatim}
+[MESH STATISTICS]
+#process: 2, #part per process: 5, #total part: 10
+LB_Method: HYPERGRAPH, LB_Approach: Refine, imbalance_tol: 3%
+
+-- Per-Process Count Statistics --
+Global: 
+	#p-set: avg 6558.5, max 7337, min 5780
+	avg p-set size (#ent): 10
+
+	#po-ent & weight: avg 1.29e+05-2.606e+05, max 144427-2.609e+05, min 113621-2.604e+05
+	Imbalance ratio [max/avg weight]: 0.1105 %
+	Imbalance ratio [avg/min weight]: 0.1106 %
+
+	Imbalance ratio [max/avg #po-ent]: 11.94 %
+	Imbalance ratio [avg/min #po-ent]: 13.56 %
+
+#p-set & size: 13117-131170
+	(p0: 5780-57800) (p1: 7337-73370) 
+
+#owned+non-owned vertex: 113342
+	(p0: 55820) (p1: 57522) 
+#owned+non-owned edge: 479488
+	(p0: 249232) (p1: 230256) 
+#owned+non-owned face: 624150
+	(p0: 337843) (p1: 286307) 
+
+#owned vertex: 91289
+	(p0: 44603) (p1: 46686) 
+#owned edge: 424057
+	(p0: 221402) (p1: 202655) 
+#owned face: 590817
+	(p0: 321164) (p1: 269653) 
+#region & weight: 258048-5.213e+05
+	(p0: 144427-2.609e+05) (p1: 113621-2.604e+05) 
+
+-- Per-Part Count Statistics --
+Global: 
+	#p-set: avg 1312, max 1566, min 459
+	avg p-set size (#ent): 10
+
+	#po-ent & weight: avg 2.58e+04-5.213e+04, max 39057-5.369e+04, min 19517-4.824e+04
+	Imbalance ratio [max/avg weight]: 2.999 %
+	Imbalance ratio [avg/min weight]: 8.07 %
+
+	Imbalance ratio [max/avg #po-ent]: 51.36 %
+	Imbalance ratio [avg/min #po-ent]: 32.22 %
+
+Local (per process) avg/max/min #p-set and avg size:
+	(p0: avg 1156, max 1419, min 459, size 10) (p1: avg 1467, max 1566, min 1308, size 10) 
+	
+
+Local (per process) #po-ent & weight:
+	(p0: avg 2.889e+04-5.219e+04, max 39057-5.369e+04, min 24892-4.824e+04) 
+    (p1: avg 2.272e+04-5.207e+04, max 27234-5.339e+04, min 19517-5.024e+04) 
+	
+
+Local (per process) imbalance ratio [max/avg weight]:
+	(p0: 2.885%) (p1: 2.538%) 
+
+Local (per process) imbalance ratio [avg/min weight]: 
+	(p0: 8.19%) (p1: 3.657%) 
+
+Local (per process) imbalance ratio [max/avg #po-ent]:
+	(p0: 35.21%) (p1: 19.85%) 
+
+Local (per process) imbalance ratio [avg/min #po-ent]: 
+	(p0: 16.04%) (p1: 16.43%) 
+
+#p-set & size: 13117-131170
+	(p0: 1341-13410 1419-14190 1384-13840 1177-11770 459-4590) 
+    (p1: 1308-13080 1566-15660 1519-15190 1563-15630 1381-13810) 
+	
+
+#owned+non-owned vertex: 113342
+	(p0: 10963 11734 11981 11096 10046) (p1: 15408 10949 10516 10506 10143) 
+	
+#owned+non-owned edge: 479488
+	(p0: 46987 49366 48454 49639 54786) (p1: 57990 44279 43485 41466 43036) 
+	
+#owned+non-owned face: 624150
+	(p0: 61976 62963 61325 67763 83816) (p1: 69670 55413 55201 50449 55574) 
+	
+
+#owned vertex: 91289
+	(p0: 10732 8595 9732 8143 7401) (p1: 6493 10609 9809 10506 9269) 
+	
+#owned edge: 424057
+	(p0: 46533 41969 42323 42780 47797) (p1: 33963 43764 42071 41466 41391) 
+	
+#owned face: 590817
+	(p0: 61750 58735 57417 63848 79414) (p1: 54688 55211 54497 50449 54808) 
+	
+#region & weight: 258048-5.213e+05
+	(p0: 25951-5.368e+04 25313-5.369e+04 24892-5.257e+04 29214-5.276e+04 39057-4.824e+04)
+    (p1: 27234-5.339e+04 22053-5.337e+04 22202-5.258e+04 19517-5.078e+04 22615-5.024e+04)
+\end{verbatim}
+\end{small}
+

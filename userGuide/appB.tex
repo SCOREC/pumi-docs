@@ -1,0 +1,31 @@
+%\appendix   % This command is used only once!
+%\addcontentsline{toc}{chapter}{APPENDICES}             %toc entry  or:
+%\addtocontents{toc}{\parindent0pt\vskip12pt APPENDICES} %toc entry, no page #
+
+\section{Displaying Mesh Size Information}\label{sec:mnument}
+
+PUMI$\_$Mesh$\_$DspSize displays, for each part, number of p-set and owned entities per type (0 for vertex, 1 for edge, 2 for face and 3 for regions). The following example illustrates the mesh size information of the mesh distributed to twenty four parts on three processes (three parts per process). 
+
+[Example]
+\begin{small}
+\begin{verbatim}
+[MESH SIZE]
+[grp0|rank0] Part 0>> #p-set:  31 (1,1,2,3,2,4,4,1,3,5,2,3)
+[grp0|rank0] Part 0>> #ent[0]: 6170 (61,4,608,27,1809,1330,49,196,521,614,200,751)
+[grp0|rank0] Part 0>> #ent[1]: 34909 (1774,813,3628,1014,4765,4917,1193,2588,3566,4010,2610,4031)
+[grp0|rank0] Part 0>> #ent[2]: 51002 (3883,2887,4761,2890,5096,5207,3044,4366,4740,4879,4331,4918)
+[grp0|rank0] Part 0>> #ent[3]: 22671 (1895,1969,1854,1964,1822,1847,1962,1879,1865,1866,1886,1862)
+[grp0|rank0] Part 1>> #p-set:  31 (0,1,3,2,4,2,0,4,3,2,6,4)
+[grp0|rank0] Part 1>> #ent[0]: 2797 (100,52,1540,50,26,43,44,8,732,7,182,13)
+[grp0|rank0] Part 1>> #ent[1]: 22158 (2173,1521,4797,1392,925,1357,1627,720,3973,753,2325,595)
+[grp0|rank0] Part 1>> #ent[2]: 42278 (4136,3667,5129,3515,2678,3350,3792,2418,4922,2631,3914,2126)
+[grp0|rank0] Part 1>> #ent[3]: 23116 (1870,1946,1837,1951,1967,1962,1906,1968,1863,1973,1896,1977)
+[grp0|rank0] Part 2>> #p-set:  38 (2,4,4,1,4,7,3,2,2,2,3,4)
+[grp0|rank0] Part 2>> #ent[0]: 4541 (56,1553,80,113,190,73,1894,66,11,32,173,300)
+[grp0|rank0] Part 2>> #ent[1]: 28240 (1587,4955,1710,2022,2483,1361,4998,1753,833,1154,2455,2929)
+[grp0|rank0] Part 2>> #ent[2]: 47176 (3653,5210,3576,3993,4169,3013,5181,3785,2856,3197,4154,4389)
+[grp0|rank0] Part 2>> #ent[3]: 22869 (1936,1842,1911,1894,1893,1954,1832,1901,1967,1962,1891,1886)
+
+\end{verbatim}
+\end{small}
+

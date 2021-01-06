@@ -1,0 +1,100 @@
+%\appendix   % This command is used only once!
+%\addcontentsline{toc}{chapter}{APPENDICES}             %toc entry  or:
+%\addtocontents{toc}{\parindent0pt\vskip12pt APPENDICES} %toc entry, no page #
+
+\section{Displaying Mesh Information}\label{sec:minfo}
+
+PUMI$\_$Mesh$\_$DspInfo displays partition model entity and mesh entity information on each process.
+
+For each partion model entity, the following are displayed
+  \begin{itemize}
+  \item process rank
+  \item partition model entity ID
+  \item residence part ids (denoted as RPs)
+  \item owner part id
+  \item the number of mesh entities classified on the partition model entity
+  \end{itemize}
+
+For each mesh entity, the following are displayed.
+  \begin{itemize}
+  \item status (internal, part boundary or ghost)
+  \item  part id
+  \item process rank
+  \item string type id (See PUMI$\_$MeshEnt$\_$StrID)
+  \item memory address
+  \item geometric classification (level/type and tag/id)
+  \item if vertex, vertex coordinates and internal id (debugging purpose)
+  \item if part boundary entity, partition classification (partition model entity id denoted as peId) and the number of remote copies (denoted as numRCs)
+  \end{itemize}
+
+[Example]
+\begin{small}
+\begin{verbatim}
+***  Process 0: PUMI_Mesh_DspInfo (#parts/proc: 1)  ***
+(0) PE iD=1, RPs=(0,1,), dim=0, owner=0, #classfied_ent=2
+(0) PE iD=2, RPs=(0,2,), dim=0, owner=0, #classfied_ent=6
+(0) PE iD=4, RPs=(0,1,2,), dim=0, owner=0, #classfied_ent=1
+Int -- [part 0|proc 0] en_info: V2[1,0,0], (iD 2, mem 0x1cee940, gLevel 0, gTag 15)
+PartBdry -- [part 0|proc 0] en_info: V6[0.5,0,0], (iD 6, mem 0x1ceee80, gLevel 1, gTag 12, 
+                            peId 1, numRCs=1)
+PartBdry -- [part 0|proc 0] en_info: V7[1,0.5,0], (iD 7, mem 0x1cef020, gLevel 1, gTag 16, 
+                            peId 2, numRCs=1)
+PartBdry -- [part 0|proc 0] en_info: V10[0.35778,0.36314,0], (iD 10, mem 0x1cef590, gLevel 2, 
+                            gTag 2, peId 4, numRCs=2)
+PartBdry -- [part 0|proc 0] en_info: V11[0.68155,0.30953,0], (iD 11, mem 0x1cef6b0, gLevel 2, 
+                            gTag 2, peId 2, numRCs=1)
+PartBdry -- [part 0|proc 0] en_info: V12[0.63912,0.64486,0], (iD 12, mem 0x1cef7d0, gLevel 2, 
+                            gTag 2, peId 2, numRCs=1)
+Int -- [part 0|proc 0] en_info: E2_6 (mem 0x1cefbd0, gLevel 1, gTag 12)
+Int -- [part 0|proc 0] en_info: E2_7 (mem 0x1cefc80, gLevel 1, gTag 16)
+Int -- [part 0|proc 0] en_info: E7_11 (mem 0x1cf0040, gLevel 2, gTag 2)
+PartBdry -- [part 0|proc 0] en_info: E6_10 (mem 0x1cf03c0, gLevel 2, gTag 2, peId 1, numRCs=1)
+Int -- [part 0|proc 0] en_info: E6_11 (mem 0x1cf0580, gLevel 2, gTag 2)
+Int -- [part 0|proc 0] en_info: E2_11 (mem 0x1cf0660, gLevel 2, gTag 2)
+PartBdry -- [part 0|proc 0] en_info: E10_11 (mem 0x1cf0850, gLevel 2, gTag 2, peId 2, numRCs=1)
+PartBdry -- [part 0|proc 0] en_info: E7_12 (mem 0x1cf0930, gLevel 2, gTag 2, peId 2, numRCs=1)
+PartBdry -- [part 0|proc 0] en_info: E11_12 (mem 0x1cf0ba0, gLevel 2, gTag 2, peId 2, numRCs=1)
+Int -- [part 0|proc 0] en_info: F2_6_11 (mem 0x1d00d40, gLevel 2, gTag 2)
+Int -- [part 0|proc 0] en_info: F2_7_11 (mem 0x1d00e50, gLevel 2, gTag 2)
+Int -- [part 0|proc 0] en_info: F6_10_11 (mem 0x1d00f40, gLevel 2, gTag 2)
+Int -- [part 0|proc 0] en_info: F7_11_12 (mem 0x1d012a0, gLevel 2, gTag 2)
+
+***  Process 1: PUMI_Mesh_DspInfo (#parts/proc: 1)  ***
+PartBdry -- [part 1|proc 1] en_info: V9[0.29938,0.701598,0], (iD 9, mem 0x2771560, gLevel 2, 
+                            gTag 2, peId 2, numRCs=1)
+PartBdry -- [part 1|proc 1] en_info: V10[0.357778,0.363135,0], (iD 10, mem 0x27716b0, gLevel 2, 
+                            gTag 2, peId 3, numRCs=2)
+Int -- [part 1|proc 1] en_info: E4_5 (mem 0x276dea0, gLevel 1, gTag 6)
+Int -- [part 1|proc 1] en_info: E3_5 (mem 0x276df80, gLevel 1, gTag 6)
+Int -- [part 1|proc 1] en_info: E3_6 (mem 0x276e0a0, gLevel 1, gTag 12)
+Int -- [part 1|proc 1] en_info: E4_9 (mem 0x276e140, gLevel 2, gTag 2)
+Int -- [part 1|proc 1] en_info: E4_8 (mem 0x276e1d0, gLevel 1, gTag 20)
+PartBdry -- [part 1|proc 1] en_info: E8_9 (mem 0x276e2a0, gLevel 2, gTag 2, peId 2, numRCs=1)
+PartBdry -- [part 1|proc 1] en_info: E6_10 (mem 0x276e3d0, gLevel 2, gTag 2, peId 1, numRCs=1)
+Int -- [part 1|proc 1] en_info: E5_9 (mem 0x276e4e0, gLevel 2, gTag 2)
+Int -- [part 1|proc 1] en_info: E5_10 (mem 0x276e560, gLevel 2, gTag 2)
+Int -- [part 1|proc 1] en_info: E3_10 (mem 0x276e640, gLevel 2, gTag 2)
+PartBdry -- [part 1|proc 1] en_info: E9_10 (mem 0x276e900, gLevel 2, gTag 2, peId 2, numRCs=1)
+Int -- [part 1|proc 1] en_info: F4_8_9 (mem 0x276e810, gLevel 2, gTag 2)
+Int -- [part 1|proc 1] en_info: F4_5_9 (mem 0x276ecf0, gLevel 2, gTag 2)
+Int -- [part 1|proc 1] en_info: F3_5_10 (mem 0x276ee40, gLevel 2, gTag 2)
+Int -- [part 1|proc 1] en_info: F3_6_10 (mem 0x276efb0, gLevel 2, gTag 2)
+Int -- [part 1|proc 1] en_info: F5_9_10 (mem 0x276f100, gLevel 2, gTag 2)
+
+***  Process 2: PUMI_Mesh_DspInfo (#parts/proc: 1)  ***
+PartBdry -- [part 2|proc 2] en_info: E8_9 (mem 0xb8f440, gLevel 2, gTag 2, peId 2, numRCs=1)
+PartBdry -- [part 2|proc 2] en_info: E7_12 (mem 0xb8f540, gLevel 2, gTag 2, peId 1, numRCs=1)
+PartBdry -- [part 2|proc 2] en_info: E9_10 (mem 0xb8f5d0, gLevel 2, gTag 2, peId 2, numRCs=1)
+PartBdry -- [part 2|proc 2] en_info: E10_11 (mem 0xb8f6a0, gLevel 2, gTag 2, peId 1, numRCs=1)
+Int -- [part 2|proc 2] en_info: E9_12 (mem 0xb8f770, gLevel 2, gTag 2)
+Int -- [part 2|proc 2] en_info: E10_12 (mem 0xb8f7f0, gLevel 2, gTag 2)
+Int -- [part 2|proc 2] en_info: E1_12 (mem 0xb8f8b0, gLevel 2, gTag 2)
+Int -- [part 2|proc 2] en_info: E8_12 (mem 0xb8f930, gLevel 2, gTag 2)
+PartBdry -- [part 2|proc 2] en_info: E11_12 (mem 0xb8f9b0, gLevel 2, gTag 2, peId 1, numRCs=1)
+Int -- [part 2|proc 2] en_info: F1_7_12 (mem 0xb8ff80, gLevel 2, gTag 2)
+Int -- [part 2|proc 2] en_info: F1_8_12 (mem 0xb900d0, gLevel 2, gTag 2)
+Int -- [part 2|proc 2] en_info: F8_9_12 (mem 0xb90220, gLevel 2, gTag 2)
+Int -- [part 2|proc 2] en_info: F9_10_12 (mem 0xb90370, gLevel 2, gTag 2)
+Int -- [part 2|proc 2] en_info: F10_11_12 (mem 0xb904c0, gLevel 2, gTag 2)
+\end{verbatim}
+\end{small}

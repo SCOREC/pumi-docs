@@ -1,0 +1,382 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Geometric Model API's}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This chapter describes geometric model related API functions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Model  managemant and interrogation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+pGeom pumi_geom_load(
+        const char* /* in */ model_file_name, 
+        const char* /* in */ model_type="mesh",
+        void (*geom_load_fp)(const char*))
+\end{verbatim}
+\vspace{-.5cm}\hspace{1cm}
+	Given geometric model file name and geometric model type (\textit{``mesh", ``null", ``analytic"}), create a model, load the model data from the file, and return a geometric model instance. If \emph{model}$\_$\emph{type} is not provided, the default is \emph{``mesh"}.
+
+In case where a geometric model is \emph{NOT} available, \texttt{pumi$\_$geom$\_$load(NULL, ``null")} will generate a ``null" geometric model which mimicks the minimal geometric model behavior enough to support the PUMI.
+
+In case of the analytic model, the user can provide a function pointer in the third argument, which creates analytic model entities. If the third argument is not provided for the analytic model, a set of analytic model entities can be created later via functions \emph{gmi}\_\emph{add}\_\emph{analytic}, \emph{gmi}\_\emph{add}\_\emph{analytic}\_\emph{region}, \emph{gmi}\_\emph{add}\_\emph{analytic}\_\emph{cell}, and \emph{gmi}\_\emph{add}\_\emph{analytic}\_\emph{reparam}. For the details of analytic model entity creation, see \emph{top}\_\emph{source}\_\emph{dir/gmi/gmi}\_\emph{analytic.h}.
+
+\begin{verbatim}	
+void pumi_geom_delete (pGeom /* in */ g)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}	
+Given a geometric model instance, delete the model instance and deallocate the memory.
+
+\begin{verbatim}
+void pumi_geom_freeze(pGeom /* in */ g) 
+\end{verbatim}
+\vspace{-.5cm}\hspace{1cm}
+In some special cases, the model entities can be created by users or derived from the mesh. 
+In such cases, when the model construction is completed, the function \emph{pumi}\_\emph{geom}\_\emph{freeze} has to be called to update the internal data of the geometric model accordingly. This function finalizes the geometric model so no more model entity can be created afterwards.
+
+\begin{verbatim}
+int pumi_geom_getNumEnt(
+        pGeom /* in */ g, 
+        int /* in */ d)
+\end{verbatim}
+\vspace{-.5cm}\hspace{1cm}
+Given a geometric model instance and dimension $d$ ($0-3$), return the number of geometric model entities of the dimension $d$.
+
+\begin{verbatim}
+pGeomEnt pumi_geom_findEnt(
+	pGeom /* in */ g, 
+        int /* in*/ d, 
+        int /* in */ id)
+\end{verbatim}
+Given a geometric model instance, dimension $d$ ($0-3$), and a local ID, find the corresponding geometric model entity and return its handle. Otherwise, return \emph{NULL}.
+
+\begin{verbatim}
+void pumi_geom_print (
+    pGeom  /* in */  g,
+    bool  /* in */  print_entities)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a mdoel instance and a boolean flag pecifing whether to print the details of model entities, display the model information. The information includes size, tag, and individual entities with global ID. The argument \emph{print$\_$entities} is optional (default: false).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Geometric model interation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{verbatim}
+  pGeom g;
+  for (pGeomIter it = g->begin(d); it!=g->end(d);++it)
+  {
+    pGeomEnt e = *it;
+    ...
+  }
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+Iterate geometric model entities of dimension $d$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Geometric entity interrogation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{verbatim}
+int pumi_gent_getDim (pGeomEnt  /* in */  geom_ent)
+\end{verbatim}
+\vspace{-.5cm}\hspace{1cm}
+Given a geometric model entity, return its dimension ($0-3$).
+
+\begin{verbatim}
+int pumi_gent_getID (pGeomEnt  /* in */  geom_ent)
+\end{verbatim}
+\vspace{-.5cm}\hspace{1cm}
+Given a geometric model entity, return its global ID. Note that, in parallel, each process loads the entire geometric model.
+
+\begin{verbatim}
+void pumi_gent_getRevClas (
+        pGeomEnt  /* in */  geom_ent,
+        std::vector<pMeshEnt>&  /* inout */  mesh_ents)
+\end{verbatim}
+\vspace{-.5cm}\hspace{1cm}
+Given a geometric model entity, get the vector \emph{mesh$\_$ents} filled with its reverse classification (equal-order mesh entities classified on the geometric model entity).
+
+\begin{verbatim}
+int pumi_gent_getNumAdj (
+        pGeomEnt  /* in */  geom_ent,
+        int /* in */ target_dim)
+\end{verbatim}
+\vspace{-.5cm}\hspace{1cm}
+        Given a geometric model entity and desired adjacency type \emph{target$\_$dim}, get the number of adjacent entities of the type. Note the following: (i) if the geometric model is constructed by users, the adjacencies shall be constructed as well using \texttt{apf::add$\_$adj} (See \texttt{gmi.h}), (ii) if the geometric model is a \emph{null} model or driven by the mesh, the adjacencies may not be fully constructed.
+
+\begin{verbatim}
+void pumi_gent_getAdj (
+        pGeomEnt  /* in */  geom_ent,
+        int /* in */ target_dim, 
+        std::vector<pGeomEnt>& /* inout*/ adj_ents)
+\end{verbatim}
+\vspace{-.5cm}\hspace{1cm}
+        Given a geometric model entity and desired adjacency type \emph{target$\_$dim}, get the vector \emph{adj$\_$ents} filled with the adjacent entities of the type. Note the following: (i) if the geometric model is constructed by users, the adjacencies shall be constructed as well using \texttt{apf::add$\_$adj} (See \texttt{gmi.h}), (ii) if the geometric model is a \emph{null} model or driven by the mesh, the adjacencies may not be fully constructed.
+
+\begin{verbatim}
+void pumi_gent_get2ndAdj (
+        pGeomEnt  /* in */  geom_ent,
+        int /* in */ brg_dim, 
+        int /* in */ target_dim, 
+        std::vector<pGeomEnt>& /* inout*/ adj_ents)
+\end{verbatim}
+\vspace{-.5cm}\hspace{1cm}
+        Given a geometric model entity handle, bridge type \emph{brg$\_$dim}, and desired adjacency type \emph{target$\_$dim}, get the vector container \emph{adj$\_$ents} filled with $2^{nd}$ order adjacent entities of type \emph{target$\_$dim} obtained through the bridge type \emph{brg$\_$dim}. \emph{brg$\_$dim} and \emph{target$\_$dim} should not be equal.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Geometric model tag management}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{verbatim}
+pTag pumi_geom_createTag (
+        pGeom /* in */ g, 
+        const char* /* in */ tag_name, 
+        int /* in */ tag_type, 
+        int /* in */ tag_size)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a geometric model instance, tag name, tag data type, and tag data size, create a tag handle in model instance and return the tag handle.
+
+\begin{verbatim}
+void pumi_geom_deleteTag (
+        pGeom /* in */ g, 
+        pTag /* in */ tag, 
+        bool force_delete=false)
+\end{verbatim}\vspace{-.5 cm}\hspace{1cm}
+       Given a geometric model instance and a tag handle, destroy the tag from the model instance. If \emph{force$\_$delete} is \emph{true}, it checks if any tag data associated with the tag exists and delete any existing tag data then deletes the tag handle. If \emph{force$\_$delete} is \emph{false}, the tag is deleted without checking tag data associated with the tag. \emph{force$\_$delete} is optional (default: $false$). if \emph{force$\_$delete} is false and the tag handle is still in use, the function crashes.
+
+Note: Since PUMI doesn't keep track of tag data attachment, forced tag deletion is $O(N)$.
+
+\begin{verbatim}
+pTag pumi_geom_findTag (
+        pGeom /* in */ g, 
+        const char* /* in */ tag_name)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a geometric model instance and character string, return the handle of an existing tag in the model. If there's no tag with the given name, \emph{NULL} is returned.
+
+\begin{verbatim}
+bool pumi_geom_hasTag (
+        pGeom /* in */ g, 
+        pTag /* in */ tag)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a geometric model instance and a tag handle, return 1 if the tag exists in the model. Otherwise, 0.
+
+\begin{verbatim}
+void pumi_geom_getTag (
+        pGeom /* in */ g, 
+        std::vector<pTag>& /* inout */ tags)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given a geometric model instance, get the vector \emph{tags} filled with tag handles created in the model.
+
+
+\begin{verbatim}
+int pumi_tag_getType (const pTag /* in */ tag)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+       Given a tag handle, return tag type. 
+
+\begin{verbatim}
+void pumi_tag_getName (
+        const pTag /* in */ tag, 
+        const char** /* out */ name)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+       Given a tag handle, get the tag name.
+
+\begin{verbatim}
+int pumi_tag_getSize (const pTag /* in */ tag)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+       Given a tag handle, get the tag data size.
+
+\begin{verbatim}
+void pumi_tag_getByte (const pTag /* in */ tag)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+       Given tag handle, get the byte size of tag data.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Geometric entity tagging}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{verbatim}
+void pumi_gent_deleteTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, delete the tag data from the entity.
+
+\begin{verbatim}
+bool pumi_gent_hasTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag)     
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, return $true$ if the tag data is attached to the entity. Otherwise, return $false$.
+
+\begin{verbatim}
+void pumi_gent_getTag (
+        pGeomEnt /* in */ geom_ent, 
+        std::vector<pTag>& /* inout */  tags)     
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, get the vector \emph{tags} filled with all tag handles attached to the entity.
+
+\begin{verbatim}
+void pumi_gent_setPtrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        const void*  /* in */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, and opaque data (void*), set or update the tag value of the entity.  It fails if (i) tag type is not \emph{PUMI}$\_$\emph{PTR}, (ii) tag data size is greater than 1.
+In some cases, users do not really care about the geometric model at
+all.
+For such cases, there is a ``null" geometric model that can be used,
+which just mimicks the minimal necessary behavior to support
+the rest of the code.
+You can get a null model as follows:
+\begin{verbatim}
+void pumi_gent_getPtrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        void**  /* out */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, get pointer type data tagged to the entity. It fails if (i) the tag doesn't exist with the entity, (ii) tag type is not \emph{PUMI}$\_$\emph{PTR}, (iii) tag data size is greater than 1.
+
+\begin{verbatim}
+void pumi_gent_setIntTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        const int /* in */ data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, and integer data, set or update the tag value of the entity. It fails if (i) tag type is not \emph{PUMI}$\_$\emph{INT}, (ii) tag data size is greater than 1.
+
+\begin{verbatim}
+void pumi_gent_getIntTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        int*  /* out */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, get integer type data tagged to the entity. It fails if (i) the tag doesn't exist with the entity, (ii) tag type is not \emph{PUMI}$\_$\emph{INT}, (iii) tag data size is greater than 1.
+
+\begin{verbatim}
+void pumi_gent_setLongTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        const long /* in */ data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, and long data, set or update the tag value of the entity. It fails if (i) tag type is not \emph{PUMI}$\_$\emph{LONG}, (ii) tag data size is greater than 1.
+
+\begin{verbatim}
+void pumi_gent_getLongTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        long*  /* out */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, get long type data tagged to the entity.  It fails if (i) tag type is not \emph{PUMI}$\_$\emph{LONG}, (ii) tag data size is greater than 1.(i) the tag doesn't exist with the entity, (ii) tag type is not \emph{PUMI}$\_$\emph{LONG}, (iii) tag data size is greater than 1.
+
+\begin{verbatim}
+void pumi_gent_setDblTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        const double  /* in */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, and double data, set or update the tag value of the entity. It fails if (i) tag type is not \emph{PUMI}$\_$\emph{DBL}, (ii) tag data size is greater than 1.
+
+\begin{verbatim}
+void pumi_gent_getDblTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        double*  /* out */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, get double type data tagged to the entity. It fails if (i) the tag doesn't exist with the entity, (ii) tag type is not \emph{PUMI}$\_$\emph{DBL}, (iii) tag data size is greater than 1.
+
+\begin{verbatim}
+void pumi_gent_setEntTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        const pGeomEnt /* in */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, and another geometric model entity, set or update the tag value of the entity. It fails if (i) tag type is not  \emph{PUMI}$\_$\emph{ENT}, (ii) tag data size is greater than 1.
+
+\begin{verbatim}
+void pumi_gent_getEntTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        pGeomEnt*  /* out */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, get the entity tagged to the geometric model entity. It fails if (i) the tag doesn't exist with the entity, (ii) tag type is not \emph{PUMI}$\_$\emph{ENT}, (iii) tag data size is greater than 1.
+
+\begin{verbatim}
+void pumi_gent_setPtrArrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        void* const* /* in */ data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, and opaque array data (void*), set or update the tag value of the entity.  It fails if (i) tag type is not \emph{PUMI}$\_$\emph{PTR}, (ii) the size of tag data doesn't match that of the data.
+
+\begin{verbatim}
+void pumi_gent_getPtrArrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        void**  /* out */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, get pointer array data tagged to the entity. It fails if (i) the tag doesn't exist with the entity, (ii) tag type is not \emph{PUMI}$\_$\emph{PTR}, (iii) the size of tag data doesn't match that of the data.
+
+\begin{verbatim} 
+void pumi_gent_setIntArrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        const int*  /* in */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, and integer array data, set or update the tag value of the entity. It fails if (i) tag type is not \emph{PUMI}$\_$\emph{INT}, (ii) the size of tag data doesn't match that of the data.
+
+\begin{verbatim} 
+void pumi_gent_getIntArrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        int**  /* out */  data, 
+        int*  /* out */  data_size)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, get integer array data tagged to the entity.  \emph{data}$\_$\emph{size} is the size of \emph{data}. It fails if (i) the tag doesn't exist with the entity, (ii) tag type is not \emph{PUMI}$\_$\emph{INT}, (iii) the size of tag data doesn't match that of the data.
+
+\begin{verbatim} 
+void pumi_gent_setLongArrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        const int*  /* in */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, and long array data, set or update the tag value of the entity. It fails if (i) tag type is not \emph{PUMI}$\_$\emph{LONG}, (ii) the size of tag data doesn't match that of the data. \\ \textit{(NOT SUPPORTED)}
+
+\begin{verbatim} 
+void pumi_gent_getLongArrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        int**  /* out */  data, 
+        int*  /* out */  data_size)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, get long array data tagged to the entity.  \emph{data}$\_$\emph{size} is the size of \emph{data}. It fails if (i) the tag doesn't exist with the entity, (ii) tag type is not \emph{PUMI}$\_$\emph{LONG}, (iii) the size of tag data doesn't match that of the data. \\ 
+\textit{(NOT SUPPORTED)}
+
+\begin{verbatim} 
+void pumi_gent_setDblArrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        const double*  /* in */  data)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, and double array data, set or update the tag value of the entity. It fails if (i) tag type is not \emph{PUMI}$\_$\emph{DBL}, (ii) the size of tag data doesn't match that of the data.
+
+\begin{verbatim} 
+void pumi_gent_getDblArrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        double**  /* out */  data, 
+        int*  /* out */  data_size)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, get double array data tagged to the entity.  \emph{data}$\_$\emph{size} is the size of \emph{data}. It fails if (i) the tag doesn't exist with the entity, (ii) tag type is not \emph{PUMI}$\_$\emph{DBL}, (iii) the size of tag data doesn't match that of the data.
+
+\begin{verbatim} 
+void pumi_gent_setEntArrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag, 
+        const pGeomEnt*  /* in */  data, 
+        int  /* in */  data_size)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle, tag handle, and entity array data, set or update the tag value of the entity.  It fails if (i) tag type is not \emph{PUMI}$\_$\emph{ENT}, (ii) the size of tag data doesn't match that of the data.
+
+\begin{verbatim} 
+void pumi_gent_getEntArrTag (
+        pGeomEnt /* in */ geom_ent, 
+        pTag /* in */ tag,
+        pGeomEnt**  /* out */  data, 
+        int*  /* out */  data_size)
+\end{verbatim}\vspace{-.5cm}\hspace{1cm}
+        Given geometric entity handle and tag handle, get entity array data tagged to the entity. \emph{data}$\_$\emph{size} is the size of \emph{data}. It fails if (i) the tag doesn't exist with the entity, (ii) tag type is not \emph{PUMI}$\_$\emph{ENT}, (iii) the size of tag data doesn't match that of the data.

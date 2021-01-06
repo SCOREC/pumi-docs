@@ -1,0 +1,38 @@
+\section{Parallel Control and Communication}  
+
+The PCU (Parallel Control Utility) is a library for parallel computation based on
+MPI with additional support for hybrid MPI/thread environments. PCU is included in PUMI to support needed parallel controls and communication for operations with distributed meshes and model.
+
+The PCU provides three things to users:
+
+\begin{enumerate}
+\item A phased message passing API
+\item A thread management API
+\item Support for phased message passing between threads instead of processes
+\end{enumerate}
+
+Phased message passing is similar to Bulk Synchronous Parallel,
+but is implemented more efficiently.
+All messages are exchanged in a phase, which is a collective operation involving
+all threads in the parallel program.
+During a phase, the following events happen in sequence:
+
+\begin{enumerate}
+\item All threads send non-blocking messages to other threads
+\item All threads receive all messages sent to them during this phase
+\end{enumerate}
+
+PCU provides termination detection, which is the ability to detect when all messages
+have been received without prior knowledge of which threads are sending to which.
+
+To write hybrid MPI/thread programs, PCU provides a function that creates threads
+within an MPI process, similar to the way mpirun creates multiple processes.
+PCU assigns ranks to these threads and has them each run the same function, with
+thread-specific input arguments to the function.
+
+Once a program has created threads using PCU, it can call the phased message passing
+API from within threads, which will behave as if each thread were an MPI process.
+Threads have unique ranks and can send messages to one another, regardless of which
+process they are in.
+
+
